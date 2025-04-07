@@ -1,0 +1,24 @@
+@mixin scrollbar-thin($size: 2px, $color: var(--grey-900), $hides: false, $track-color: transparent) {
+  -moz-scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: $size;
+    height: $size;
+
+    &-thumb {
+      background: $color;
+    }
+    &-track {
+      background: $track-color;
+    }
+  }
+  @if $hides {
+    &::-webkit-scrollbar-thumb {
+      visibility: hidden;
+    }
+    &:hover::-webkit-scrollbar-thumb,
+    &:active::-webkit-scrollbar-thumb {
+      visibility: visible;
+    }
+  }
+}

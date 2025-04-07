@@ -1,0 +1,84 @@
+@mixin text-upper {
+  text-transform: uppercase;
+}
+
+@mixin text-lower {
+  text-transform: lowercase;
+}
+
+%heading {
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+@mixin h0 {
+  @extend %heading;
+  font-size: 88px;
+}
+@mixin h1 {
+  @extend %heading;
+  font-size: 58px;
+  @media (max-width: $sm) {
+    font-size: 48px;
+  }
+}
+@mixin h2 {
+  @extend %heading;
+  font-size: 44px;
+}
+@mixin h3 {
+  @extend %heading;
+  font-size: 32px;
+}
+@mixin h4 {
+  @extend %heading;
+  font-size: 28px;
+  @media (max-width: $md) {
+    font-size: 27px;
+  }
+  @media (max-width: $sm) {
+    font-size: 25px;
+  }
+}
+@mixin h5 {
+  @extend %heading;
+  font-size: 22px;
+  @media (max-width: $md) {
+    font-size: 21px;
+  }
+  @media (max-width: $sm) {
+    font-size: 20px;
+  }
+}
+@mixin h6 {
+  @extend %heading;
+  font-size: 21px;
+  @media (max-width: $sm) {
+    font-size: 18px;
+  }
+}
+@mixin subtitle-small($weight: 400) {
+  font-style: normal;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: $weight;
+  @media (max-width: $sm) {
+    font-size: 17px;
+    line-height: 22px;
+  }
+}
+
+@mixin text-normal($weight: 400) {
+  font-style: normal;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: $weight;
+}
+
+@mixin text-small($weight: 400) {
+  font-style: normal;
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: $weight;
+}

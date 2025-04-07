@@ -1,0 +1,9 @@
+// utils for global using
+// autoimports to each component
+// place here variables, mixins, placeholders, functions etc
+// don't place here scss, which renders to real css
+
+@import './_variables';
+@import './_typography';
+@import './_color';
+@import './_scrollbar';
