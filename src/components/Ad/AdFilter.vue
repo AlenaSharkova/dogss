@@ -3,19 +3,54 @@ import {computed, ref} from "vue";
 import type {ISelectComponent, ISelectComponentWithChildren} from "~/struct/Common/ISelectComponent";
 
 const breedsStore = useBreedsStore()
+const adStore = useAdStore()
 const filterStore = useFilterStore()
 const regionsStore = useRegionsStore()
 const router = useRouter();
 
-const selectBreed = ref<ISelectComponent[]>([])
+const selectBreed = ref<ISelectComponent[]>(adStore.adCatalogFilter.breeds || [])
 const selectAdType = ref<ISelectComponent>( {})
-const selectRegions = ref<ISelectComponentWithChildren[]>( [])
+const selectRegions = ref<ISelectComponentWithChildren[]>( adStore.adCatalogFilter.regions || [])
 const selectAge = ref<ISelectComponent[]>( [])
 const selectGender = ref<ISelectComponent>( {})
+const selectedMinPrice = ref(8);
+const selectedMaxPrice = ref(1080);
 
 
-const switchTrue = ref(true);
-const switchFalse = ref(false);
+watchEffect(() => {
+  if(adStore.adCatalogFilter['max-price'] !== undefined) selectedMaxPrice.value = adStore.adCatalogFilter['max-price']
+})
+watchEffect(() => {
+  if(adStore.adCatalogFilter['min-price'] !== undefined) selectedMinPrice.value = adStore.adCatalogFilter['min-price']
+})
+watchEffect(() => {
+  selectBreed.value = adStore.adCatalogFilter.breeds || []
+})
+watchEffect(() => {
+  selectAdType.value = adStore.adCatalogFilter.type || {}
+})
+watchEffect(() => {
+  selectGender.value = adStore.adCatalogFilter.gender || {}
+})
+
+watch(() => adStore.adCatalogFilter.regions,
+    (newValue) => {
+  selectRegions.value = newValue || []
+})
+/*watch(() => adStore.adCatalogFilter.breeds,
+    (newValue) => {
+      console.log('newValue breeds', newValue)
+  selectBreed.value = newValue || []
+})*/
+
+/*watch(() => adStore.adCatalogFilter.type,
+    (newValue) => {
+  selectAdType.value = newValue || {}
+})
+watch(() => adStore.adCatalogFilter.gender,
+    (newValue) => {
+  selectGender.value = newValue || {}
+})*/
 
 if(!breedsStore.breedsList) {
   breedsStore.updateBreedsList()
@@ -34,6 +69,8 @@ const goFilter = () => {
   const breeds = selectBreed.value.map(item => item.value).filter(item => !!item)?.join(',')
   const type = selectAdType.value.value || ''
   let gender = selectGender.value.value || ''
+  //let ageMax = selectAge.value?.det || ''
+  let ageMin = selectGender.value.value || ''
 
 
   let regionsArr: any[] = []
@@ -62,8 +99,6 @@ const swipeFilter = () => {
   router.push({name: 'catalog', query: {}})
 }
 
-const selectedMinPrice = ref(8);
-const selectedMaxPrice = ref(1080);
 
 const handlePriceRangeChanged = (range: any) => {
   selectedMinPrice.value = range.min;
@@ -72,6 +107,7 @@ const handlePriceRangeChanged = (range: any) => {
 };
 
 const showPriceRange = ref(false)
+
 </script>
 
 <template>
@@ -82,6 +118,7 @@ const showPriceRange = ref(false)
     </div>
     -->
     <div class="ad-filter__list">
+      {{selectBreed}}
       <BaseSelect
           v-if="breedsList?.length"
           :items="breedsList"
@@ -97,16 +134,6 @@ const showPriceRange = ref(false)
           name="ad-type"
           full-value
           placeholder="Выберите тип объявления"
-      />
-      <BaseSelect
-          v-if="ageList?.length"
-          :items="regionsListFull"
-          v-model="selectRegions"
-          show-search
-          multiple
-          name="ad-type"
-          full-value
-          placeholder="Выберите регион"
       />
       <BaseSelect
           v-if="ageList?.length"

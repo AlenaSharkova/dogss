@@ -3,15 +3,17 @@
     <div v-if="props.showSearch"
          @click="open = true"
          class="base-select__search" >
+      {{placeHolder}}
+      {{multiple}}
       <input
           class="base-select__search-input"
-        type="text"
-        v-model="search"
-        @blur="closeDropdown"
-        :placeholder="`${ (multiple? multipleItemsDisplay: singleItemDisplay) || placeholder }`"
-        :class="[props.rounded, props.class]"
-        :disabled="!props.showSearch"
-        :style="{ width: '100%' }"
+          type="text"
+          v-model="search"
+          v-bind:placeholder="placeHolder"
+          :class="[props.rounded, props.class]"
+          :disabled="!props.showSearch"
+          @blur="closeDropdown"
+
       />
       <div
         v-if="props.showSearch && search && props.showClear"
@@ -39,7 +41,7 @@
         </div>
         <div class="base-select__main-button__text"
              v-else-if="props.modelValue && props.multiple && multipleItemsDisplay">
-          {{ multipleItemsDisplay }}
+         {{ multipleItemsDisplay }}
         </div>
         <div class="base-select__main-button__placeholder"
              v-else >
@@ -74,7 +76,7 @@
                 type="text"
                 v-model="search"
                 @blur="closeDropdown"
-                :placeholder="`${ (multiple? multipleItemsDisplay: singleItemDisplay) || placeholder }`"
+                :placeholder="placeHolder"
                 :class="[props.rounded, props.class]"
                 :disabled="!props.showSearch"
                 :style="{ width: '100%' }"
@@ -210,8 +212,12 @@ const itemsFormat: ComputedRef<ISelectComponentWithChildren[]> = computed(() => 
   return props.items || []
 })
 
-
-
+const placeHolder = computed(() => {
+  console.log('placeHolder 0', props.multiple, multipleItemsDisplay.value, singleItemDisplay.value)
+  if (props.multiple)
+    return multipleItemsDisplay.value || props.placeholder
+  else return singleItemDisplay.value || props.placeholder
+})
 const emit = defineEmits(["select", "clear", "update:modelValue", "input", 'onError', 'click-changes', 'open']);
 const error = ref("");
 
@@ -232,6 +238,8 @@ watch(
         singleItemValue.value = newVal.value;
         if(props.multiple) {
           multipleItemsDisplay.value = selectedOptions.value?.length? selectedOptions.value?.filter(item => item.value)?.map((option) => option.text).join(", "): ''
+          console.log('props.modelValue 2 ', multipleItemsDisplay.value)
+
         }
       }
     },

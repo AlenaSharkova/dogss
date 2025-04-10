@@ -1,5 +1,5 @@
 import BaseApiService from "~/service/baseApi.service";
-import type {AdCreateItemStruct, AdItemStruct, AdQueryFilterStruct} from "~/struct/Ad/AdItemStruct";
+import type {AdCreateItemStruct, AdItemStruct, AdListApi, AdQueryFilterStruct} from "~/struct/Ad/AdItemStruct";
 import axios from "axios";
 
 export default class AdService extends BaseApiService {
@@ -9,9 +9,9 @@ export default class AdService extends BaseApiService {
     super(config);
   }
   async getAdList(query: AdQueryFilterStruct | null) {
-    const {data} = await useFetch<AdItemStruct[]>(this.RESOURCE, {
+    const {data} = await useFetch<AdListApi>(this.RESOURCE, {
       method: "get",
-      query: query,
+      query: query || {},
       baseURL: this.baseURL,
       headers: {
         ...this.headers,

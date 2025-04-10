@@ -1,27 +1,23 @@
 import type {Database} from "db0";
-import type {ISelectNumber} from "~/struct/Common/ISelectComponent";
+import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
 
-export interface AdCreateItemStruct {
-    img: string;
-    name: string;
-    owner: number;
-    price: number | null;
-    count_image: number;
 
-    date_birth: string;
-    breed_id: number;
-    type_ad: 'purchase' | 'good-hands' | 'mating' | 'lost';
-    description: string;
-    is_export: boolean
-    parents_mum?: number | null;
-    parents_dad?: number | null;
-    region_main: number
-    city_main: number;
-    gender: 'female' | 'male' | 'any' | null;
-    quantitative: 'one' | 'litter';
-    regionsExport?: number[] | null
+export interface AdListApiDetails {
+    limit: number;
+    offset: number;
+    count: number;
 }
-
+export interface AdListApiQuery {
+    breeds?: ISelectNumber[] | null;
+    regions?: ISelectNumber[] | null;
+}
+export interface AdListApi {
+    limit: number;
+    offset: number;
+    count: number;
+    queryDetails: AdListApiQuery;
+    result: AdItemStruct[]
+}
 export interface AdItemStruct {
     breed: ISelectNumber;
     name: string;
@@ -55,6 +51,15 @@ export interface AdItemStruct {
     gender: 'female' | 'male' | 'any' | null;
     quantitative: 'one' | 'litter';
 }
+
+export interface AdFullFilterStruct {
+    'max-price'?: number;
+    'min-price'?: number;
+    type?: ISelectComponent | null;
+    gender?: ISelectComponent | null;
+    breeds?: ISelectNumber[] | null;
+    regions?: ISelectComponentWithChildren[] | null;
+}
 export interface AdQueryFilterStruct {
     breeds?: string;
     'max-price'?: string;
@@ -62,6 +67,26 @@ export interface AdQueryFilterStruct {
     regions?: string;
     type?: string;
     gender?: string;
+}
+export interface AdCreateItemStruct {
+    img: string;
+    name: string;
+    owner: number;
+    price: number | null;
+    count_image: number;
+
+    date_birth: string;
+    breed_id: number;
+    type_ad: 'purchase' | 'good-hands' | 'mating' | 'lost';
+    description: string;
+    is_export: boolean
+    parents_mum?: number | null;
+    parents_dad?: number | null;
+    region_main: number
+    city_main: number;
+    gender: 'female' | 'male' | 'any' | null;
+    quantitative: 'one' | 'litter';
+    regionsExport?: number[] | null
 }
 
 export interface ISelectTypeAd {

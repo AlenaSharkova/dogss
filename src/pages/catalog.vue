@@ -24,6 +24,7 @@ const updateList = () => {
 }
 
 const adList = computed(() => adStore.adCatalogList )
+const adListDetails = computed(() => adStore.adCatalogListDetails )
 
 const title = ref('')
 
@@ -32,7 +33,7 @@ const queryType = ref<string>('')
 const queryRegion = ref<string>('')
 const queryBreedsObj = ref<ISelectComponent[]| null>(null)
 const queryTypeObj = ref< ISelectComponent | null>(null)
-const queryRegionObj = ref< ISelectComponent | null>(null)
+const queryRegionObj = ref< ISelectComponent[] | null>(null)
 
 
 onBeforeUpdate(async () => {
@@ -44,50 +45,31 @@ onBeforeUpdate(async () => {
   });
 })
 
-
-
-const getCreate = async () => {
-  const query = route.query as AdQueryFilterStruct
-
+const getCreate = async ( offset = 0 as number ) => {
+  const queryRoute = route.query as AdQueryFilterStruct
+  const query = {
+    ...queryRoute,
+    offset
+  }
   await adStore.updateAdList(query)
 
-  queryBreeds.value = route.query.breeds? (route.query.breeds as string).split(',') : []
-  queryType.value = route.query.type as string || ''
-  queryRegion.value = route.query.regios as string || ''
+  console.log('adCatalogFilter', adStore.adCatalogFilter)
 
-  if(queryBreeds.value?.length) {
-    if(!breedsStore.breedsList) await breedsStore.updateBreedsList()
-
-    if(breedsStore.breedsList) {
-      queryBreedsObj.value = queryBreeds.value
-          .map(queryBreedItem =>
-              breedsStore.breedsList?.find(item => String(item.value) === queryBreedItem ) as ISelectComponent
-          )
-    }
-  } else queryBreedsObj.value = null
-
-  if(queryRegion.value?.length) {
-    if(!regionsStore.regionsList) await regionsStore.updateRegionsListFull()
-
-    if(regionsStore.regionsListFull) {
-      queryRegionObj.value = regionsStore.regionsListFull.find(item => String(item.value) === queryRegion.value ) || null
-    }
-  } else queryRegionObj.value = null
-
-  if(queryType.value ) {
-    queryTypeObj.value = filterStore.typeAdList.find(item => String(item.value) === queryType.value ) || null
-  } else queryTypeObj.value = null
+  queryBreedsObj.value = adStore?.adCatalogFilter.breeds || null
+  queryRegionObj.value = adStore?.adCatalogFilter.regions || null
 
 
   title.value =  (queryBreedsObj.value?.length == 1 ? queryBreedsObj.value[0].text : 'Собаки') + " " +
       (queryTypeObj.value?.text || '').toLowerCase()
-      + " в " + (queryRegionObj.value?.text || "России")
+      + " в " + (queryRegionObj.value?.length? queryRegionObj.value[0].text: "России")
 
 
 }
 
 await getCreate()
-
+const changePage = (offset: number) => {
+  getCreate(offset)
+}
 
 useHead({
   title: `Dogs - ${title.value || '' }`,
@@ -106,15 +88,21 @@ useHead({
         </div>
 
       <div class="page-catalog__main">
-        <AdWrapperList has-filter>
-          <CartAdItem
-              v-for="(item, index) in adList"
-              :key="index"
-              :item="item" />
-        </AdWrapperList>
-
+        <div v-if="adList?.length" class="page-catalog__main-listing">
+          <AdWrapperList has-filter>
+            <CartAdItem
+                v-for="(item, index) in adList"
+                :key="index"
+                :item="item" />
+          </AdWrapperList>
+          <CommonPaginationList
+              :data="adListDetails"
+              @change-page="changePage" />
+        </div>
+        <div v-else>
+          не найдено
+        </div>
         <AdFilter class="page-catalog__main-filter"/>
-
       </div>
       <br />
       <BaseButton type="primary" @click="updateList()"  text="Обновить"/>

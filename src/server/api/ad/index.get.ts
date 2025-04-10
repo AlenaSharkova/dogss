@@ -1,13 +1,16 @@
 
 
 export default defineEventHandler<{query: {
-    breeds?: string;
-    'max-price'?: string;
-    'min-price'?: string;
-    regions?: string;
-    type?: string;
-    gender?: string;
-    city?: string;
+        breeds?: string;
+        'max-price'?: string;
+        'min-price'?: string;
+        regions?: string;
+        type?: string;
+        gender?: string;
+        city?: string;
+
+        limit?: number;
+        offset?: number;
     }
     }>(async (event)=>
 
@@ -15,8 +18,12 @@ export default defineEventHandler<{query: {
     const sql = usePostgres()
 
     const query = getQuery(event)
+    const queryFull = {
+        breeds: null as any,
+        regions: null as any,
+    }
 
-    let sqlQuery = 'SELECT * FROM ad_list WHERE'; // Базовый запрос.  1=1 чтобы было удобно добавлять условия
+    let sqlQuery = 'SELECT * FROM ad_list WHERE';
 
     const conditions = [] as any[];// Начальное условие (пустое)
 
@@ -24,8 +31,14 @@ export default defineEventHandler<{query: {
         conditions.push(sql`type_ad = ${query.type}`);
     }
     if (query.breeds) {
-
-        conditions.push(sql`breed_id = ${query.breeds}`);
+        queryFull.breeds = []
+        const queryBreedsArr = query.breeds.split(',')
+        const breedsSql = queryBreedsArr.reduce((acc, breed, index) => {
+            if (index == queryBreedsArr.length - 1) return sql`${acc}${breed}`
+            return sql`${acc}${breed}, `
+        }, sql``)
+        conditions.push( sql`breed_id IN (${breedsSql})` );
+        queryFull.breeds = await sql`SELECT * FROM breeds WHERE value IN (${breedsSql})`
     }
     if (query.gender) {
         conditions.push(sql`gender = ${query.gender}`);
@@ -37,11 +50,15 @@ export default defineEventHandler<{query: {
         conditions.push(sql`price >= ${query['min-price']}`);
     }
     if (query.regions) {
-        const regionsSql = query.regions.split(',').reduce((acc, reg, index) => {
-            if(index == (query.regions as string).split(',').length - 1) return sql`${acc}${reg}`
+        queryFull.regions = []
+        let queryRegionsArr = query.regions.split(',')
+        const regionsSql = queryRegionsArr.reduce((acc, reg, index) => {
+            if(index == queryRegionsArr.length - 1) return sql`${acc}${reg}`
             return sql`${acc}${reg}, `
         }, sql``)
         conditions.push( sql`region_main IN (${regionsSql})` );
+        queryFull.regions = await sql`SELECT * FROM geo_regions WHERE value IN (${regionsSql})`
+
     }
     if (query.city) {
         const citySql = query.city.split(',').reduce((acc, reg, index) => {
@@ -52,9 +69,16 @@ export default defineEventHandler<{query: {
     }
 
     // Добавляем LIMIT и OFFSET (пагинация - необязательно, но часто используется)
-    const limit = 20; //значение по умолчанию
-    const offset = 0; //значение по умолчанию
-    let adListDB
+    let limit = 12; //значение по умолчанию
+    let offset = 0; //значение по умолчанию
+    if (query.limit) {
+        limit = query.limit;
+    }
+    if (query.offset) {
+        offset = query.offset;
+    }
+
+    let adListDB, countAdListDB
     console.log('sqlQuery', query, sqlQuery)
     if (conditions.length > 0) {
         console.log('adListDB2 conditions', conditions)
@@ -64,16 +88,19 @@ export default defineEventHandler<{query: {
             let combinedConditions = sql``;
 
             for (let i = 0; i < conditions.length; i++) {
-                if (i > 0) {
-                    combinedConditions = sql`${combinedConditions} AND ${conditions[i]}`;
-                } else {
-                    combinedConditions = conditions[i]; // Первое условие
-                }
+                if (i > 0) combinedConditions = sql`${combinedConditions} AND ${conditions[i]}`;
+                else combinedConditions = conditions[i];
             }
             console.log('adListDB2 0', combinedConditions)
-
             whereClause = sql`WHERE ${combinedConditions}`;
-            adListDB = await sql`SELECT * FROM ad_list ${whereClause}`;
+
+            adListDB = await sql`
+                SELECT * FROM ad_list ${whereClause} 
+                LIMIT ${limit} OFFSET ${offset}`;
+
+            countAdListDB = await sql`
+                SELECT COUNT(*) FROM ad_list ${whereClause}`;
+
             console.log('adListDB2 result', adListDB)
 
             console.log('adListDB2', whereClause)
@@ -84,7 +111,8 @@ export default defineEventHandler<{query: {
             throw error; // Перебросить ошибку, чтобы ее можно было обработать выше
         }
     } else {
-        adListDB = await sql`SELECT * FROM ad_list`
+        adListDB = await sql`SELECT * FROM ad_list LIMIT ${limit} OFFSET ${offset}`
+        countAdListDB = await sql`SELECT COUNT(*) FROM ad_list`;
     }
 
     //const adListDB2 = await sql`${sql.raw(baseQuery)} ${sql.raw(values.map((val, index) => `$${index+1} = ${sql.value(val)}`).join(' AND '))}`;
@@ -92,7 +120,7 @@ export default defineEventHandler<{query: {
 
 
     console.log('ad 22', adListDB );
-    let results = await Promise.all(adListDB.map(async (item) => {
+    let result = await Promise.all(adListDB.map(async (item) => {
         const adOwner =  await sql`SELECT * FROM users WHERE id=${item.owner}`
         const adBreed = await sql`SELECT * FROM breeds WHERE value=${item.breed_id}`
         const adRegionMain = await sql`SELECT * FROM geo_regions WHERE value=${item.region_main}`
@@ -149,6 +177,12 @@ export default defineEventHandler<{query: {
     event.waitUntil(sql.end())
 
 
-    return results
+    return {
+        limit: Number(limit),
+        queryDetails: queryFull,
+        offset: Number(offset),
+        count: Number(countAdListDB[0].count),
+        result: result
+    }
 
 })
