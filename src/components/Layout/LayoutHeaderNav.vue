@@ -34,6 +34,7 @@ const logout = () => {
 
     <div class="header-nav__actions">
       <BaseButton text="Подать объявление" size="small" to="/create-ad" />
+      <BaseButton text="Войти" size="small" to="/login" type="secondary" />
     </div>
   </div>
 </template>
@@ -65,6 +66,8 @@ const logout = () => {
     text-wrap: nowrap;
   }
   &__actions {
+    display: flex;
+    gap: 5px;
     flex-shrink: 0;
   }
 }

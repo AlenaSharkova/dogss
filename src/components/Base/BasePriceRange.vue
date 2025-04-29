@@ -38,6 +38,14 @@
           :step="step"
       />
     </div>
+    <div class="range-descr">
+      <div class="range-descr__min">
+        <span>{{ formatAmount(minValue, true) }}</span>
+      </div>
+      <div class="range-descr__max">
+        <span>{{ formatAmount(maxValue, true) }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -68,8 +76,6 @@ const maxPrice = defineModel<'' | number>('maxPrice', {default: 1000});
 const rangeMin = ref<number>(minPrice.value == ''? 0: minPrice.value);
 const rangeMax = ref<number>(maxPrice.value == ''? 0: maxPrice.value);
 
-
-// Watchers to sync prices with range inputs
 watch(minPrice, (newMinPrice) => {
   if (newMinPrice === '' ) {
     rangeMin.value = 0
@@ -79,14 +85,9 @@ watch(minPrice, (newMinPrice) => {
     minPrice.value = rangeMax.value - props.priceGap;
   }
   if (newMinPrice < props.minValue ) {
-    console.log('newMinPrice < props.minValue ', newMinPrice, minPrice.value, props.minValue )
-
     minPrice.value = props.minValue;
     return
   }
-
-  console.log('newMinPrice < props.minValue 22 ',  minPrice.value, props.minValue )
-
   rangeMin.value = newMinPrice;
 });
 
@@ -105,22 +106,18 @@ watch(maxPrice, (newMaxPrice) => {
   rangeMax.value = newMaxPrice;
 });
 
-
-// Watchers to sync range inputs with prices and enforce priceGap
 watch(rangeMin, (newRangeMin) => {
   if (newRangeMin > rangeMax.value - props.priceGap) {
     rangeMin.value = rangeMax.value - props.priceGap;
   }
   minPrice.value = newRangeMin;
 });
-
 watch(rangeMax, (newRangeMax) => {
   if (newRangeMax < rangeMin.value + props.priceGap) {
     rangeMax.value = rangeMin.value + props.priceGap;
   }
   maxPrice.value = newRangeMax;
 });
-
 
 const progressStyle = computed(() => {
   const left = ((rangeMin.value - props.minValue) / (props.maxValue - props.minValue)) * 100;
@@ -133,7 +130,7 @@ const progressStyle = computed(() => {
 
 const onInputNumber = (e: InputEvent & { target: HTMLInputElement }) => {
   let res = e.target.value
-  if(e.target.value != 0) res = String(Number(e.target.value) || '')
+  if(e.target.value != '0') res = String(Number(e.target.value) || '')
   e.target.value = res.replace(/[^0-9 ]/g, '')
 }
 </script>
@@ -251,5 +248,14 @@ input[type="range"]::-moz-range-thumb{
   pointer-events: auto;
   -moz-appearance: none;
   box-shadow: 0 0 6px rgba(0,0,0,0.05);
+}
+
+.range-descr {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+  &__min, &__max {
+    @include subtitle-small(500);
+  }
 }
 </style>

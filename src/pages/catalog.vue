@@ -88,21 +88,26 @@ useHead({
         </div>
 
       <div class="page-catalog__main">
-        <div v-if="adList?.length" class="page-catalog__main-listing">
-          <AdWrapperList has-filter>
-            <CartAdItem
-                v-for="(item, index) in adList"
-                :key="index"
-                :item="item" />
-          </AdWrapperList>
-          <CommonPaginationList
-              :data="adListDetails"
-              @change-page="changePage" />
+        <div class="page-catalog__main-sorting">
+          <AdSorting />
         </div>
-        <div v-else>
-          не найдено
+        <div class="page-catalog__main-block">
+          <div v-if="adList?.length" class="page-catalog__main-listing">
+            <AdWrapperList has-filter>
+              <CartAdItem
+                  v-for="(item, index) in adList"
+                  :key="index"
+                  :item="item" />
+            </AdWrapperList>
+            <CommonPaginationList
+                :data="adListDetails"
+                @change-page="changePage" />
+          </div>
+          <div v-else>
+            не найдено
+          </div>
+          <AdFilter class="page-catalog__main-filter"/>
         </div>
-        <AdFilter class="page-catalog__main-filter"/>
       </div>
       <br />
       <BaseButton type="primary" @click="updateList()"  text="Обновить"/>
@@ -124,12 +129,17 @@ useHead({
     flex-wrap: wrap;
   }
   &__main {
-    position: relative;
     display: flex;
-    gap: 10px;
-    align-items: flex-start;
-    @media (max-width: $sm) {
-      flex-direction: column-reverse;
+    flex-direction: column;
+    gap: 12px;
+    &-block {
+      position: relative;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      @media (max-width: $sm) {
+        flex-direction: column-reverse;
+      }
     }
     &-filter {
       position: sticky;

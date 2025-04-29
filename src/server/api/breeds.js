@@ -1,44 +1,27 @@
-import breeds from "~/demoData/new_breeds.json";
-import connection from "express";
 
-
-export default defineEventHandler(async (event)=>
-{
-    const sql = usePostgres()
+export default defineEventHandler(async (event) => {
+    console.log('event.context', event.context)
     const query = getQuery(event)
-    console.log('query', query)
-    //const id = getRouterParam(event, 'name')
-    let res
+    const sequelize = event.context.sequelize;
+
+    const Breeds = event.context.Breeds; // Получаем модель Breed из контекста Nitro
+
+    if (!Breeds || !sequelize) {
+        console.error('Breeds model or sequelize is not available in the context');
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Database connection error',
+        });
+    }
+
     try {
-        res = await sql`SELECT * FROM breeds`
-    } catch (e)
-    {
-        /*await sql`CREATE TABLE breeds(id INT, name VARCHAR(255))`
-
-        let responseJson = JSON.stringify(breeds);
-
-        console.log('responseJson', responseJson)
-        const a = await sql`
-             INSERT INTO breeds (name, id)
-             SELECT breeds.name, breeds.id 
-             FROM JSON_TABLE(
-                 ${responseJson}, '$[*]' COLUMNS ( name VARCHAR(255)  PATH '$.name', id INT PATH '$.id')
-             ) AS breeds;`
-        console.log('a responseJson', a)
-        res = await sql`SELECT * FROM breeds`*/
+        return await Breeds.findAll();
+    } catch (error) {
+        console.error('Sequelize error:', error);
+        throw createError({
+            statusCode: 500,
+            statusMessage: 'Ошибка при запросе к базе данных',
+            data: error,
+        });
     }
-
-    if(!res) {
-
-
-    }
-
-        /*throw createError({
-            statusCode: 404,
-            statusMessage: 'Питомник не найден',
-        })*/
-    // Ensure the database connection is closed after the request is processed
-    event.waitUntil(sql.end())
-    return res
-
-})
+});

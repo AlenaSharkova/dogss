@@ -8,6 +8,7 @@ import type {
     AdListApiQuery,
     AdQueryFilterStruct
 } from "~/struct/Ad/AdItemStruct";
+import {q} from "~~/.output/server/chunks/runtime.mjs";
 
 
 export const useAdStore = defineStore('adStore', () => {
@@ -23,9 +24,13 @@ export const useAdStore = defineStore('adStore', () => {
 
     async function updateAdList(query = null as AdQueryFilterStruct | null) {
         console.log('query', query)
-        if(query) getQueryAd(query)
-        adService
-            .getAdList(query)
+        if(query) {
+            getQueryAd(query)
+            query.minAgeMonth = adCatalogFilter.value.ageCategory?.details.minAgeMonth
+            query.maxAgeMonth = adCatalogFilter.value.ageCategory?.details.maxAgeMonth
+            delete query.ageCategory
+        }
+        adService.getAdList(query)
             .then((res) => {
                 if (res.value) {
                     adCatalogList.value = res.value.result;
@@ -36,6 +41,7 @@ export const useAdStore = defineStore('adStore', () => {
                     };
                     adCatalogFilter.value.regions = res.value.queryDetails.regions
                     adCatalogFilter.value.breeds = res.value.queryDetails.breeds
+                    adCatalogFilter.value.maxFullPrice = res.value.queryDetails.maxFullPrice
                 }
             })
             .catch(e => console.error(e));
@@ -48,7 +54,10 @@ export const useAdStore = defineStore('adStore', () => {
         adCatalogFilter.value['max-price'] = Number(query['max-price'] ) || 0
         adCatalogFilter.value['min-price'] = Number(query['min-price']) || 0
         if(query.gender) {
-            adCatalogFilter.value.gender = filterStore.genderListFull?.find(item => String(item.value) === query.gender ) || null
+            adCatalogFilter.value.gender = filterStore.genderList?.find(item => String(item.value) === query.gender ) || null
+        }
+        if(query.ageCategory) {
+            adCatalogFilter.value.ageCategory = filterStore.ageList?.find(item => item.value === query.ageCategory ) || null
         }
     }
     async function createAd(body: AdCreateItemStruct) {

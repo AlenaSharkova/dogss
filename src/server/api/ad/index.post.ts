@@ -4,6 +4,10 @@ export default defineEventHandler(async (event)=>
 
 
     const body = await readBody(event)
+
+    const AdList = event.context.AdList;
+    const AdExportRegions = event.context.AdExportRegions;
+
     let adItemCreateResult
     //TO DO: валидация
     //const columns = Object.keys(bodySend);
@@ -12,8 +16,21 @@ export default defineEventHandler(async (event)=>
     //await sql` INSERT INTO ad_list (${columnsString}) VALUES (${placeholders}) `;
 
     try {
+        body.status = 'active'
+        adItemCreateResult = await AdList.create(body);
 
-        adItemCreateResult = await sql`
+        if (body.is_export && body.regionsExport && body.regionsExport.length ) {
+            for (const regionId of body.regionsExport) {
+                await AdExportRegions.create({
+                    ad_id: adItemCreateResult.id,
+                    region_id: regionId
+                });
+            }
+        }
+
+        //await adItemCreateResult.reload()
+
+        /*adItemCreateResult = await sql`
             INSERT INTO ad_list (
                     img, name, owner, price,
                     count_image, date_birth, breed_id, type_ad, 
@@ -41,7 +58,7 @@ export default defineEventHandler(async (event)=>
             }
         }
 
-        event.waitUntil(sql.end())
+        event.waitUntil(sql.end())*/
 
         return adItemCreateResult
     }

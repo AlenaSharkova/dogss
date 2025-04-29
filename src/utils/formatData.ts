@@ -39,9 +39,9 @@ export const formatAmount = (amount: number | string, currency = false  ) => {
         }
     } else {
         if (typeof(amount) === 'number' ) {
-            return amount.toLocaleString("ru-RU", { style: "currency", currency: "RUB"});
+            return amount.toLocaleString("ru-RU", { style: "currency", currency: "RUB", minimumFractionDigits: 0});
         } else if (!isNaN(Number(amount)) && amount) {
-            return Number(amount).toLocaleString("ru-RU", { style: "currency", currency: "RUB"});
+            return Number(amount).toLocaleString("ru-RU", { style: "currency", currency: "RUB", minimumFractionDigits: 0});
         } else {
             console.log('ошибка: нечисловой тип')
             return ''

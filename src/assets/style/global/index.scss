@@ -5,6 +5,10 @@ body {
   color: #2D2D2D;
   padding: 0;
   overflow-x: hidden;
+  ::selection{
+    color: #fff;
+    background: $violet;
+  }
   @media (max-width: 1023px) {
     background: #fbfcfd;
     //background: #000;

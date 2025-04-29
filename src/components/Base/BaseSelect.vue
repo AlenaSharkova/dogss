@@ -3,17 +3,14 @@
     <div v-if="props.showSearch"
          @click="open = true"
          class="base-select__search" >
-      {{placeHolder}}
-      {{multiple}}
       <input
           class="base-select__search-input"
           type="text"
           v-model="search"
-          v-bind:placeholder="placeHolder"
+          :placeholder="placeHolder"
           :class="[props.rounded, props.class]"
           :disabled="!props.showSearch"
           @blur="closeDropdown"
-
       />
       <div
         v-if="props.showSearch && search && props.showClear"
@@ -85,7 +82,6 @@
           <div v-if="filteredOptions.length"
                class="base-select__dropdown-list"
           >
-
             <div
               v-for="(option, i) in filteredOptions"
               :key="i"
@@ -120,6 +116,7 @@
                 :id="`input-check-${name}-${i}`"
                 :value="option"
               />
+
               <div
                   v-if="isEnclosure"
                   class="base-select__dropdown-list__point-enclosure"
@@ -134,7 +131,7 @@
                   />
               </div>
               <label v-else   class="base-select__dropdown-list__point-text">
-                <span  >{{ option.text }}</span>
+                <span>{{ option.text }}</span>
               </label>
 
             </div>
@@ -226,16 +223,18 @@ let search = ref("");
 let selectedOptions = ref<ISelectComponentWithChildren[] >(props.modelValue);
 const singleItemValue = ref();
 let filteredOptions = ref(JSON.parse(JSON.stringify(itemsFormat.value)))
-const multipleItemsDisplay = ref(selectedOptions.value?.length? selectedOptions.value?.filter(item => item.value).map((option) => option.text).join(", "): '')
+const multipleItemsDisplay = ref(selectedOptions.value?.length && props.multiple? selectedOptions.value?.filter(item => item.value).map((option) => option.text).join(", "): '')
 
 
 watch(
     () => props.modelValue,
     (newVal) => {
       if(newVal) {
-        console.log('props.modelValue', newVal)
+        console.log('props.modelValue', newVal, props.name)
         selectedOptions.value = newVal;
-        singleItemValue.value = newVal.value;
+
+        if(props.fullValue) singleItemValue.value = newVal.value
+        else singleItemValue.value = newVal
         if(props.multiple) {
           multipleItemsDisplay.value = selectedOptions.value?.length? selectedOptions.value?.filter(item => item.value)?.map((option) => option.text).join(", "): ''
           console.log('props.modelValue 2 ', multipleItemsDisplay.value)
@@ -375,7 +374,14 @@ function closeMobile() {
 }
 
 let singleItemDisplay = computed(() => {
-  if (props.modelValue.value) {
+  if (props.modelValue.value && props.fullValue) {
+    return (
+        [...itemsFormat.value].find((item) => {
+          return item.value === singleItemValue.value;
+        })?.text || ""
+    );
+  } else if(props.modelValue) {
+    console.log('aaaa', singleItemValue.value)
     return (
         [...itemsFormat.value].find((item) => {
           return item.value === singleItemValue.value;
@@ -478,8 +484,10 @@ watch(
         }
       } else {
         const option = itemsMap[props.modelValue];
+        console.log('option', option)
+
         if (option) {
-          selectedOptions.value = [option];
+          selectedOptions.value = option
         } else {
           selectedOptions.value = [];
         }

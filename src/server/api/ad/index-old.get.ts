@@ -31,7 +31,7 @@ export default defineEventHandler<{query: {
         conditions.push(sql`type_ad = ${query.type}`);
     }
     if (query.breeds) {
-        queryFull.breeds = []
+       let breeds = []
         const queryBreedsArr = query.breeds.split(',')
         const breedsSql = queryBreedsArr.reduce((acc, breed, index) => {
             if (index == queryBreedsArr.length - 1) return sql`${acc}${breed}`

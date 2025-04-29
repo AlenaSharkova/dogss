@@ -62,12 +62,11 @@ const breedsList = computed(() =>  breedsStore.breedsList)
 const typeAdList = computed(() => filterStore.typeAdList)
 const genderList = computed(() => filterStore.genderList)
 const quantitativeList = computed(() => filterStore.quantitativeList)
-const genderListFull = computed(() => filterStore.genderListFull)
 const regionsList = computed(() => regionsStore.regionsList)
 const cityList = computed(() => regionsStore.cityList || [])
 const ageList = computed(() => filterStore.ageList)
 
-const selectGender = ref<ISelectGender>(genderListFull.value[0] )
+const selectGender = ref<ISelectGender>(genderList.value[0] )
 const selectQuantitative = ref<IFilterQuantitative>( quantitativeList.value[0])
 const isExport = ref(false)
 
@@ -116,6 +115,7 @@ const getBody = (): AdCreateItemStruct | false => {
   }
 }
 const createAdForm = async () => {
+
   const body = getBody();
   if(!body) return
   await adStore.createAd(body)

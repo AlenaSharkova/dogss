@@ -39,12 +39,22 @@ export default defineNuxtConfig({
     }
   },
   modules: ['dayjs-nuxt', '@pinia/nuxt', 'nuxt-swiper'],
+  imports: {
+    autoImport: true //  Убедитесь, что autoImport включен
+  },
 
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.PROXY,
       websiteUrl: process.env.WEBSITE_URL,
       websiteENV: process.env.WEBSITE_ENV
+    },
+    postgres: {
+      user: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+      database: process.env.POSTGRES_DATABASE,
+      host: process.env.POSTGRES_HOST,
+      port: process.env.POSTGRES_PORT, // Порт по умолчанию
     },
   },
   dayjs: {

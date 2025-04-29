@@ -10,6 +10,7 @@ export interface AdListApiDetails {
 export interface AdListApiQuery {
     breeds?: ISelectNumber[] | null;
     regions?: ISelectNumber[] | null;
+    maxFullPrice: number;
 }
 export interface AdListApi {
     limit: number;
@@ -59,6 +60,8 @@ export interface AdFullFilterStruct {
     gender?: ISelectComponent | null;
     breeds?: ISelectNumber[] | null;
     regions?: ISelectComponentWithChildren[] | null;
+    maxFullPrice?: number;
+    ageCategory?: IFilterAge | null;
 }
 export interface AdQueryFilterStruct {
     breeds?: string;
@@ -67,6 +70,9 @@ export interface AdQueryFilterStruct {
     regions?: string;
     type?: string;
     gender?: string;
+    ageCategory?: string;
+    minAgeMonth?: number;
+    maxAgeMonth?: number | 'infinite';
 }
 export interface AdCreateItemStruct {
     img: string;
@@ -97,7 +103,6 @@ export interface ISelectGender {
     text?: string,
     value?: 'female' | 'male' | 'any' | '';
 }
-
 export interface IFilterTypeAd {
     text: string,
     value?: 'purchase' | 'good-hands' | 'mating' | 'lost' | '';
@@ -107,3 +112,11 @@ export interface IFilterQuantitative {
     value?:  "one" | "litter" | '';
 }
 
+export interface IFilterAge {
+    text: string,
+    value: 'puppy' | 'young' | 'adult' | 'elderly',
+    details: {
+        minAgeMonth: number,
+        maxAgeMonth: number | 'infinite'
+    }
+}

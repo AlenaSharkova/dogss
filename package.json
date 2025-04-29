@@ -7,7 +7,9 @@
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "migrate": "node migrations/run.js up",
+    "migrate:undo": "node migrations/run.js down"
   },
   "overrides": {
     "vue": "latest"
@@ -16,19 +18,26 @@
     "@pinia/nuxt": "^0.5.5",
     "axios": "^1.7.9",
     "dayjs-nuxt": "^2.1.11",
+    "dotenv": "^16.5.0",
     "express": "^4.21.0",
     "gsap": "^3.12.7",
     "mysql2": "^3.11.3",
+    "nodemailer": "^6.10.1",
     "nuxt": "^3.13.0",
     "nuxt-swiper": "^1.2.2",
+    "pg": "^8.15.0",
+    "pg-hstore": "^2.3.4",
     "pinia": "^2.2.4",
     "postgres": "^3.4.5",
     "postgresql": "^0.0.1",
+    "sequelize": "^6.37.7",
+    "umzug": "^3.8.2",
     "vue": "latest",
     "vue-router": "latest"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "sass": "^1.79.4"
+    "sass": "^1.79.4",
+    "sequelize-cli": "^6.6.2"
   }
 }
