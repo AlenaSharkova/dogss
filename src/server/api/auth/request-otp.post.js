@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
         console.log('expiresAt', expiresAt)
 
         // Удаляем предыдущий OTP, если он есть
-        const otpNewDelete = await Otp.destroy({ where: { userId: user.id } });
+        await Otp.destroy({ where: { userId: user.id } });
 
         // Сохраняем OTP в базе данных
         const otpNew = await Otp.create({

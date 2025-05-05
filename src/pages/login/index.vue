@@ -6,18 +6,31 @@ import {useAuthStore} from "~/stores/auth.store";
 import {useUsersStore} from "~/stores/users.store";
 
 const form = reactive({
+  email: '',
   phone: '',
+  otp: '',
 })
 
 const sendSMS1 = () => {
-  const amount = form.phone.replace(/[^0-9]/g, "")
+  const amount = form.email.replace(/[^0-9]/g, "")
   console.log('amount', amount)
 }
 const authStore = useAuthStore()
 
 const sendSMS = () => {
-  authStore.SendEmail()
+  authStore.SendEmail(form.email)
 }
+const sendOtp = () => {
+  console.log('sendOtp')
+  authStore.getSessionOtp(form.email, form.otp)
+}
+watch(() => form.otp,
+    (newOtp) => {
+      console.log('watch(() => form.otp', newOtp, newOtp.length)
+      if(newOtp.length === 6) {
+        sendOtp()
+      }
+})
 </script>
 
 <template>
@@ -39,8 +52,13 @@ const sendSMS = () => {
             mask=" (___) ___ __-__"
         />
         <BaseInput
-            v-model="form.phone"
+            v-model="form.email"
             title="Введите почту "
+        />
+        {{form.otp}}
+        <BaseInput
+            v-model="form.otp"
+            title="Введите otp "
         >
         </BaseInput>
       </template>
