@@ -2,7 +2,6 @@
 
 
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
-import {useAdStore} from "~/stores/ad.store";
 import {computed, ref} from "vue";
 import CartAdItem from "~/components/Cart/CartAdItem.vue";
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
@@ -24,6 +23,7 @@ useHead({
 
 const defaultSelect = ref({})
 const breedsStore = useBreedsStore()
+const adStore = useAdStore()
 const filterStore = useFilterStore()
 const regionsStore = useRegionsStore()
 const router = useRouter();
@@ -35,8 +35,6 @@ const selectRegionsExport = ref<ISelectNumber[]>( [])
 const selectCity = ref<ISelectNumber>({})
 const selectAge = ref<ISelectComponent>({})
 
-const adStore = useAdStore()
-adStore.updateAdList()
 
 const form = reactive({
   name: '',
@@ -46,10 +44,8 @@ const form = reactive({
 
 })
 
-breedsStore.updateBreedsList()
-const updateList = () => {
-  adStore.updateAdList()
-}
+console.log('adStore0', adStore)
+adStore.updateAdList()
 
 
 if(!breedsStore.breedsList) {
@@ -120,6 +116,7 @@ const createAdForm = async () => {
   if(!body) return
   await adStore.createAd(body)
 }
+
 </script>
 
 <template>

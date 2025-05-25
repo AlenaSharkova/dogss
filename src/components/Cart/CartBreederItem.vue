@@ -33,7 +33,7 @@ const goToBreeder = (id: number) => {
         <div class="cart-breeder-item__content-wrapper">
           <div class="cart-breeder-item__content-name">
             <p>Имя: {{item.name}}</p>
-            <p>Порода: {{item.breed?.text}}</p>
+            <p>Mail: {{item.email}}</p>
             <p>Цена: {{formatAmountInput(item.price)}} ₽</p>
             <p> Рождение: {{formatDate(item.date, 'DD MMMM YYYY')}}</p>
             <p> Возраст: {{getYearsOld(item.date)}}</p>

@@ -6,6 +6,16 @@ $grey: #e6e6e6;
 $light-black: #6c6c6c;
 $err: #b10121;
 
+$error: #E57373;
+$error-text: #F44336;
+$error-border: #F8BBD0;
+$success: #81C784;
+$success-text: #4CAF50;
+$success-border: #C8E6C9;
+$info: #64B5F6;
+$info-border: #BBDEFB;
+
+//$dev: #673AB7;
 
 $white-text: #ffffff;
 $dark-text: #333333;
@@ -15,6 +25,10 @@ $yellow: #F2C94C;
 $second-yellow: #E0A96F;
 $light-teal: #B2E1DA;
 $back: #f4f4f4;
+$green: #2E4A41;
+
+$link: rgba(42, 34, 200, 0.8);
+
 
 $box-shadow-primary-from : 0px 4px 24px 0px rgba(51, 51, 51, 10%);
 $box-shadow-primary-to : 0px 4px 24px 10px rgba(51, 51, 51, 25%);

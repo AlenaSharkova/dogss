@@ -20,13 +20,12 @@ export default defineEventHandler(async (event) => {
     const { email } = await readBody(event) // Принимаем email или номер телефона
 
     try {
-        let user = await Users.findOne({ where: { email } }); // Или phoneNumber
+        let user = await Users.findOne({ where: { email } });
         console.log('user', user)
         if (!user) {
             // Если пользователя нет, создаем его
-            user = await Users.create({ email }); // Или phoneNumber
+            user = await Users.create({ email });
             console.log('user 2', user)
-
         }
 
         const otp = generateOTP();
@@ -54,6 +53,7 @@ export default defineEventHandler(async (event) => {
                 console.log('sendOTPByEmail')
                 await sendOTPByEmail(email, otp, token);
                 console.log('sendOTPByEmail 2')
+                return { message: 'OTP sent successfully' }
             } else {
                 createError({
                     statusCode: 400,
@@ -62,14 +62,13 @@ export default defineEventHandler(async (event) => {
                 })
             }
         } catch (error) {
-            console.error("Failed to send OTP:", error);
-            createError({
+            throw createError({
                 statusCode: 500,
-                statusMessage: 'Failed to send OTP',
+                statusMessage: 'Не удалось запросить OTP',
                 error: error,
             })
         }
-        return { message: 'OTP sent successfully' }
+
 
     } catch (error) {
         console.error(error);

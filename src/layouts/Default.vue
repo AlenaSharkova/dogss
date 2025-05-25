@@ -2,6 +2,7 @@
 import LayoutHeaderNav from '@/components/Layout/LayoutHeaderNav.vue'
 import { ref} from 'vue'
 import {useCommonStore} from "~/stores/common.store";
+import CommonAlertsList from "~/components/Common/CommonAlertsList.vue";
 
 const isShowMenu = ref(false)
 
@@ -30,6 +31,7 @@ const commonStore = useCommonStore()
 
       </div>
       <CommonUpButton />
+      <CommonAlertsList/>
     </div>
   </div>
 </template>
@@ -37,6 +39,9 @@ const commonStore = useCommonStore()
 <style scoped lang="scss">
 
 .default-layout {
+  min-height: 100vh;
+  background-color: $back;
+
   .header {
     position: fixed;
     right: 0;
@@ -62,6 +67,7 @@ const commonStore = useCommonStore()
       max-width: 1920px;
       padding: 0 50px;
       display: flex;
+      justify-content: center;
       align-items: center;
       gap: 20px;
       @media (max-width: $md) {
@@ -100,10 +106,12 @@ const commonStore = useCommonStore()
   }
   .main {
     //background: rgb(178, 225, 218);
-    height: 100%;
+    min-height: 100vh;
 
     &-container {
-      background-color: $back;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
       max-width: 1920px;
       margin: auto;
       padding: 30px 0 0;

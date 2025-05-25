@@ -10,6 +10,8 @@ const emits = defineEmits([
   'blur',
   'paste',
   'chooseAutocomplete',
+
+  'onError'
 ]);
 interface Props {
   formName?: string;
@@ -26,14 +28,31 @@ interface Props {
   validCharacters?: string;
   styleAmount?: boolean;
   postfix?: string;
-  invalidSend?: boolean
+  invalidSend?: boolean;
+
+  rules?: any[]
 }
 const props = withDefaults(defineProps<Props>(), {})
 
 const isShowPassword = ref(false);
 const focused = ref(false);
 const isDisabledInvalidText = ref(false)
+const errorCustomer = ref('')
 
+const checkRules = (showError?: boolean) => {
+  if (props.rules) {
+    errorCustomer.value = "";
+    for (const rule of props.rules) {
+      const ruleResult = rule(props.modelValue);
+      if (ruleResult) {
+        errorCustomer.value = showError ? ruleResult : "";
+        emits("onError", false);
+        return;
+      }
+    }
+    emits("onError", true);
+  }
+};
 const onBlur = (e: InputEvent & { target: HTMLInputElement }) => {
   toggleFocused(false);
   emits('blur', e.target.value);
@@ -115,7 +134,9 @@ const formMask = (e: InputEvent & { target: HTMLInputElement }) => {
     });
   }
 };
-
+watch(() => props.modelValue,  () => {
+  checkRules(true);
+})
 watch(
     () => props.invalidText,
     (newValue) => {
@@ -129,7 +150,7 @@ watch(
 
 <template>
   <div class="base-field">
-    <div class="base-field__item" :class="{ invalid: invalidText && !isDisabledInvalidText, focused: focused, '--no-title': !title, disabled: disabled}">
+    <div class="base-field__item" :class="{ invalid: invalidText && !isDisabledInvalidText || errorCustomer, focused: focused, '--no-title': !title, disabled: disabled}">
       <input
         :id="formName"
         placeholder=""
@@ -173,9 +194,17 @@ watch(
       <label v-if="fullnessInput" class="label-fullness">
         {{ fullnessInput }}
       </label>
-      <label v-if="invalidText && !isDisabledInvalidText" class="label-invalid" :for="formName">
-        {{ invalidText }}
-      </label>
+      <Transition name="invalid">
+        <label v-if="invalidText && !isDisabledInvalidText && !focused" class="label-invalid" :for="formName">
+          {{ invalidText }}
+        </label>
+      </Transition>
+      <Transition name="invalid">
+        <label v-if="errorCustomer && !focused" class="label-invalid" :for="formName">
+          {{ errorCustomer }}
+        </label>
+      </Transition>
+
     </div>
   </div>
 </template>
@@ -222,9 +251,12 @@ watch(
       }
     }
     &.focused {
-      border: 1px solid var(--primary, #2D2D2D);
+      //border: 1px solid  darken($light-teal, 8%);
+      border: 1px solid $violet;
+      //border: 1px solid #9FB4B2;
+      //box-shadow: $box-shadow-primary-from;
       .label-invalid {
-        display: none;
+        //display: none;
         /*opacity: 0;
         transition: none;
         top: 40px;*/
@@ -298,7 +330,8 @@ watch(
       left: 0;
       font-size: 12px;
       line-height: 12px;
-      color: #DB1237;
+      //color: #DB1237;
+      color: $error-text;
       font-weight: 500;
       animation: anim-invalid 0.2s;
       //transition: opacity 0.2s, top 0.2s;
@@ -324,9 +357,9 @@ watch(
     }
   }
   &__item.invalid {
-    border: 1px solid var(--error, #DB1237);
+    border: 1px solid $error-text;
     &.focused {
-      border: 1px solid var(--border, #D3D8E6);
+      border: 1px solid #D3D8E6;
     }
   }
 }
@@ -339,5 +372,16 @@ watch(
     top: 50px;
     opacity: 1;
   }
+}
+.invalid-leave-active, .invalid-enter-active {
+  transition: all 0.2s;
+}
+.invalid-enter-from, .invalid-leave-to {
+  opacity: 0;
+  top: 40px!important;
+}
+.invalid-enter-to, .invalid-leave-from  {
+  top: 50px;
+  opacity: 1;
 }
 </style>

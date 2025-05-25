@@ -54,7 +54,7 @@ const adList = computed(() => adStore.adCatalogList )
 
 <template>
   <div class="page-breeder">
-    <div  class="page-breeder__row">
+    <div class="page-breeder__row">
       <UserSiteHead :title="`Питомник ${usersData?.name}`" />
       <div class="page-breeder__title">
         <h1>Питомник {{usersData?.name}}</h1>
@@ -121,11 +121,7 @@ const adList = computed(() => adStore.adCatalogList )
           <BaseIconPaws class="page-breeder__paws-item__icon"/>
         </div>
       </TransitionGroup>
-
-
     </div>
-
-
   </div>
 </template>
 

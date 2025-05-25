@@ -229,7 +229,6 @@ const isShowMenu = ref(false)
 
     &__title {
       @include h0;
-      //*font-size: 88px;*/
       color: #fff;
     }
   }

@@ -8,8 +8,9 @@ export default class AdService extends BaseApiService {
   constructor(config: string) {
     super(config);
   }
+
   async getAdList(query: AdQueryFilterStruct | null) {
-    const {data} = await useFetch<AdListApi>(this.RESOURCE, {
+    const {data, error} = await useFetch<AdListApi>(this.RESOURCE, {
       method: "get",
       query: query || {},
       baseURL: this.baseURL,
@@ -17,11 +18,12 @@ export default class AdService extends BaseApiService {
         ...this.headers,
       },
     })
-    return data
+    if(error.value ) throw {...error.value};
+    else return data.value;
   }
 
   async postAdItem(body: AdCreateItemStruct) {
-    const {data} = await useFetch(this.RESOURCE, {
+    const {data, error} = await useFetch(this.RESOURCE, {
       body: body,
       method: "post",
       baseURL: this.baseURL,
@@ -29,7 +31,7 @@ export default class AdService extends BaseApiService {
         ...this.headers,
       },
     })
-    return data
+    if(error.value ) throw {...error.value};
+    else return data.value;
   }
-
 }

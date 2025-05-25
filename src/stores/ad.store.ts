@@ -9,12 +9,14 @@ import type {
     AdQueryFilterStruct
 } from "~/struct/Ad/AdItemStruct";
 import {q} from "~~/.output/server/chunks/runtime.mjs";
+import {useCommonStore} from "~/stores/common.store";
 
 
 export const useAdStore = defineStore('adStore', () => {
     const config = useRuntimeConfig();
 
     const adService = new AdService(config.public.apiBaseUrl);
+    const commonStore = useCommonStore()
 
     const adCatalogList = ref<AdItemStruct[] | null>(null)
     const adCatalogListDetails = ref<AdListApiDetails | null>(null)
@@ -30,22 +32,25 @@ export const useAdStore = defineStore('adStore', () => {
             query.maxAgeMonth = adCatalogFilter.value.ageCategory?.details.maxAgeMonth
             delete query.ageCategory
         }
-        adService.getAdList(query)
+        await adService.getAdList(query)
             .then((res) => {
-                if (res.value) {
-                    adCatalogList.value = res.value.result;
+                if (res) {
+                    adCatalogList.value = res.result;
                     adCatalogListDetails.value = {
-                        limit: res.value.limit,
-                        offset: res.value.offset,
-                        count: res.value.count,
+                        limit: res.limit,
+                        offset: res.offset,
+                        count: res.count,
                     };
-                    adCatalogFilter.value.regions = res.value.queryDetails.regions
-                    adCatalogFilter.value.breeds = res.value.queryDetails.breeds
-                    adCatalogFilter.value.maxFullPrice = res.value.queryDetails.maxFullPrice
+                    adCatalogFilter.value.regions = res.queryDetails.regions
+                    adCatalogFilter.value.breeds = res.queryDetails.breeds
+                    adCatalogFilter.value.maxFullPrice = res.queryDetails.maxFullPrice
                 }
             })
-            .catch(e => console.error(e));
-        /*.finally(() => (isLoading.value = false));*/
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                throw e.data
+            });
     }
     function getQueryAd(query: AdQueryFilterStruct) {
         if(query.type) {
@@ -61,15 +66,18 @@ export const useAdStore = defineStore('adStore', () => {
         }
     }
     async function createAd(body: AdCreateItemStruct) {
-        adService
+        await adService
             .postAdItem(body)
             .then((res) => {
                 //TO DO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
                 //if (res) adCreatedSuccessItem.value = res.value;
                 console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
             })
-            .catch(e => console.error(e));
-        /*.finally(() => (isLoading.value = false));*/
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                throw e.data
+            });
     }
     return {
         adCatalogList,

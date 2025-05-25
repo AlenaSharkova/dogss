@@ -7,25 +7,24 @@ defineProps({
     default: ''
   }
 })
+const isPopup = ref(false)
 
-const isExportPopup = ref(false)
 
-
-const onFocusExport = () => {
-  isExportPopup.value = true
+const onFocus = () => {
+  isPopup.value = true
 }
-const onBlurExport = () => {
-  isExportPopup.value = false
+const onBlur = () => {
+  isPopup.value = false
 }
 </script>
 
 <template>
-  <div @mouseenter="onFocusExport"
-       @mouseleave="onBlurExport"
+  <div @mouseenter="onFocus"
+       @mouseleave="onBlur"
        class="base-with-mini-popup">
     <slot></slot>
     <Transition name="fade">
-      <div v-if="isExportPopup" class="base-with-mini-popup__main">
+      <div v-if="isPopup" class="base-with-mini-popup__main">
         <div class="base-with-mini-popup__wrapper">
           <p v-html="text" class="base-with-mini-popup__text"></p>
         </div>

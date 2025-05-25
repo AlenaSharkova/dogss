@@ -2,10 +2,12 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia';
 import UsersService from '~/service/users.service';
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
+import {useCommonStore} from "~/stores/common.store";
 
 
 export const useUsersStore = defineStore('usersStore', () => {
   const config = useRuntimeConfig();
+  const commonStore = useCommonStore()
 
   const usersService = new UsersService(config.public.apiBaseUrl);
 
@@ -16,12 +18,15 @@ export const useUsersStore = defineStore('usersStore', () => {
         await usersService
         .getUsersList()
         .then((res) => {
-            if (res) usersList.value = res.value;
-          console.log('usersList in store', usersList.value, res, res.value)
+            if (res) usersList.value = res;
+          console.log('usersList in store', usersList.value, res)
 
         })
-          .catch(e => console.error(e));
-        /*.finally(() => (isLoading.value = false));*/
+          .catch(e => {
+              commonStore.addUserErrorAlert(e.data?.statusMessage)
+              commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+              throw e.data
+          });
   }
 
   async function getUsersData(id: string | number) {
@@ -30,7 +35,11 @@ export const useUsersStore = defineStore('usersStore', () => {
         .then((res) => {
           if (res) userData.value = res.value;
         })
-          .catch(e => console.error(e));
+          .catch(e => {
+              commonStore.addUserErrorAlert(e.data?.statusMessage)
+              commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+              throw e.data
+          });
         /*.finally(() => (isLoading.value = false));*/
   }
 

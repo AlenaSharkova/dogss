@@ -8,8 +8,9 @@ export default class RegionsService extends BaseApiService {
   constructor(config: string) {
     super(config);
   }
+  // TO DO: отображать типы в каком-то виде
   async getRegionsList(onlyRegions = false, regionValue = null as number | null) {
-    const {data} = await useFetch<any[]>(this.RESOURCE, {
+    const {data, error} = await useFetch<any[]>(this.RESOURCE, {
       method: "get",
       query: {
         onlyRegions: onlyRegions,
@@ -20,6 +21,7 @@ export default class RegionsService extends BaseApiService {
         ...this.headers,
       },
     })
-    return data
+    if(error.value ) throw {...error.value};
+    else return data.value;
   }
 }

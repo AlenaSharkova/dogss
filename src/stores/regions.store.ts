@@ -4,10 +4,13 @@ import RegionsService from '~/service/regions.service';
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {ISelectComponent, ISelectComponentWithChildren} from "~/struct/Common/ISelectComponent";
 import {fa} from "cronstrue/dist/i18n/locales/fa";
+import {useCommonStore} from "~/stores/common.store";
 
 
 export const useRegionsStore = defineStore('regionsStore', () => {
   const config = useRuntimeConfig();
+  const commonStore = useCommonStore()
+
 
   const regionsService = new RegionsService(config.public.apiBaseUrl);
 
@@ -19,35 +22,44 @@ export const useRegionsStore = defineStore('regionsStore', () => {
         await regionsService
         .getRegionsList()
         .then((res) => {
-            if (res) regionsListFull.value = res.value;
-          console.log('regionsListFull in store', regionsList.value, res, res.value)
+            if (res) regionsListFull.value = res;
+          console.log('regionsListFull in store', regionsList.value, res)
 
         })
-          .catch(e => console.error(e));
+          .catch(e => {
+              commonStore.addUserErrorAlert(e.data?.statusMessage)
+              commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+              throw e.data
+          });
         /*.finally(() => (isLoading.value = false));*/
     }
     async function updateRegionsList() {
         await regionsService
         .getRegionsList(true)
         .then((res) => {
-            if (res) regionsList.value = res.value;
-          console.log('regionsList in store', regionsList.value, res.value)
+            if (res) regionsList.value = res;
+          console.log('regionsList in store', regionsList.value)
 
         })
-          .catch(e => console.error(e));
-        /*.finally(() => (isLoading.value = false));*/
+          .catch(e => {
+              commonStore.addUserErrorAlert(e.data?.statusMessage)
+              commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+              throw e.data
+          });
     }
     async function getCityList(regionValue: number) {
         if(!regionValue) return
         await regionsService
         .getRegionsList(false, regionValue)
-        .then((res) => {
-            if (res) cityList.value = res.value;
-          console.log('cityList in store', cityList.value, res, res.value)
-
-        })
-          .catch(e => console.error(e));
-        /*.finally(() => (isLoading.value = false));*/
+            .then((res) => {
+                if (res) cityList.value = res;
+              console.log('cityList in store', cityList.value, res)
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                throw e.data
+            });
     }
 
   return {

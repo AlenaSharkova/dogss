@@ -1,6 +1,5 @@
 import BaseApiService from "~/service/baseApi.service";
-import type {AdCreateItemStruct, AdItemStruct, AdListApi, AdQueryFilterStruct} from "~/struct/Ad/AdItemStruct";
-import axios from "axios";
+import type {AdListApi} from "~/struct/Ad/AdItemStruct";
 import {useAuthStore} from "~/stores/auth.store";
 
 export default class AuthService extends BaseApiService {
@@ -9,61 +8,60 @@ export default class AuthService extends BaseApiService {
   constructor(config: string) {
     super(config);
   }
-  async sendEmail(email: string) {
-    const {data} = await useFetch(this.RESOURCE + '/request-otp', {
+  async loginEmail(email: string) {
+    const {data, error} = await useFetch(this.RESOURCE + '/login', {
       method: "post",
-      body: {
-        email: email
-      },
+      body: { email },
       baseURL: this.baseURL,
       headers: {
         ...this.headers,
       },
     })
-    return data
+    console.log('error.value', {...error.value})
+    if(error.value ) throw {...error.value};
+    else return data.value;
   }
-  async sendOtp(email: string, otp: string) {
-      const {data} = await useFetch<{token: string}>(this.RESOURCE + '/verify', {
+  // TO DO: типы в общий
+
+  async verifyOtp(email: string, otp: string) {
+      const {data, error} = await useFetch<{token: string}>(this.RESOURCE + '/verify', {
         method: "get",
-        query: {
-          email: 'alena.sarkova.16@gmail.com',
-          otp
-        },
+        query: { email, otp },
         baseURL: this.baseURL,
         headers: {
           ...this.headers,
         },
       })
-      return data
+      if(error.value ) throw {...error.value};
+      else return data.value;
   }
 
-  async sendTokenLink(code: string) {
-      const {data} = await useFetch<{token: string}>(this.RESOURCE + '/verify', {
+  async sendTokenLink(token: string) {
+    const { data, error } = await useFetch<{token: string}>(this.RESOURCE + '/verify', {
         method: "get",
-        query: {
-          token: code
-        },
+        query: { token },
         baseURL: this.baseURL,
         headers: {
           ...this.headers,
         },
-      })
-      return data
+    })
+    if(error.value ) throw {...error.value};
+    else return data.value;
   }
 
   async getSession() {
-
     const authStore = useAuthStore()
 
-    const {data} = await useFetch<AdListApi>(this.RESOURCE + '/session', {
-        method: "get",
-        baseURL: this.baseURL,
-        headers: {
-          ...this.headers,
-          authorization: `Bearer ${authStore.sessionToken}`,
-        },
-      })
-      return data
+    const { data, error } = await useFetch<any>(this.RESOURCE + '/session', {
+      method: "get",
+      baseURL: this.baseURL,
+      headers: {
+        ...this.headers,
+        authorization: `Bearer ${authStore.sessionToken}`,
+      },
+    })
+    if(error.value ) throw {...error.value};
+    else return data.value;
   }
 
  /* async postAdItem(body: AdCreateItemStruct) {

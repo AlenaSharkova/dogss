@@ -127,9 +127,9 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
       }
     }
     &--teriary {
-      color: var(--primary, #2D2D2D);
-      border: 1px solid var(--white, #FFF);
-      background: var(--white, #FFF);
+      color: $violet;
+      border: $light-teal;
+      background: $light-teal;
       &.base-button__disabled {
         color: var(--border, #D3D8E6);
       }

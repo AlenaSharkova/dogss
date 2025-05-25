@@ -1,18 +1,39 @@
 <script setup lang="ts">
+import BaseIconArrow from "~/components/Base/BaseIcon/BaseIconArrow.vue";
+
 const props = defineProps({
   modal: {
     type: Boolean,
     required: false,
     default: false,
   },
+  isPrev: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  type: {
+    type: String as PropType<'original' | 'default'>,
+    default: 'default',
+  }
 });
 
+const emits = defineEmits(['prev'])
+
+const prev = () => {
+  emits('prev')
+}
 </script>
 
 <template>
-  <div class="form-window">
+  <div class="form-window"
+       :class="`--type-${type}`"
+  >
     <div class="form-window__content">
       <div class="form-window__header">
+        <div v-if="isPrev" @click="prev" class="form-window__header-prev">
+          <BaseIconArrow nav="left" />
+        </div>
         <div class="form-window__header-title">
           <span>
             <slot name="title" />
@@ -48,8 +69,26 @@ const props = defineProps({
   border-radius: 24px;
   box-shadow: 0px 4px 24px 0px rgba(30, 30, 30, 0.1);
   max-width: 1000px;
+  backdrop-filter: blur(10px);
+  //background-color: rgb(185, 160, 149, 0.75);
+  &.--type-default {
+
+  }
+  &.--type-original {
+    //background-color: #bba496D0;
+    //background-color: #c2afa1;
+    //background: url("@/assets/image/balls_back.jpg") no-repeat center center;
+    background-size: cover;
+    @media (max-width: $sm) {
+      background: transparent;
+    }
+  }
   &__content {
     padding: 40px;
+    @media (max-width: $sm) {
+      padding: 30px 20px;
+
+    }
   }
   &__header {
     display: flex;
@@ -58,11 +97,27 @@ const props = defineProps({
     align-items: center;
     width: 100%;
     margin-bottom: 20px;
+    position: relative;
+    &-prev {
+      width: 20px;
+      height: 22px;
+      left: 0;
+      top: 15px;
+      position: absolute;
+      cursor: pointer;
+    }
     &-title {
       @include h3;
     }
     &-subtitle {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
       @include subtitle-small;
+      text-align: center;
+      .subtitle-infallible {
+        color: $error-text;
+      }
     }
 
   }
@@ -73,7 +128,7 @@ const props = defineProps({
     width: 100%;
   }
   &__action {
-    margin-top: 20px;
+    margin-top: 28px;
     display: flex;
     gap: 10px;
   }

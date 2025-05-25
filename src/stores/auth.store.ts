@@ -1,12 +1,15 @@
 import { defineStore } from 'pinia';import AuthService from "~/service/auth.service";
+import {useCommonStore} from "~/stores/common.store";
 
 
-export const useAuthStore = defineStore('adStore', () => {
+export const useAuthStore = defineStore('authStore', () => {
     const config = useRuntimeConfig();
+    const commonStore = useCommonStore()
 
     const authService = new AuthService(config.public.apiBaseUrl);
 
     const sessionToken = ref();
+    const userData = ref(null);
 
     const updateSessionToken = (token: string) => {
         localStorage.setItem("sessionToken", token)
@@ -16,60 +19,81 @@ export const useAuthStore = defineStore('adStore', () => {
         sessionToken.value = localStorage.getItem("sessionToken")
     }
     onMounted(() => {
-        getSessionToken()
+        if(!sessionToken.value) getSessionToken()
     })
 
-    async function SendEmail(email: string) {
-        authService.sendEmail(email)
+    async function sendEmailForLogin(email: string) {
+        await authService.loginEmail(email)
             .then((res) => {
-                if (res) {
-                    console.log(res)   }
+                if (res) return res
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                if(e.data?.statusCode !== 401) {
+                    commonStore.addUserErrorAlert(e.data?.statusMessage)
+                    commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                    throw e.data
+                }
+                throw e.data
+            });
         /*.finally(() => (isLoading.value = false));*/
     }
     async function getSessionOtp(email: string, otp: string) {
         console.log('getSessionOtp store')
-        authService.sendOtp(email, otp)
+        await authService.verifyOtp(email, otp)
             .then((res) => {
-                if (res?.value) {
-                    updateSessionToken(res.value.token)
+                if (res) {
+                    updateSessionToken(res.token)
                     console.log('getSessionOtp', res)
                 }
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                throw e.data
+            });
         /*.finally(() => (isLoading.value = false));*/
     }
     async function getSessionTokenLink(code: string) {
-        authService.sendTokenLink(code)
+        await authService.sendTokenLink(code)
             .then((res) => {
-                if (res?.value) {
-                    updateSessionToken(res.value.token)
+                if (res) {
+                    updateSessionToken(res.token)
                     console.log('getSessionTokenLink', res)
                 }
             })
-            .catch(e => console.error(e));
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                throw e.data
+            });
         /*.finally(() => (isLoading.value = false));*/
     }
-    async function updateSession() {
-        authService.getSession()
+    async function getUserData() {
+        console.log('updateSession')
+        await authService.getSession()
             .then((res) => {
+                console.log('updateSession ss', res)
                 if (res) {
                     console.log('getSession', res)
+                    userData.value = res
+                    return res
                 }
             })
-            .catch(e => console.error(e));
-        /*.finally(() => (isLoading.value = false));*/
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                throw e.data
+            });
     }
 
     return {
-        SendEmail,
+        sendEmailForLogin,
         getSessionOtp,
         getSessionTokenLink,
-        updateSession,
+        getUserData,
         updateSessionToken,
-        sessionToken
-
+        sessionToken,
+        userData
     }
 })
 

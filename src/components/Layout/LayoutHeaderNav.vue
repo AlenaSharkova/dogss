@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import {defineEmits} from "vue";
+import {useAuthStore} from "~/stores/auth.store";
 
 const emit = defineEmits(["close"]);
+
+const authStore = useAuthStore()
 
 const goToPage = (page: string) => {
  // router.push(page)
@@ -12,12 +15,48 @@ const logout = () => {
   goToPage('/dashboard/authorization')
 }
 
+const getUserData = () => {
+  authStore.getUserData()
+}
+const userData = computed(() => authStore.userData )
+
+onMounted( () => {
+  getUserData()
+
+})
+const test = async () => {
+  let user = {
+    'email': JSON.stringify('alena.s_00@mail.ru')
+  };
+  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration/convert')
+  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration/convert', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: JSON.stringify(user)
+  })
+  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: JSON.stringify(user)
+  })
+  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=utf-8'
+    },
+    body: JSON.stringify(user)
+  })
+}
 </script>
 
 <template>
   <div class="header-nav">
     <div class="header-nav__links">
-      <nuxt-link class="header-nav__item" to="/breeder">
+      <nuxt-link class="header-nav__item" to="/breeders">
         Питомник
       </nuxt-link>
       <nuxt-link class="header-nav__item" to="/catalog">
@@ -33,8 +72,19 @@ const logout = () => {
 
 
     <div class="header-nav__actions">
-      <BaseButton text="Подать объявление" size="small" to="/create-ad" />
-      <BaseButton text="Войти" size="small" to="/login" type="secondary" />
+      <BaseButton
+          class="header-nav__actions-ad"
+          text="Подать объявление"
+          size="small"
+          to="/create-ad" />
+      <BaseButton
+          v-if="!userData"
+          class="header-nav__actions-login"
+          text="Войти"
+          size="small"
+          to="/auth/login"
+          type="secondary" />
+      <span v-else>Привет, {{userData.email}} </span>
     </div>
   </div>
 </template>
@@ -52,8 +102,9 @@ const logout = () => {
   &__links {
     padding: 12px;
 
-    display: flex;
+    //display: flex;
     gap: 30px;
+    display: none;
   }
   &__item {
     cursor: pointer;
@@ -69,6 +120,9 @@ const logout = () => {
     display: flex;
     gap: 5px;
     flex-shrink: 0;
+    &-ad {
+      text-wrap: nowrap;
+    }
   }
 }
 </style>
