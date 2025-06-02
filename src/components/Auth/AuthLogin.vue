@@ -20,8 +20,8 @@ const form = reactive({
   otp: '',
 })
 
-const numberStep = ref(0)
-const textValidOtp = ref('')
+const numberStep = ref(1)
+const textInvalidOtp = ref('')
 const textInvalidDescr = ref('')
 const isLoadSendMail = ref(false)
 
@@ -31,13 +31,13 @@ const prevStep = () => {
 }
 
 const nextStep = async () => {
-  if(numberStep.value === 0) {
+  if(numberStep.value === 1) {
     if(form.email.valid) {
       isLoadSendMail.value = true
       await authStore.sendEmailForLogin(form.email.value)
           .then(() => {
             console.log('success nextStep')
-            numberStep.value = 1
+            numberStep.value = 2
           }).catch(err => {
             console.log('err nextStep', err)
             textInvalidDescr.value = err.statusMessage
@@ -50,14 +50,22 @@ const nextStep = async () => {
 const repeatOtp = () => {
   authStore.sendEmailForLogin(form.email.value)
       .catch(err => {
-        textValidOtp.value = err
+        textInvalidOtp.value = err
       })
 }
 const sendOtp = async (otp: string) => {
-  await authStore.getSessionOtp(form.email.value, otp)
-  await authStore.getUserData().then(() => {
-    router.push('/profile')
-  })
+  await authStore.getSessionTokenWitchOtp(form.email.value, otp)
+      .then(res => {
+        if(res?.token && authStore.statusUser === 'active') {
+          console.log('переход в profile')
+          router.push('/profile')
+        } else textInvalidOtp.value = 'Ошибка авторизации'
+      })
+      .catch(e => {
+        if(e && (e.statusCode == 401 || e.statusCode == 400)) {
+          textInvalidOtp.value = e.statusMessage
+        }
+      })
 }
 const onFocusEmail = () => {
   textInvalidDescr.value = ''
@@ -66,7 +74,11 @@ const onFocusEmail = () => {
 
 <template>
   <div class="auth-login">
-    <FormWindow :isPrev="!!numberStep" @prev="prevStep" type="original">
+    <FormWindow
+        :isPrev="numberStep !== 1"
+        @prev="prevStep"
+        type="original"
+    >
       <template #title>
         Вход
       </template>
@@ -76,25 +88,27 @@ const onFocusEmail = () => {
       </template>
       <template #default>
         <BaseInput
-            v-if="numberStep == 0"
+            v-if="numberStep == 1"
             v-model="form.email.value"
             title="Введите почту"
+            form-name="email"
             :invalid-text="textInvalidDescr"
             :rules="[ruleValidEmail]"
+            :max-length="254"
             @focus="onFocusEmail"
             @onError="(val: boolean) => (form.email.valid = val)"
         />
         <AuthOtpContent
-            v-if="numberStep == 1"
+            v-if="numberStep == 2"
             :email="form.email.value"
-            :error-otp-message="textValidOtp"
+            :error-otp-message="textInvalidOtp"
             @finishOtp="sendOtp"
             @repeatOtp="repeatOtp"
         />
       </template>
       <template #action-buttons>
         <BaseButton
-            v-if="numberStep == 0"
+            v-if="numberStep == 1"
             text="Отправить"
             type="teriary"
             @click="nextStep"

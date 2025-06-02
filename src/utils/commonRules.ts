@@ -52,7 +52,7 @@ export const ruleFieldMinLength = (value: string) =>
 
 
 export const ruleValidNumberPhone = (value: number | string) =>
-    !value.toString().match(/^[\d\+][\d\(\)\ -]{4,14}\d$/)
+    !/^\+7\s\(\d{3}\)\s\d{3}\s\d{2}-\d{2}$/.test(value.toString())
         ? "Введите номер телефона в верном формате"
         : "";
 
@@ -60,9 +60,6 @@ export const ruleValidLinkURL = (value: string) => {
     const URLRegex = /(^https?:\/\/)?[a-z0-9~_\-\.]+\.[a-z]{2,9}(\/|:|\?[!-~]*)?$/i;
     return URLRegex.test(value) ? "" : "Вы ввели некорректный URL или адрес ссылки";
 };
-
-export const ruleValidClientID = (value: string) =>
-    !value.match(/^taxi\/park\//) ? "Client ID должен начинаться с taxi/park/" : "";
 
 export const ruleNumberNotNegative = (value: string) =>
     Number(value) < 0 ? "Число не может быть меньше 0" : "";

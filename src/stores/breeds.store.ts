@@ -24,7 +24,7 @@ export const useBreedsStore = defineStore('breedsStore', () => {
         })
           .catch(e => {
               commonStore.addUserErrorAlert(e.data?.statusMessage)
-              commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+              commonStore.addUserErrorAlert(e.data?.message, true)
               throw e.data
           });
   }

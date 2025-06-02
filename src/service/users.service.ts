@@ -9,7 +9,7 @@ export default class UsersService extends BaseApiService {
     super(config);
   }
 
-  // TO DO: отображать типы хоть в каком-то виде
+  // TODO: отображать типы хоть в каком-то виде
   async getUsersList() {
     const {data, error} = await useFetch<any[]>(this.RESOURCE, {
       method: "get",

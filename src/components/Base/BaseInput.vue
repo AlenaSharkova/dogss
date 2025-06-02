@@ -31,8 +31,11 @@ interface Props {
   invalidSend?: boolean;
 
   rules?: any[]
+  type?: string;
 }
-const props = withDefaults(defineProps<Props>(), {})
+const props = withDefaults(defineProps<Props>(), {
+  type: 'text'
+})
 
 const isShowPassword = ref(false);
 const focused = ref(false);
@@ -113,8 +116,8 @@ const toggleFocused = (value: boolean) => {
 };
 const typeInput = computed(() => {
   if (props.password) {
-    return isShowPassword.value? 'text': 'password';
-  } else return 'text'
+    return isShowPassword.value? props.type: 'password';
+  } else return props.type
 })
 const fullnessInput = computed(() => {
   if (props.showFullnes && props.modelValue.length > 10) {
@@ -153,6 +156,7 @@ watch(
     <div class="base-field__item" :class="{ invalid: invalidText && !isDisabledInvalidText || errorCustomer, focused: focused, '--no-title': !title, disabled: disabled}">
       <input
         :id="formName"
+        pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
         placeholder=""
         :type="typeInput"
         :value="modelValue"
@@ -204,7 +208,6 @@ watch(
           {{ errorCustomer }}
         </label>
       </Transition>
-
     </div>
   </div>
 </template>
@@ -277,6 +280,12 @@ watch(
       font-style: normal;
       font-weight: 400;
       line-height: 22px;
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus {
+        box-shadow: inset 20px 20px 0 20px $white-text;
+        background: $white-text;
+      }
       &::placeholder {
         color: transparent;
       }

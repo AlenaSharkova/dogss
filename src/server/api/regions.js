@@ -7,12 +7,14 @@ export default defineEventHandler(async (event) => {
     const GeoRegions = event.context.GeoRegions; // Получаем модель Breed из контекста Nitro
     const GeoCity = event.context.GeoCity;
     const sequelize = event.context.sequelize;
+    const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
     if (!GeoRegions || !GeoCity || !sequelize) {
         console.error('Models or sequelize is not available in the context');
         throw createError({
             statusCode: 500,
-            statusMessage: 'Database connection error',
+            message: 'Database connection error',
+            statusMessage: statusMessageServer,
         });
     }
     let regionsList, regionsListFull, regionsListPlan
@@ -50,8 +52,7 @@ export default defineEventHandler(async (event) => {
         console.error('Sequelize error:', error);
         throw createError({
             statusCode: 500,
-            statusMessage: 'Ошибка при запросе к базе данных',
-            data: error,
+            message: 'Ошибка региона при запросе к базе данных',
         });
     }
 });

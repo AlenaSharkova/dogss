@@ -1,6 +1,11 @@
 <script setup lang="ts">
 
 import FormTest from "~/components/Form/FormTest.vue";
+
+definePageMeta({
+  requirementUser : null
+})
+
 </script>
 
 <template>

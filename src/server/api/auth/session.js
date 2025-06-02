@@ -7,12 +7,15 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const Users = event.context.Users;
     const Otp = event.context.Otp;
+    const statusMessage = 'Ошибка получения Ваших данных, попробуйте, ещё раз'
+    const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
     if (!Users || !Otp || !sequelize) {  // Исправлено: добавлены логические операторы OR
         console.error('Model or sequelize is not available in the context');
         throw createError({
             statusCode: 500,
-            statusMessage: 'Database connection error',
+            message: 'Database connection error',
+            statusMessage: statusMessageServer,
         });
     }
 
@@ -21,14 +24,16 @@ export default defineEventHandler(async (event) => {
         console.error('Ошибка: Переменная окружения JWT_SECRET_KEY не определена!');
         throw createError({
             statusCode: 500,
-            statusMessage: 'Internal Server Error',
+            message: 'Internal Server Error',
+            statusMessage: statusMessageServer,
         });
     }
 
     if (token == null) {
         throw createError({
             statusCode: 401,
-            statusMessage: 'Нет токена',
+            message: 'Нет токена',
+            statusMessage
         }); // Нет токена
     }
 
@@ -37,23 +42,42 @@ export default defineEventHandler(async (event) => {
         const dataToken = await jwtVerify(token, secretKey);
 
         if(!dataToken?.userId) {
-            throw createError({ statusCode: 401, statusMessage: 'Неавторизованный пользователь: нет информации о пользователе в токене' }); // Исправлено: Выбрасываем ошибку
+            throw createError({ statusCode: 401, message: 'Неавторизованный пользователь: нет информации о пользователе в токене' }); // Исправлено: Выбрасываем ошибку
         }
-
         const user = await Users.findOne({where: {id: dataToken.userId}});
         if(!user) {
-            throw createError({ statusCode: 401, statusMessage: 'Неавторизованный пользователь: пользователь не найден' }); // Исправлено: Выбрасываем ошибку
+            throw createError({ statusCode: 401, message: 'Неавторизованный пользователь: пользователь не найден' }); // Исправлено: Выбрасываем ошибку
         }
-        return user; // Возвращаем пользователя, если все проверки пройдены
+        if(user.status !== 'active') {
+            throw createError({ statusCode: 401, message: 'Неактивный пользователь: статус пользователя: ' + user.status}); // Исправлено: Выбрасываем ошибку
+        }
+        return {
+            id: user.id,
+            status: user.status,
+            personal_data: {
+                address: user.address,
+                email: user.email,
+                id: user.id,
+                last_name: user.last_name,
+                photo: user.photo,
+                first_name: user.first_name,
+                status: user.status,
+                geo_main: {
+                    city: user.LocationRegion,
+                    region: user.LocationCity
+                }
+            }
+        } // Возвращаем пользователя, если все проверки пройдены
     } catch (error) {
         console.error("Ошибка при верификации токена:", error);
-
         if (error.name === 'TokenExpiredError') {
-            throw createError({ statusCode: 401, statusMessage: 'Token has expired' }); // Исправлено: Выбрасываем ошибку
+            throw createError({ statusCode: 401, message: 'Token has expired' });
         }
         if (error.name === 'JsonWebTokenError') {
-            throw createError({ statusCode: 403, statusMessage: 'Invalid token' }); // Исправлено: Выбрасываем ошибку
+            throw createError({ statusCode: 403, message: 'Invalid token' });
         }
-        throw createError({ statusCode: 500, statusMessage: 'Failed to verify token' }); // Исправлено: Выбрасываем ошибку
+        throw error
+
+        //throw createError({ statusCode: 500, message: 'Failed to verify token' });
     }
 });

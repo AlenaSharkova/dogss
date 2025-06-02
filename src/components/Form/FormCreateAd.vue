@@ -129,7 +129,12 @@ const createAdForm = async () => {
         форма
       </template>
       <template #default>
-        <BaseInput v-model="form.name" title="Заголовок объявления" />
+
+        <BaseInput
+            v-model="form.name"
+            title="Заголовок объявления"
+            :max-length="64"
+        />
         <BaseSelect
             :items="typeAdList"
             v-model="selectAdType"
@@ -172,7 +177,13 @@ const createAdForm = async () => {
             @click="showErrorSelectedRegion"
         />
 
-        <BaseInput v-model="form.price" title="Цена" total-number postfix=" ₽" :max-length="10" styleAmount />
+        <BaseInput
+            v-model="form.price"
+            title="Цена"
+            total-number
+            postfix=" ₽"
+            :max-length="10"
+            styleAmount />
         <span>Возможно ли обговорить доставку в другие регионы?</span>
         <BaseSwitch v-model="isExport" />
         <BaseSelect

@@ -8,7 +8,7 @@ export default class BreedsService extends BaseApiService {
   constructor(config: string) {
     super(config);
   }
-  // TO DO: отображать типы в каком-то виде
+  // TODO: отображать типы в каком-то виде
 
   async getBreedsList() {
     const {data, error} = await useFetch<any[]>(this.RESOURCE, {

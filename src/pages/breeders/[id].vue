@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import {useUsersStore} from "~/stores/users.store";
 import {computed} from "vue";
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
@@ -8,6 +7,10 @@ import CartAdItem from "~/components/Cart/CartAdItem.vue";
 import {Autoplay, EffectCoverflow} from "swiper/modules";
 import UserSiteHead from "~/components/User/UserSite/UserSiteHead.vue";
 import BaseIconPaws from "~/components/Base/BaseIcon/BaseIconPaws.vue";
+
+definePageMeta({
+  requirementUser : null
+})
 const route = useRoute();
 const idBreeder = ref<string | null>(null)
 
@@ -16,7 +19,7 @@ const breedsStore = useBreedsStore()
 usersStore.updateUsersList()
 breedsStore.updateBreedsList()
 
-const usersData = computed(() => usersStore.userData )
+const usersData = computed(() => usersStore.userFullData )
 const breedsList = computed(() => breedsStore.breedsList )
 const pawsCount = ref(1)
 const selectBreed = ref({

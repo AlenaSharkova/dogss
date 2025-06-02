@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
+
+definePageMeta({
+  requirementUser : null
+})
 </script>
 <template>
   <div class="home-page">

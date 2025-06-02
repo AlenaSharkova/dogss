@@ -9,6 +9,7 @@ export const useCommonStore = defineStore('commonStore', () => {
 
   const isShowMobileMenu = ref(false)
   const isScrolled = ref(false)
+  const isLoadingPage = ref(false)
   const showMobileMenu = () => {
     isShowMobileMenu.value = true
   }
@@ -76,5 +77,8 @@ export const useCommonStore = defineStore('commonStore', () => {
     addUserInfoAlert,
     addUserSuccessAlert,
     addUserErrorAlert,
+    isLoadingPage
   }
+}, {
+  persist: true
 })

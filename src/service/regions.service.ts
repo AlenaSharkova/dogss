@@ -8,7 +8,7 @@ export default class RegionsService extends BaseApiService {
   constructor(config: string) {
     super(config);
   }
-  // TO DO: отображать типы в каком-то виде
+  // TODO: отображать типы в каком-то виде
   async getRegionsList(onlyRegions = false, regionValue = null as number | null) {
     const {data, error} = await useFetch<any[]>(this.RESOURCE, {
       method: "get",

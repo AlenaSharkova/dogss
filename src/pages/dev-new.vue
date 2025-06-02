@@ -5,6 +5,10 @@ import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import dayjs from "dayjs";
 import CartAdItem from "~/components/Cart/CartAdItem.vue";
 
+definePageMeta({
+  requirementUser : null
+})
+
 const ad = ref(null)
 const users = ref(null)
 await $fetch<any>(`/api/ad`, {

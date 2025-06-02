@@ -1,5 +1,7 @@
 <script setup lang="ts">
-
+definePageMeta({
+  requirementUser : 'unauthorized'
+})
 </script>
 
 <template>
@@ -114,7 +116,6 @@
     }
   }
   &__window {
-    z-index: 1;
     margin: 35px auto 100px;
     @media (max-width: $sm) {
       margin: 80px 20px;

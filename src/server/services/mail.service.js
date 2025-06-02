@@ -18,7 +18,7 @@ export async function sendOTPByEmail(email, otp, token) {
             from: 'Собака-улыбака alena.s_00@mail.ru',
             to: email,
             subject: `Одноразовый пароль: ${otp}`,
-            text: `Ваш одноразовый пароль: ${otp}. Срок его действия истекает через 5 минут.`,
+            text: `Ваш одноразовый пароль: ${otp}. Срок его действия истекает через 3 минуты после отправления.`,
             html: mailHtml(otp, token),
         };
 
@@ -27,7 +27,7 @@ export async function sendOTPByEmail(email, otp, token) {
         if (info.rejected.length > 0) {
             throw createError({
                 statusCode: 400,
-                serviceMessage: `Email rejected by server for: ${info.rejected.join(', ')}`,
+                message: `Email rejected by server for: ${info.rejected.join(', ')}`,
                 statusMessage: `Ошибка отправления сообщения на почту`,
                 //statusMessage:  error,
             })

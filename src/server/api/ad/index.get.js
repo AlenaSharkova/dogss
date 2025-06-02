@@ -15,12 +15,15 @@ export default defineEventHandler(async (event) => {
     const Users = event.context.Users;
     const AdExportRegions = event.context.AdExportRegions;
     const sequelize = event.context.sequelize;
+    const statusMessage = 'Ошибка входа, попробуйте, ещё раз'
+    const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
     if (!AdList || !sequelize) {
         console.error('Model or sequelize is not available in the context');
         throw createError({
             statusCode: 500,
-            statusMessage: 'Database connection error',
+            message: 'Database connection error',
+            statusMessage: statusMessageServer
         });
     }
 
@@ -177,8 +180,7 @@ export default defineEventHandler(async (event) => {
         console.error('Sequelize error:', error);
         throw createError({
             statusCode: 500,
-            statusMessage: 'Ошибка при запросе к базе данных',
-            data: error,
+            message: 'Ошибка при запросе к базе данных',
         });
     }
 });

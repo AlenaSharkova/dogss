@@ -5,7 +5,7 @@ export default defineEventHandler(async (event)=>
 
     const body = await readBody(event)
     let adItemCreateResult
-    //TO DO: валидация
+    //TODO: валидация
     //const columns = Object.keys(bodySend);
     //const values = Object.values(bodySend);
 

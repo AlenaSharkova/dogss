@@ -13,7 +13,7 @@ export default defineEventHandler(async (event)=>
     if(query?.id) {
         let users = await sql`SELECT * FROM users WHERE id = ${query.id}`
         console.log('user', users)
-        if(users.length) {
+        if(users?.length) {
             res = users[0]
         } else {
             throw createError({

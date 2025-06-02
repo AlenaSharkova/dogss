@@ -54,6 +54,9 @@
 @mixin h6 {
   @extend %heading;
   font-size: 21px;
+  @media (max-width: $md) {
+    font-size: 20px;
+  }
   @media (max-width: $sm) {
     font-size: 18px;
   }

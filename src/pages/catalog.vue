@@ -8,7 +8,9 @@ import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
 import BaseMiniBlock from "~/components/Base/BaseMiniBlock.vue";
 import type {ISelectComponent} from "~/struct/Common/ISelectComponent";
 import type {AdQueryFilterStruct} from "~/struct/Ad/AdItemStruct";
-
+definePageMeta({
+  requirementUser : null
+})
 const route = useRoute();
 const adStore = useAdStore()
 adStore.updateAdList()

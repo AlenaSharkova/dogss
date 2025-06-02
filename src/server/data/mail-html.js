@@ -16,7 +16,7 @@ export const mailHtml = (otp, token) => `
                 <strong style="font-size: 32px; color: #ffffff;">${otp}</strong>
               </div>
 
-              <p style="color: #333333; font-size: 14px; text-align: center;">Действителен в течение 5 минут.</p>
+              <p style="color: #333333; font-size: 14px; text-align: center;">Действителен в течение 3 минут.</p>
               <p style="color: #333333; font-size: 14px; text-align: center;">Если вы не запрашивали этот пароль, проигнорируйте это письмо.</p>
             </td>
           </tr>

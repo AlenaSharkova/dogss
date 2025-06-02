@@ -9,11 +9,7 @@ export default defineEventHandler(async (event)=>
     const AdExportRegions = event.context.AdExportRegions;
 
     let adItemCreateResult
-    //TO DO: валидация
-    //const columns = Object.keys(bodySend);
-    //const values = Object.values(bodySend);
-
-    //await sql` INSERT INTO ad_list (${columnsString}) VALUES (${placeholders}) `;
+    //TODO: валидация
 
     try {
         body.status = 'active'
@@ -63,12 +59,9 @@ export default defineEventHandler(async (event)=>
         return adItemCreateResult
     }
     catch (error) {
-        console.log('error adItemCreateResult', error )
-
         throw createError({
             statusCode: 400,
             statusMessage: 'Ошибка при создании объявления',
-            //statusMessage:  error,
         })
 
     }

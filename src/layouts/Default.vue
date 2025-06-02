@@ -11,7 +11,7 @@ const commonStore = useCommonStore()
 
 <template>
   <div class="default-layout">
-
+    <CommonLoading />
     <header class="header" :class="{'header--hidden': commonStore.isScrolled}">
       <div class="header-wrapper">
         <nuxt-link to="/" class="header-logo">
@@ -19,7 +19,7 @@ const commonStore = useCommonStore()
         </nuxt-link>
         <div class="header-menu">
             <LayoutHeaderNav @close="isShowMenu=false" />
-
+            {{commonStore.isLoadingPage}}
         </div>
       </div>
     </header>
@@ -110,10 +110,10 @@ const commonStore = useCommonStore()
 
     &-container {
       min-height: 100vh;
+      width: 100%;
       display: flex;
       justify-content: center;
       max-width: 1920px;
-      margin: auto;
       padding: 30px 0 0;
     }
   }

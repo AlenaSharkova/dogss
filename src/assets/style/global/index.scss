@@ -2,7 +2,7 @@
 body {
   margin: 0;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color: #2D2D2D;
+  color: $dark-text;
   padding: 0;
   overflow-x: hidden;
   ::selection{
@@ -105,5 +105,5 @@ nav a.router-link-exact-active {
   opacity: 0;
 }
 .fade-enter-active, .fade-leave-active {
-  transition: opacity .2s;
+  transition: opacity .3s;
 }

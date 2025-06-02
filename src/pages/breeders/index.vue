@@ -4,7 +4,9 @@ import {useUsersStore} from "~/stores/users.store";
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {computed} from "vue";
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
-
+definePageMeta({
+  requirementUser : null
+})
 const usersStore = useUsersStore()
 const usersList = computed(() => usersStore.usersList )
 usersStore.updateUsersList()
@@ -30,6 +32,7 @@ usersStore.updateUsersList()
 
 <style scoped lang="scss">
 .page-breeders-group {
+  width: 100%;
   &__list {
     display: flex;
     flex-direction: column;

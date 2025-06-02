@@ -8,11 +8,15 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const Users = event.context.Users;
     const Otp = event.context.Otp;
+    const statusMessage = 'Ошибка верификации, попробуйте, ещё раз'
+    const statusMessageServer = 'Ошибка сервера, попробуйте позже'
+
     if (!Users || !Otp || !sequelize) {
         console.error( 'Model or sequelize is not available in the context');
         throw createError({
             statusCode: 500,
-            statusMessage: 'Database connection error',
+            message: 'Database connection error',
+            statusMessage: statusMessageServer
         });
     }
     const secretKey = process.env.JWT_SECRET_KEY;
@@ -20,7 +24,8 @@ export default defineEventHandler(async (event) => {
         console.error('Ошибка: Переменная окружения JWT_SECRET_KEY не определена!');
         throw createError({
             statusCode: 500,
-            statusMessage: 'Переменная окружения JWT_SECRET_KEY не определена!',
+            message: 'Переменная окружения JWT_SECRET_KEY не определена!',
+            statusMessage: statusMessageServer
         });
     }
     try {
@@ -28,31 +33,32 @@ export default defineEventHandler(async (event) => {
         if (query?.code) {
             let OtpWithToken = await Otp.findOne({where: {token: query?.code}});
             if(!OtpWithToken) {
-                createError({
-                    statusCode: 404,
-                    statusMessage: 'Token not found',
+                throw createError({
+                    statusCode: 401,
+                    message: 'Token not found',
                 });
             }
             if (OtpWithToken.expiresAt < new Date()) {
-                createError({
+                throw createError({
                     statusCode: 410,
-                    statusMessage: 'Срок действия OTP истек.',
+                    message: 'Срок действия OTP истек.',
                 });
             }
             user = await Users.findOne({where: {id: OtpWithToken.userId}});
             if (!user) {
-                createError({
+                throw createError({
                     statusCode: 404,
-                    statusMessage: 'User not found',
+                    message: 'User not found',
                 });
             }
         }
         else if (query?.email && query?.otp) {
             user = await Users.findOne({where: {email: query.email}});
             if (!user) {
-                createError({
-                    statusCode: 404,
-                    statusMessage: 'User not found',
+                throw createError({
+                    statusCode: 401,
+                    message: 'User not found',
+                    statusMessage: 'Пользователь не найден'
                 });
             }
             let OtpWithOtpToken = await Otp.findOne(
@@ -64,10 +70,12 @@ export default defineEventHandler(async (event) => {
                     }
                 }
             );
+
             if (!OtpWithOtpToken) {
-                createError({
+                throw createError({
                     statusCode: 400,
-                    statusMessage: 'Invalid OTP',
+                    message: 'Invalid OTP',
+                    statusMessage: 'Неверно введённый код'
                 });
             }
             await Otp.destroy(
@@ -82,15 +90,16 @@ export default defineEventHandler(async (event) => {
         }
         // Аутентификация успешна!  Создаем и возвращаем JWT токен
         const token = jwt.sign({ userId: user?.id }, secretKey, { expiresIn: '1h' });
+        if(user && user.status === 'unconfirmed') {
+            user.status = 'active'
+            await user.save();
+        }
         return {
             token: token
         }
     } catch (error) {
         console.error(error);
-        throw createError({
-            statusCode: 500,
-            statusMessage: 'Failed to verify OTP',
-        });
+        throw error
     }
 
 

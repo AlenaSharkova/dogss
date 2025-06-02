@@ -9,7 +9,7 @@ export async function up(data) {
 
         const {queryInterface, Sequelize, sequelize} = data.context
 
-        await queryInterface.addColumn('users', 'email', {
+        await queryInterface.addColumn('users', 'city', {
             type: Sequelize.STRING, // Используем DataTypes.STRING
             allowNull: true,
             unique: true,

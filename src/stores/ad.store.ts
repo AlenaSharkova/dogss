@@ -48,7 +48,7 @@ export const useAdStore = defineStore('adStore', () => {
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
             });
     }
@@ -69,13 +69,13 @@ export const useAdStore = defineStore('adStore', () => {
         await adService
             .postAdItem(body)
             .then((res) => {
-                //TO DO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
+                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
                 //if (res) adCreatedSuccessItem.value = res.value;
                 console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
             });
     }

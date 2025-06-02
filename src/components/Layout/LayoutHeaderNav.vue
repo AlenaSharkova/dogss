@@ -15,42 +15,17 @@ const logout = () => {
   goToPage('/dashboard/authorization')
 }
 
-const getUserData = () => {
-  authStore.getUserData()
+const getUserFullData = () => {
+  authStore.getUserFullData()
 }
-const userData = computed(() => authStore.userData )
+const userFullData = computed(() => authStore.userFullData )
 
 onMounted( () => {
-  getUserData()
-
+  if (authStore.statusUser === 'unknown') {
+    //authStore.getUserFullData()
+  }
 })
-const test = async () => {
-  let user = {
-    'email': JSON.stringify('alena.s_00@mail.ru')
-  };
-  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration/convert')
-  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration/convert', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json;charset=utf-8'
-    },
-    body: JSON.stringify(user)
-  })
-  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json;charset=utf-8'
-    },
-    body: JSON.stringify(user)
-  })
-  await fetch('https://undo-wsc-uat.effortel-tech.com/api/integration/vl/registration', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json;charset=utf-8'
-    },
-    body: JSON.stringify(user)
-  })
-}
+
 </script>
 
 <template>
@@ -65,8 +40,8 @@ const test = async () => {
       <nuxt-link class="header-nav__item" to="/dev-new">
         dev-new
       </nuxt-link>
-      <nuxt-link class="header-nav__item" to="/form">
-        form
+      <nuxt-link class="header-nav__item" to="/profile">
+        profile
       </nuxt-link>
     </div>
 
@@ -78,13 +53,21 @@ const test = async () => {
           size="small"
           to="/create-ad" />
       <BaseButton
-          v-if="!userData"
+          v-if="!userFullData"
           class="header-nav__actions-login"
           text="Войти"
           size="small"
           to="/auth/login"
           type="secondary" />
-      <span v-else>Привет, {{userData.email}} </span>
+      <span v-else-if="userFullData">Привет, {{userFullData.personal_data.email}} </span>
+
+      <BaseButton
+          v-if="userFullData"
+          class="header-nav__actions-login"
+          text="Войти"
+          size="small"
+          to="/auth/login"
+          type="secondary" />
     </div>
   </div>
 </template>
@@ -102,9 +85,8 @@ const test = async () => {
   &__links {
     padding: 12px;
 
-    //display: flex;
+    display: flex;
     gap: 30px;
-    display: none;
   }
   &__item {
     cursor: pointer;

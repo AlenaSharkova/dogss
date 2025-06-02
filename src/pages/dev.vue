@@ -161,6 +161,9 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue';
 
+definePageMeta({
+  requirementUser : null
+})
 
 const model = ref('');
 const model2 = ref('');

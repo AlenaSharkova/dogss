@@ -81,10 +81,11 @@ export default defineNitroPlugin(async  (nitroApp) => {
         foreignKey: 'owner',
         as: 'Owner'
     });
-    Otp.belongsTo(Users, { foreignKey: 'userId' });
+
+    Otp.belongsTo(Users, { foreignKey: 'userId', onDelete: 'CASCADE',  as: 'User' });
 
 
-    await sequelize.sync({ force: false }); //  force: false - не трогает существующие данные
+    await sequelize.sync({ force: false });
     nitroApp.hooks.hook('request', (event) => {
         event.context.sequelize = sequelize;
         event.context.Breeds = Breeds;

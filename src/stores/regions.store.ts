@@ -28,7 +28,7 @@ export const useRegionsStore = defineStore('regionsStore', () => {
         })
           .catch(e => {
               commonStore.addUserErrorAlert(e.data?.statusMessage)
-              commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+              commonStore.addUserErrorAlert(e.data?.message, true)
               throw e.data
           });
         /*.finally(() => (isLoading.value = false));*/
@@ -43,7 +43,7 @@ export const useRegionsStore = defineStore('regionsStore', () => {
         })
           .catch(e => {
               commonStore.addUserErrorAlert(e.data?.statusMessage)
-              commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+              commonStore.addUserErrorAlert(e.data?.message, true)
               throw e.data
           });
     }
@@ -57,7 +57,7 @@ export const useRegionsStore = defineStore('regionsStore', () => {
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
             });
     }

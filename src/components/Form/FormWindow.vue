@@ -65,23 +65,20 @@ const prev = () => {
 
 <style scoped lang="scss">
 .form-window {
-  margin: auto;
   border-radius: 24px;
   box-shadow: 0px 4px 24px 0px rgba(30, 30, 30, 0.1);
   max-width: 1000px;
-  backdrop-filter: blur(10px);
-  //background-color: rgb(185, 160, 149, 0.75);
   &.--type-default {
+    background-color: white;
 
   }
   &.--type-original {
+    backdrop-filter: blur(10px);
+
     //background-color: #bba496D0;
     //background-color: #c2afa1;
     //background: url("@/assets/image/balls_back.jpg") no-repeat center center;
-    background-size: cover;
-    @media (max-width: $sm) {
-      background: transparent;
-    }
+
   }
   &__content {
     padding: 40px;

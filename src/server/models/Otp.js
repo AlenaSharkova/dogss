@@ -31,19 +31,10 @@ module.exports = (sequelize) => {
             type: DataTypes.DATE,
             allowNull: false,
         },
-    },
-    {
+    }, {
         tableName: 'otp',
-        timestamps: false,
-        indexes: [
-            {
-                unique: true,
-                fields: ['userId'],
-            },
-        ],
+        timestamps: false
     })
-    OTP.belongsTo(Users, { foreignKey: 'userId' }); // Устанавливаем связь "один ко многим" между OTP и User
-
     return OTP
 }
 

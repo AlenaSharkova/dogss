@@ -19,7 +19,7 @@ const onSwiper = (swiper: Swiper) => {
 const router = useRouter();
 
 const goToBreeder = (id: number) => {
-  router.push(`/breeder/${id}`)
+  router.push(`/breeders/${id}`)
 }
 </script>
 

@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-04-03',
+  compatibilityDate: '2025-06-02',
   devtools: { enabled: true },
   pages: true,
   ssr: true,
@@ -38,7 +38,15 @@ export default defineNuxtConfig({
       }
     }
   },
-  modules: ['dayjs-nuxt', '@pinia/nuxt', 'nuxt-swiper'],
+  modules: [ '@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt', 'nuxt-swiper', 'dayjs-nuxt'],
+  piniaPluginPersistedstate: {
+    storage: 'cookies',
+    cookieOptions: {
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 1 week
+    },
+    debug: true,
+  },
   imports: {
     autoImport: true //  Убедитесь, что autoImport включен
   },

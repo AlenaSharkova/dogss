@@ -1,5 +1,10 @@
-import { defineStore } from 'pinia';import AuthService from "~/service/auth.service";
+import { defineStore } from 'pinia';
+import AuthService from "~/service/auth.service";
 import {useCommonStore} from "~/stores/common.store";
+import type {
+    UserCreateItemStruct,
+    UserItemFullStruct,
+} from "~/struct/User/UserItemStruct";
 
 
 export const useAuthStore = defineStore('authStore', () => {
@@ -9,91 +14,154 @@ export const useAuthStore = defineStore('authStore', () => {
     const authService = new AuthService(config.public.apiBaseUrl);
 
     const sessionToken = ref();
-    const userData = ref(null);
+    const isUseCookie = ref(false);
+    const userFullData = ref<UserItemFullStruct | null>(null);
+    const statusUser = ref<"active" | 'unauthorized' | "unconfirmed" | "archive" | 'unknown'>('unknown')
 
-    const updateSessionToken = (token: string) => {
+    const updateSessionToken = async (token: string) => {
         localStorage.setItem("sessionToken", token)
+        console.log('updateSessionToken')
+
+        useCookie('sessionToken', {
+            maxAge: 60 * 60 * 24 * 7,
+            path: '/',
+            sameSite: 'lax',
+            secure: true,
+            //secure: process.env.NODE_ENV === 'production',
+        }).value = token
+        console.log('sessionTokenCookie', useCookie('sessionToken'))
         getSessionToken()
+        await getUserFullData()
     }
     const getSessionToken = () => {
-        sessionToken.value = localStorage.getItem("sessionToken")
+        const token = useCookie('sessionToken').value
+
+        sessionToken.value = isUseCookie.value? token: localStorage.getItem("sessionToken")
     }
-    onMounted(() => {
-        if(!sessionToken.value) getSessionToken()
-    })
 
     async function sendEmailForLogin(email: string) {
-        await authService.loginEmail(email)
+        return await authService.loginEmail(email)
             .then((res) => {
                 if (res) return res
             })
             .catch(e => {
                 if(e.data?.statusCode !== 401) {
                     commonStore.addUserErrorAlert(e.data?.statusMessage)
-                    commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
-                    throw e.data
+                    commonStore.addUserErrorAlert(e.data?.message, true)
                 }
                 throw e.data
             });
         /*.finally(() => (isLoading.value = false));*/
     }
-    async function getSessionOtp(email: string, otp: string) {
-        console.log('getSessionOtp store')
-        await authService.verifyOtp(email, otp)
+    async function sendEmailForConfirm(email: string) {
+        return await authService.loginEmail(email, true)
             .then((res) => {
-                if (res) {
-                    updateSessionToken(res.token)
-                    console.log('getSessionOtp', res)
+                if (res) return res
+            })
+            .catch(e => {
+                if(e.data?.statusCode !== 401) {
+                    commonStore.addUserErrorAlert(e.data?.statusMessage)
+                    commonStore.addUserErrorAlert(e.data?.message, true)
                 }
+                throw e.data
+            });
+        /*.finally(() => (isLoading.value = false));*/
+    }
+
+    async function sendEmailForRegistration(body: UserCreateItemStruct) {
+        return await authService.registrationEmail(body)
+            .then((res) => {
+                if (res) return res
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
             });
         /*.finally(() => (isLoading.value = false));*/
     }
-    async function getSessionTokenLink(code: string) {
-        await authService.sendTokenLink(code)
-            .then((res) => {
+
+    async function getSessionTokenWitchOtp(email: string, otp: string) {
+        console.log('getSessionTokenWitchOtp store')
+        return await authService.verifyOtp(email, otp)
+            .then(async (res) => {
                 if (res) {
-                    updateSessionToken(res.token)
-                    console.log('getSessionTokenLink', res)
-                }
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
-                throw e.data
-            });
-        /*.finally(() => (isLoading.value = false));*/
-    }
-    async function getUserData() {
-        console.log('updateSession')
-        await authService.getSession()
-            .then((res) => {
-                console.log('updateSession ss', res)
-                if (res) {
-                    console.log('getSession', res)
-                    userData.value = res
+                    await updateSessionToken(res.token)
+                    console.log('getSessionTokenWitchOtp', res)
                     return res
                 }
             })
             .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.serviceMessage, true)
+                if(!(e.data?.statusCode == 401 || e.data?.statusCode == 400)) {
+                    commonStore.addUserErrorAlert(e.data?.statusMessage)
+                    commonStore.addUserErrorAlert(e.data?.message, true)
+                }
                 throw e.data
             });
+        /*.finally(() => (isLoading.value = false));*/
+    }
+    async function getSessionTokenWitchLink(code: string) {
+        console.log('getSessionTokenWitchLink 123')
+        await authService.verifyCodeLink(code)
+            .then(async (res) => {
+                console.log('getSessionTokenWitchLink 1234', res)
+                if (res) {
+                    await updateSessionToken(res.token)
+                    console.log('getSessionTokenWitchLink 123456', res)
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+        /*.finally(() => (isLoading.value = false));*/
+    }
+    async function checkEmailAvailability(email: string) {
+        return await authService.checkEmailAvailability(email)
+            .then((res) => {
+                return res
+            })
+            .catch(e => {
+                throw e.data
+            });
+    }
+    async function getUserFullData() {
+        console.log('getUserFullData', sessionToken.value)
+        getSessionToken()
+        if(!sessionToken.value) return null
+        await authService.getSession(sessionToken.value)
+            .then((res) => {
+                console.log('getUserFullData 2', res)
+
+                if (res) {
+                    userFullData.value = res
+                    statusUser.value = res.status
+                    console.log('обновили пользователя')
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                statusUser.value = 'unauthorized'
+                throw e.data
+            })
     }
 
     return {
         sendEmailForLogin,
-        getSessionOtp,
-        getSessionTokenLink,
-        getUserData,
+        sendEmailForRegistration,
+        sendEmailForConfirm,
+        getSessionTokenWitchOtp,
+        getSessionTokenWitchLink,
+        getSessionToken,
+        getUserFullData,
         updateSessionToken,
+        checkEmailAvailability,
         sessionToken,
-        userData
+        userFullData,
+        statusUser,
+        isUseCookie
     }
 })
 

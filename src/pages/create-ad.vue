@@ -1,6 +1,10 @@
 <script setup lang="ts">
 
 import FormCreateAd from "~/components/Form/FormCreateAd.vue";
+
+definePageMeta({
+  requirementUser : null
+})
 </script>
 
 <template>

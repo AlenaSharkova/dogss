@@ -5,7 +5,7 @@ import type {RouteLocationRaw} from "#vue-router";
 
 interface Props {
   text: string;
-  type?: 'primary' | 'secondary' | 'teriary';
+  type?: 'primary' | 'secondary' | 'teriary' | 'violet';
   disabled?: boolean;
   to?: PropType<RouteLocationRaw>[] | string | null;
   size?: 'large' | 'medium' | 'small';
@@ -30,6 +30,7 @@ const classes = computed(() => {
     [`${base}__type--primary`]: props.type === 'primary',
     [`${base}__type--secondary`]: props.type === 'secondary',
     [`${base}__type--teriary`]: props.type === 'teriary',
+    [`${base}__type--violet`]: props.type === 'violet',
     [`${base}__disabled`]: props.disabled || props.load,
     [`${base}__unfull`]: props.unfull,
   };
@@ -130,6 +131,14 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
       color: $violet;
       border: $light-teal;
       background: $light-teal;
+      &.base-button__disabled {
+        color: var(--border, #D3D8E6);
+      }
+    }
+    &--violet {
+      color: $white-text;
+      border: $violet;
+      background: $violet;
       &.base-button__disabled {
         color: var(--border, #D3D8E6);
       }

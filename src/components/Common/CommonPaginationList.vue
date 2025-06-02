@@ -72,7 +72,7 @@ const pagesList = computed(() => {
       cursor: pointer;
       box-shadow: $box-shadow-second;
       &:hover {
-        //TO DO: (design) придумать hover, как и для кнопки базовой
+        //TODO: (design) придумать hover, как и для кнопки базовой
       }
       &.active {
         background-color: $violet;
