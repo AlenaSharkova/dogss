@@ -20,7 +20,7 @@ const filterStore = useFilterStore()
 const regionsStore = useRegionsStore()
 const router = useRouter();
 
-breedsStore.updateBreedsList()
+//breedsStore.updateBreedsList()
 const updateList = () => {
   getCreate()
 }

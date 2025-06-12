@@ -3,13 +3,19 @@
 import FormCreateAd from "~/components/Form/FormCreateAd.vue";
 
 definePageMeta({
-  requirementUser : null
+  requirementUser : 'authorized'
 })
+
+const authStore = useAuthStore()
 </script>
 
 <template>
   <div class="page-create-ad">
-    <FormCreateAd />
+    <LayoutWrapperPage >
+      <BaseWrapperWithDogs image="dolmatian">
+        <FormCreateAd />
+      </BaseWrapperWithDogs>
+    </LayoutWrapperPage>
   </div>
 
 
@@ -17,6 +23,6 @@ definePageMeta({
 
 <style scoped lang="scss">
 .page-create-ad {
-  padding-top: 80px;
+  width: 100%;
 }
 </style>

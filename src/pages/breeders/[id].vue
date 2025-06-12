@@ -17,9 +17,9 @@ const idBreeder = ref<string | null>(null)
 const usersStore = useUsersStore()
 const breedsStore = useBreedsStore()
 usersStore.updateUsersList()
-breedsStore.updateBreedsList()
+//breedsStore.updateBreedsList()
 
-const usersData = computed(() => usersStore.userFullData )
+const usersData = computed(() => usersStore.usersData )
 const breedsList = computed(() => breedsStore.breedsList )
 const pawsCount = ref(1)
 const selectBreed = ref({

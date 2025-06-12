@@ -1,4 +1,3 @@
-import type {Database} from "db0";
 import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
 
 
@@ -22,7 +21,7 @@ export interface AdListApi {
 export interface AdItemStruct {
     breed: ISelectNumber;
     name: string;
-    img: string;
+    photos: string[];
     id: number;
     price: number;
     status: 'active' | 'inactive' | 'archive';
@@ -75,7 +74,7 @@ export interface AdQueryFilterStruct {
     maxAgeMonth?: number | 'infinite';
 }
 export interface AdCreateItemStruct {
-    img: string;
+    photos: string[];
     name: string;
     owner: number;
     price: number | null;

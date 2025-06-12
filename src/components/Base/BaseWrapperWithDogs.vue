@@ -28,6 +28,8 @@ defineProps({
     justify-content: center;
   }
   &-image {
+    position: sticky;
+    top: 130px;
     border-radius: 40px;
     width: 40%;
     height: 80vh;
@@ -39,7 +41,7 @@ defineProps({
       right: 0;
       height: 100%;
       border-radius: 0;
-      position: absolute;
+      position: fixed;
     }
     img {
       width: 100%;
@@ -53,12 +55,12 @@ defineProps({
         background-size: cover;
         background-position: top;
         opacity: 0.7;
+        z-index: 1;
       }
     }
   }
   &-content {
     @media (max-width: $sm) {
-      z-index: 1;
       //position: absolute;
       //backdrop-filter: blur(10px);
     }

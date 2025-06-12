@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const Users = event.context.Users;
     const Otp = event.context.Otp;
-    const statusMessage = 'Ошибка верификации, попробуйте, ещё раз'
+    const statusMessage = 'Ошибка верификации, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
     if (!Users || !Otp || !sequelize) {
@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
             );
         }
         // Аутентификация успешна!  Создаем и возвращаем JWT токен
-        const token = jwt.sign({ userId: user?.id }, secretKey, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user?.id }, secretKey, { expiresIn: '6h' });
         if(user && user.status === 'unconfirmed') {
             user.status = 'active'
             await user.save();

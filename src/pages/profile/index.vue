@@ -1,13 +1,19 @@
 <script setup lang="ts">
 import {useAuthStore} from "~/stores/auth.store";
+import CommonModalFile from "~/components/Common/CommonModalFile.vue";
+import {usePersonalStore} from "~/stores/personal.store";
+import {computed} from "vue";
+import ProfileAd from "~/components/Profile/ProfileAd.vue";
 
 definePageMeta({
   requirementUser : 'authorized'
 })
 
 const authStore = useAuthStore()
+const personalStore = usePersonalStore()
 
 const userFullData = computed(() => authStore.userFullData)
+
 
 onMounted( () => {
   //мб не надо
@@ -29,6 +35,8 @@ onMounted( () => {
         </div>
       </div>
       userFullData: {{authStore.userFullData}}
+      <br><br><br><br>
+      <ProfileAd />
     </LayoutWrapperPage>
   </div>
 </template>

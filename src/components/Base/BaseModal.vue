@@ -61,7 +61,6 @@ const props = defineProps({
     justify-content: center;
     z-index: 101;
     @media (max-width: $sm) {
-      justify-content: flex-end;
       align-items: flex-end;
       z-index: 101;
       width: 100%;

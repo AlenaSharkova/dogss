@@ -2,6 +2,7 @@
 
 import { Op} from "sequelize";
 import dayjs from "dayjs";
+import {formattedAd} from "~/server/utils/formattedRequest.js";
 
 export default defineEventHandler(async (event) => {
     console.log('event.context', event.context)
@@ -15,7 +16,7 @@ export default defineEventHandler(async (event) => {
     const Users = event.context.Users;
     const AdExportRegions = event.context.AdExportRegions;
     const sequelize = event.context.sequelize;
-    const statusMessage = 'Ошибка входа, попробуйте, ещё раз'
+    const statusMessage = 'Ошибка входа, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
     if (!AdList || !sequelize) {
@@ -47,6 +48,7 @@ export default defineEventHandler(async (event) => {
             queryBd.breed_id = query.breeds?.split(',');
         }
         if (query.gender) queryBd.gender = query.gender;
+        queryBd.status = 'active';
         if (query.regions) {
             queryBd.region_main = query.regions.split(',');
             queryFull.regions = await GeoRegions.findAll({
@@ -80,7 +82,7 @@ export default defineEventHandler(async (event) => {
                 sorting = [ ['created_at', 'ASC'] ]
             }
         } else {
-          sorting = [ ['created_at', 'DESC'] ]
+          sorting = [ ['created_at', 'ASC'] ]
         }
         queryFull.maxFullPrice = await AdList.max('price')
 
@@ -96,7 +98,6 @@ export default defineEventHandler(async (event) => {
             order: sorting,
             limit: limit,
             offset: offset,
-            distinct: true, // Добавляем distinct
             include: [
                 {
                     model: GeoRegions,
@@ -126,47 +127,7 @@ export default defineEventHandler(async (event) => {
         console.log('AdList a', adListDB.rows)
 
         let result = await Promise.all(adListDB.rows.map(async (item) => {
-            return {
-                id: item.id,
-                created_at: item.created_at,
-                date_birth: item.date_birth,
-                gender: item.gender,
-                name: item.name,
-                price: item.price,
-                quantitative: item.quantitative,
-                region_main: item.region_main,
-                city_main: item.city_main,
-                geo_main: {
-                    region: item.LocationRegion,
-                    city: item.LocationCity,
-                   // city: adCityMain[0],
-                },
-                /*geo_main: {
-                    region: adRegionMain[0],
-                    city: adCityMain[0],
-                },*/
-                status: item.status,
-                type_ad: item.type_ad,
-                //необязательно для листинга
-                description: item.description,
-                parents: {
-                    parents_dad: item.parents_dad,
-                    parents_mum: item.parents_mum,
-                },
-                //временнно
-                count_image: item.count_image,
-                img: item.img,
-                //
-
-                //breed: item.breeds,
-                breed: item.Breed,
-                exportRegions: {
-                    isExport: item.is_export,
-                    regionsList: item.ExportRegions
-                    //regionsList: item.GeoRegions
-                },
-                ownerDetails: item.Owner,
-            }
+            return await formattedAd(item);
         }))
         return {
             limit: Number(limit),

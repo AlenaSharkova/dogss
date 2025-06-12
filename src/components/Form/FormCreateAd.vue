@@ -1,21 +1,25 @@
 <script setup lang="ts">
-
-
-import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
-import {computed, ref} from "vue";
-import CartAdItem from "~/components/Cart/CartAdItem.vue";
-import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
-import BaseMiniBlock from "~/components/Base/BaseMiniBlock.vue";
-import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
+import {computed, type PropType, ref} from "vue";
+import type {ISelectComponent, ISelectNumber} from "~/struct/Common/ISelectComponent";
 import {ruleRegions} from "~/utils/commonRules";
 import dayjs from "dayjs";
 import type {
-  AdCreateItemStruct, IFilterQuantitative,
+  AdCreateItemStruct, AdItemStruct, IFilterQuantitative,
   ISelectGender,
   ISelectTypeAd
 } from "~/struct/Ad/AdItemStruct";
+import type {ICommonUpload} from "~/struct/Common/ICommonUpload";
+import FormWindow from "./FormWindow.vue";
+import BaseInput from "../Base/BaseInput.vue";
 
 const route = useRoute();
+
+const props = defineProps({
+  itemDraftAd: {
+    type: Object as PropType<AdItemStruct | null>,
+    default: null
+  }
+})
 
 useHead({
   title: `Dogs - создать объявление`,
@@ -24,17 +28,10 @@ useHead({
 const defaultSelect = ref({})
 const breedsStore = useBreedsStore()
 const adStore = useAdStore()
+const authStore = useAuthStore()
 const filterStore = useFilterStore()
 const regionsStore = useRegionsStore()
 const router = useRouter();
-
-const selectBreed = ref<ISelectComponent>({})
-const selectAdType = ref<ISelectTypeAd>( {})
-const selectRegion = ref<ISelectNumber>( {})
-const selectRegionsExport = ref<ISelectNumber[]>( [])
-const selectCity = ref<ISelectNumber>({})
-const selectAge = ref<ISelectComponent>({})
-
 
 const form = reactive({
   name: '',
@@ -44,16 +41,17 @@ const form = reactive({
 
 })
 
-console.log('adStore0', adStore)
-adStore.updateAdList()
 
+const userFullData = computed(() => authStore.userFullData)
+const isActiveUser = computed(() => authStore.statusUser === 'active')
 
 if(!breedsStore.breedsList) {
-  breedsStore.updateBreedsList()
+  //breedsStore.updateBreedsList()
 }
 if(!regionsStore.regionsList) {
   regionsStore.updateRegionsList()
 }
+
 const breedsList = computed(() =>  breedsStore.breedsList)
 const typeAdList = computed(() => filterStore.typeAdList)
 const genderList = computed(() => filterStore.genderList)
@@ -62,7 +60,15 @@ const regionsList = computed(() => regionsStore.regionsList)
 const cityList = computed(() => regionsStore.cityList || [])
 const ageList = computed(() => filterStore.ageList)
 
-const selectGender = ref<ISelectGender>(genderList.value[0] )
+const selectBreed = ref<ISelectComponent>({})
+const selectAdType = ref<ISelectTypeAd>( {})
+const selectRegionsExport = ref<ISelectNumber[]>( [])
+const selectAge = ref<ISelectComponent>({})
+const imageList = ref<ICommonUpload[]>([])
+
+const selectRegion = ref<ISelectNumber>({})
+const selectCity = ref<ISelectNumber>({})
+const selectGender = ref<ISelectGender>( genderList.value[0] )
 const selectQuantitative = ref<IFilterQuantitative>( quantitativeList.value[0])
 const isExport = ref(false)
 
@@ -78,25 +84,76 @@ watch(() => selectRegion.value,
       if(newRegion?.value) regionsStore.getCityList(newRegion.value)
     }
 )
-const getBody = (): AdCreateItemStruct | false => {
+watch(() => authStore.statusUser,
+    async (newStatusUser) => {
+      if(newStatusUser === 'active') {
+        await fillPersonalData()
+      }
+    }
+)
+
+const setDraftData = () => {
+  console.log('date_birth', props.itemDraftAd)
+  if(!props.itemDraftAd) return
+  const {breed, type_ad, exportRegions, photos, geo_main, date_birth,
+    name, gender, quantitative, description, price}
+  = props.itemDraftAd
+  if(breed) selectBreed.value = breed
+  if(type_ad) selectAdType.value.value = type_ad
+  if(exportRegions.isExport) isExport.value = exportRegions.isExport
+  if(exportRegions.regionsList && isExport.value) selectRegionsExport.value = exportRegions.regionsList
+  //if(props.itemDraftAd?.breed) selectAge.value = props.itemDraftAd?.age
+  if(photos) imageList.value = photos.map(url => {
+    return {
+      imageUrl: url,
+      status: 'success'
+    }
+  })
+  if(geo_main.region) selectRegion.value = geo_main.region
+  if(geo_main.city) selectCity.value = geo_main.city
+  if(gender) selectGender.value.value = gender
+  if(quantitative) selectQuantitative.value.value = quantitative
+  if(name) form.name = name
+  if(description) form.description = description
+  if(price) form.price = String(price)
+  if(date_birth) form.date_birth = date_birth
+}
+
+const fillPersonalData = async () => {
+  if(!userFullData.value) return
+  console.log('userFullData.value.personal_data.geo_main', userFullData.value.personal_data.geo_main)
+  selectRegion.value = userFullData.value.personal_data.geo_main.region
+  if(!selectRegion.value?.value) return
+  await regionsStore.getCityList(selectRegion.value?.value)
+  selectCity.value = userFullData.value.personal_data.geo_main.city
+}
+const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | false => {
   console.log('dayjs(form.name)', dayjs(form.name))
   console.log('dayjs(form.date_birth, \'DD.MM.YYYY\')', dayjs(form.date_birth, 'DD.MM.YYYY').format())
+  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => item.imageUrl) as string[]
+
   if(
-      !dayjs(form.date_birth, 'DD.MM.YYYY')
+      (!dayjs(form.date_birth).isValid()
       || !selectRegion.value.value
       || !selectCity.value.value
       || !selectAdType.value.value
       || !selectQuantitative.value.value
+      || !imageUploadList.length
+      || !userFullData.value)
+      && type === 'active'
   ) return false
 
+
   return {
-    img: '/server/image/ad12/sale/2/',
+    status: type,
+    photos: imageUploadList,
     name: form.name,
-    owner: 1,
+    owner: userFullData.value.id,
     price: Number(form.price.replace(/[^0-9]/g, "")),
     count_image: 4,
 
-    date_birth: dayjs(form.date_birth, 'DD.MM.YYYY').format('YYYY-MM-DD'),
+    date_birth: dayjs(form.date_birth).isValid()?
+        dayjs(form.date_birth, 'DD.MM.YYYY').format('YYYY-MM-DD'): null,
     breed_id: selectBreed.value.value as number,
     type_ad: selectAdType.value.value,
     description: form.description,
@@ -110,18 +167,29 @@ const getBody = (): AdCreateItemStruct | false => {
     regionsExport: isExport.value && selectRegionsExport.value? selectRegionsExport.value.map(item => item.value) : null,
   }
 }
-const createAdForm = async () => {
+const createAdForm = async (type = 'active' as 'active' | 'draft') => {
 
-  const body = getBody();
+  const body = getBody(type);
   if(!body) return
   await adStore.createAd(body)
 }
 
+if(authStore.statusUser === 'active') {
+  fillPersonalData()
+  setDraftData()
+}
+
+onBeforeUnmount(() => {
+  if(!props.itemDraftAd?.id) {
+    createAdForm('draft')
+  }
+})
+
 </script>
 
 <template>
-  <div class="form-create-ad">
-    <FormWindow>
+  <div class="form-create-ad" v-if="isActiveUser" >
+    <FormWindow type="original" >
       <template #title>
         Подать объявление
       </template>
@@ -154,7 +222,6 @@ const createAdForm = async () => {
         />
         <BaseInput v-model="form.date_birth" title="Дата рождения (DD.MM.YYYY)" mask="__.__.____" />
 
-
         <BaseSelect
             v-if="regionsList?.length"
             :items="regionsList"
@@ -184,47 +251,46 @@ const createAdForm = async () => {
             postfix=" ₽"
             :max-length="10"
             styleAmount />
-        <span>Возможно ли обговорить доставку в другие регионы?</span>
-        <BaseSwitch v-model="isExport" />
+        <div class="form-create-ad__list-row">
+          <BaseSwitch v-model="isExport" />
+          <span>Возможно ли обговорить доставку в другие регионы?</span>
+        </div>
         <BaseSelect
-            v-if="regionsList?.length && isExport"
-            :items="regionsList"
-            :rules="[ruleRegions]"
-            v-model="selectRegionsExport"
-            show-search
-            multiple
-            name="ad-region"
-            full-value
-            placeholder="Выберите регион для доставки"
+          v-if="regionsList?.length && isExport"
+          :items="regionsList"
+          :rules="[ruleRegions]"
+          v-model="selectRegionsExport"
+          show-search
+          multiple
+          name="ad-region"
+          full-value
+          placeholder="Выберите регион для доставки"
         />
         <div class="form-create-ad__list-row">
           <BaseTabSwitch :items="quantitativeList" v-model="selectQuantitative" />
           <BaseTabSwitch v-if="selectQuantitative.value == 'one'" :items="genderList" v-model="selectGender" />
         </div>
         <BaseTextarea v-model="form.description" title="Описание объявления" />
+        <CommonUploadImage :isShow="true" v-model="imageList"/>
 
       </template>
       <template #action-buttons>
         <BaseButton text="Применить" @click="createAdForm" />
-        <img src="@/assets/image/svg/dog-boy.png" alt="">
-        <img src="@/assets/image/svg/Check.svg" alt="">
-
-
-
       </template>
 
 
     </FormWindow>
+
   </div>
 </template>
 
 <style scoped lang="scss">
 .form-create-ad {
-  padding-bottom: 500px;
   &__list {
     &-row {
       display: flex;
-      justify-content: space-between;
+      align-items: flex-start;
+      justify-content: flex-start;
       gap: 12px;
     }
   }

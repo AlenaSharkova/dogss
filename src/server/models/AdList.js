@@ -21,8 +21,8 @@ module.exports = (sequelize) => {
         owner: {
             type: DataTypes.INTEGER,
         },
-        img: {
-            type: DataTypes.TEXT,
+        photos: {
+            type: DataTypes.ARRAY(DataTypes.TEXT),
         },
         breed: {
             type: DataTypes.TEXT,

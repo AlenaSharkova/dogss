@@ -8,8 +8,8 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const Users = event.context.Users;
     const Otp = event.context.Otp;
-    const statusMessage = 'Ошибка запроса кода, попробуйте, ещё раз'
-    const statusMessageServer = 'Ошибка сервера, попробуйте позже'
+    const statusMessage = 'Ошибка запроса кода, попробуйте ещё раз'
+    const statusMessageServer = 'Ошибка сервера попробуйте позже'
 
     if (!Users || !Otp || !sequelize) {
         console.error( 'Model or sequelize is not available in the context');

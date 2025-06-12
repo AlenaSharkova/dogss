@@ -1,0 +1,95 @@
+import { ref, computed } from 'vue'
+import { defineStore } from 'pinia';
+import PersonalService from '~/service/personal.service';
+import type {
+    AdItemStruct,
+} from "~/struct/Ad/AdItemStruct";
+import {useCommonStore} from "~/stores/common.store";
+import type {PersonalAdListStruct} from "~/struct/Personal/PersonalAdListStruct";
+
+
+export const usePersonalStore = defineStore('personalStore', () => {
+    const config = useRuntimeConfig();
+    const authStore = useAuthStore()
+    authStore.getSessionToken()
+    const token = computed(() => String(authStore.sessionToken))
+    console.log('tokenff 000' , token.value)
+
+    const personalService = new PersonalService(config.public.apiBaseUrl, token.value);
+    //console.log('token pers', token)
+    const commonStore = useCommonStore()
+
+
+    const AdPersonalList = ref<PersonalAdListStruct | null>(null)
+    const AdPersonalCurrentItemActive = ref<AdItemStruct | null>(null)
+    const AdPersonalCurrentItemDraft = ref<AdItemStruct | null>(null)
+
+    async function updatePersonalList() {
+        await personalService.getPersonalAdList()
+            .then((res) => {
+                console.log('ressss', res)
+                if (res) {
+                    AdPersonalList.value = res.result;
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+    async function getPersonalAdCurrentDraft(id: number | string) {
+        await personalService.getPersonalAdItem(id, 'draft')
+            .then((res) => {
+                console.log('ressss', res)
+                if (res) {
+                    AdPersonalCurrentItemDraft.value = res;
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+
+    async function getPersonalAdCurrentActive(id: number) {
+        await personalService.getPersonalAdItem(id, 'active')
+            .then((res) => {
+                console.log('ressss', res)
+                if (res) {
+                    AdPersonalCurrentItemActive.value = res;
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+
+
+    onMounted(async () => {
+        if(authStore.statusUser === 'active') {
+            await updatePersonalList()
+        }
+    })
+    watch(() => authStore.statusUser,
+        async (newValue) => {
+            if(newValue == 'active') {
+                await updatePersonalList()
+            }
+        })
+
+
+
+    return {
+        AdPersonalList,
+        updatePersonalList,
+        getPersonalAdCurrentDraft,
+        getPersonalAdCurrentActive,
+        AdPersonalCurrentItemDraft,
+        AdPersonalCurrentItemActive,
+    }
+})
+

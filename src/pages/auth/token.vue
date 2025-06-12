@@ -14,6 +14,10 @@ const isExpiredToken = ref(false)
 
 const getToken = async () => {
   console.log('route.query.code', route.query.code)
+  commonStore.changeIsLoadingPage(true)
+
+  if(authStore.statusUser === 'active') await router.push('/profile')
+
   if (route.query.code) {
     commonStore.isLoadingPage = true
     await authStore.getSessionTokenWitchLink(route.query.code as string)
@@ -29,7 +33,8 @@ const getToken = async () => {
             throw err
           }
         }).finally(() => {
-          commonStore.isLoadingPage = false
+          commonStore.changeIsLoadingPage(false)
+
         })
     console.log('authStore.statusUser', authStore.statusUser, authStore.userFullData)
   }

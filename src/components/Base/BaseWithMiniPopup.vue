@@ -38,7 +38,7 @@ const onBlur = () => {
 .base-with-mini-popup {
   &__main {
     position: absolute;
-    top: -84px;
+    bottom: 100%;
     right: 2px;
     width: 200px;
     height: auto;
@@ -47,6 +47,7 @@ const onBlur = () => {
     border-radius: 10px;
     box-shadow: $box-shadow-second;
     background-color: $back;
+    margin-bottom: 4px;
   }
   &__wrapper {
     padding: 7px 10px;

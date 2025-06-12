@@ -16,6 +16,7 @@ export interface UserItemFullStruct {
         geo_main: {
             region: ISelectNumber,
             city: ISelectNumber,
+            address: string | null,
         },
     }
 }

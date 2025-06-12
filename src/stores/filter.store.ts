@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia';
-import type {AdItemStruct, IFilterAge, ISelectGender} from "~/struct/Ad/AdItemStruct";
+import type {AdItemStruct, IFilterAge, IFilterQuantitative, ISelectGender} from "~/struct/Ad/AdItemStruct";
 import type {ISelectComponent} from "~/struct/Common/ISelectComponent";
 
 
@@ -26,7 +26,7 @@ export const useFilterStore = defineStore('filterStore', () => {
             value: 'lost'
         }
     ])
-    const genderList = ref( [
+    const genderList = ref<ISelectGender[]>( [
         {
             text: 'Девочка',
             value: 'female'
@@ -36,7 +36,7 @@ export const useFilterStore = defineStore('filterStore', () => {
             value: 'male'
         },
     ])
-    const quantitativeList = ref( [
+    const quantitativeList = ref<IFilterQuantitative[]>( [
 
         {
             text: 'Одна собака',

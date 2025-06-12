@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const Users = event.context.Users;
     const Otp = event.context.Otp;
-    const statusMessage = 'Ошибка регистрации, попробуйте, ещё раз'
+    const statusMessage = 'Ошибка регистрации, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
     if (!Users || !Otp || !sequelize) {

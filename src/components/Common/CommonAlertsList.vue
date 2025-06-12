@@ -34,10 +34,11 @@ const closeItem = (item: IUsersAlert) => {
 $modal-offset: 20px;
 .common-alerts-list {
   @include subtitle-small;
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   right: 20px;
   display: flex;
+  z-index: 20;
 }
 .skip-leave-active, .skip-enter-active {
   transition: all 0.4s;

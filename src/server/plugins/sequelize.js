@@ -65,6 +65,14 @@ export default defineNitroPlugin(async  (nitroApp) => {
     });
 
     // Определение связи One-to-Many для региона нахождения
+    Users.belongsTo(GeoRegions, {
+        foreignKey: 'region',
+        as: 'LocationUserRegion'
+    });
+    Users.belongsTo(GeoCity, {
+        foreignKey: 'city',
+        as: 'LocationUserCity'
+    });
     AdList.belongsTo(GeoRegions, {
         foreignKey: 'region_main',
         as: 'LocationRegion'
@@ -79,6 +87,8 @@ export default defineNitroPlugin(async  (nitroApp) => {
     });
     AdList.belongsTo(Users, {
         foreignKey: 'owner',
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
         as: 'Owner'
     });
 

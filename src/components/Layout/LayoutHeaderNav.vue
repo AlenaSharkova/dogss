@@ -4,15 +4,18 @@ import {useAuthStore} from "~/stores/auth.store";
 
 const emit = defineEmits(["close"]);
 
+const router = useRouter();
 const authStore = useAuthStore()
 
 const goToPage = (page: string) => {
- // router.push(page)
+  //router.push(page)
   //emit('close')
 }
 
-const logout = () => {
-  goToPage('/dashboard/authorization')
+const logout = async () => {
+  await authStore.logout()
+  await router.push("/")
+  //goToPage('/dashboard/authorization')
 }
 
 const getUserFullData = () => {
@@ -68,6 +71,14 @@ onMounted( () => {
           size="small"
           to="/auth/login"
           type="secondary" />
+      <BaseButton
+          v-if="userFullData"
+          class="header-nav__actions-login"
+          text="Выйти"
+          size="small"
+          type="secondary"
+          @click="logout"
+      />
     </div>
   </div>
 </template>

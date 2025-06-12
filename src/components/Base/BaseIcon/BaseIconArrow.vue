@@ -52,5 +52,8 @@ svg {
   &.back path {
     fill: $back;
   }
+  &.error path {
+    fill: $error;
+  }
 }
 </style>

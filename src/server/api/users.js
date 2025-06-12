@@ -1,58 +1,68 @@
 import breeds from "~/demoData/new_breeds.json";
 import connection from "express";
+import {formattedUserGlobal} from "~/server/utils/formattedRequest.js";
 
 
 export default defineEventHandler(async (event)=>
 {
-    const sql = usePostgres()
     const query = getQuery(event)
-    console.log('query', query)
-    //const id = getRouterParam(event, 'name')
-    let res
 
-    if(query?.id) {
-        let users = await sql`SELECT * FROM users WHERE id = ${query.id}`
-        console.log('user', users)
-        if(users?.length) {
-            res = users[0]
-        } else {
-            throw createError({
-                statusCode: 404,
-                statusMessage: 'Питомник не найден',
-            })
-        }
+    const sequelize = event.context.sequelize;
+    const Users = event.context.Users;
+    const GeoCity = event.context.GeoCity;
+    const GeoRegions = event.context.GeoRegions;
 
+    const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
-        //let re = `INSERT INTO breeds SET column= ${responseJson}`
-        //console.log('re15', re);
-/*
-        let responseJson = JSON.stringify(breeds);
-
-
-        //await sql`CREATE TABLE breeds(id INT, name VARCHAR(255))`
-
-        //await sql`CREATE TABLE t1(json_col JSON)`
-        //await sql`INSERT INTO t1 VALUES (${responseJson})`
-
-        ///await sql`SELECT breeds.* FROM t1,
-        console.log('responseJson', responseJson)
-        const a = await sql`
-             INSERT INTO breeds (name, id)
-             SELECT breeds.name, breeds.id 
-             FROM JSON_TABLE(
-                 ${responseJson}, '$[*]' COLUMNS ( name VARCHAR(255)  PATH '$.name', id INT PATH '$.id')
-             ) AS breeds;`
-        console.log('a responseJson', a)
-
-
-
-      // console.log('data inserted', query1);
-*/
-    } else {
-        res = await sql`SELECT * FROM users`
+    if (!Users || !GeoCity  || !GeoRegions || !sequelize) {
+        console.error('Breeds model or sequelize is not available in the context');
+        throw createError({
+            statusCode: 500,
+            message: 'Database connection error',
+            statusMessage: statusMessageServer
+        });
     }
-    // Ensure the database connection is closed after the request is processed
-    event.waitUntil(sql.end())
-    return res
-
+    try {
+        if (query?.id) {
+            const user = await Users.findOne({
+                include: [
+                    {
+                        model: GeoCity,
+                        as: 'LocationUserCity',
+                    },
+                    {
+                        model: GeoRegions,
+                        as: 'LocationUserRegion',
+                    }
+                ]
+            });
+            if (!user) {
+                throw createError({
+                    statusCode: 404,
+                    statusMessage: 'Пользователь не найден',
+                })
+            } else {
+                return formattedUserGlobal(user)
+            }
+        } else {
+            const usersList = await Users.findAll(
+                {include: [
+                    {
+                        model: GeoCity,
+                        as: 'LocationUserCity',
+                    },
+                    {
+                        model: GeoRegions,
+                        as: 'LocationUserRegion',
+                    }
+                ]}
+            );
+            return usersList.map(user => formattedUserGlobal(user))
+        }
+    } catch (error) {
+        throw createError({
+            statusCode: 500,
+            statusMessageServer
+        });
+    }
 })

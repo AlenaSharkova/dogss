@@ -20,6 +20,8 @@ defineProps({
 
 <style scoped lang="scss">
 svg {
+  width: inherit;
+  height: auto;
   &.violet path {
     fill: $violet
   }
@@ -43,6 +45,9 @@ svg {
   }
   &.back path {
     fill: $back;
+  }
+  &.error path {
+    fill: $error;
   }
 }
 </style>

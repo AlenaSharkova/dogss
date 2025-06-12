@@ -6,7 +6,7 @@
 
 export async function up(data) {
   try {
-
+/*
     const {queryInterface, Sequelize, sequelize} = data.context
 
     await queryInterface.addColumn('users', 'city', {
@@ -34,7 +34,7 @@ export async function up(data) {
       allowNull: true,
     });
     console.log("Миграция up:  добавлен");
-
+*/
   }  catch (error) {
     console.error("Ошибка при выполнении миграции up:", error);
     throw error; // Важно: Пробрасываем ошибку, чтобы umzug знал, что миграция не удалась
@@ -47,7 +47,7 @@ export async function up(data) {
  */
 export async function down(queryInterface, Sequelize) {
   try {
-    await queryInterface.removeColumn('users', 'email');
+   // await queryInterface.removeColumn('users', 'email');
   } catch (error) {
     console.error("Ошибка при выполнении миграции down:", error);
     throw error; // Важно: Пробрасываем ошибку, чтобы umzug знал, что миграция не удалась

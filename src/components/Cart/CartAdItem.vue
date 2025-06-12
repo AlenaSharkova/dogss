@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
-import {formatAmountInput, formatDate, getYearsOld} from "~/utils/formatData";
 import { Pagination } from 'swiper/modules';
 import type Swiper from "swiper";
 import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
@@ -37,8 +36,7 @@ const onBlurHeart = () => {
 }
 const textRegionsExport = computed(() => {
   if(!props.item.exportRegions.isExport) return ''
-  return `Возможна доставка в такие регионы, как:
-  <br>
+  return `<p style="font-size: 12px">Возможна доставка в такие регионы, как:</p>
     ${props.item.exportRegions.regionsList?.map(region => region?.text).join('<br>')}`
 })
 </script>
@@ -87,10 +85,19 @@ const textRegionsExport = computed(() => {
                 @swiper="onSwiper"
                 :modules="[Pagination]"
         >
-          {{`${item.img}1.jpg`}}
-          <swiper-slide class="cart-item__swiper-slide" v-for="i in item.count_image">
-            <img class="cart-item__swiper__img" :src="`${item.img + i}.jpg`" :alt="`dog-${item.id}`">
+          {{`${item.photos}1.jpg`}}
+          <swiper-slide
+              class="cart-item__swiper-slide"
+              v-for="(img, indexImg) in item.photos"
+              :key="indexImg"
+          >
+            <img class="cart-item__swiper-img" :src="img" :alt="`dog-${item.id}-${indexImg}`">
           </swiper-slide>
+          <div v-if="!item.photos.length"
+               class="cart-item__swiper-slide --empty">
+            <img class="cart-item__swiper-img" src="@/assets/image/default_cart.png" :alt="`dog-${item.id}-${indexImg}`">
+          </div>
+
           <div class="cart-item__swiper-pagination"></div>
           <div v-if="swiperInstance" class="cart-item__swiper-announcements">
             <div class="cart-item__swiper-announcements__item"
@@ -133,12 +140,11 @@ const textRegionsExport = computed(() => {
   }
   &__top {
     position: relative;
-    height: calc(100% - 200px);
   }
   &__info {
     &-circle {
       position: absolute;
-      left: 0px;
+      left: 0;
       z-index: 2;
       width: 50px;
       height: 50px;
@@ -204,8 +210,13 @@ const textRegionsExport = computed(() => {
     &-slide {
       width: 100%;
       height: 100%;
+      &.--empty {
+        //background-color: $light-teal;
+        background: linear-gradient(270deg,$light-teal 0%, $violet-opacity 100%, $light-teal 100%);
+      }
       img {
-        height: 100%;
+        aspect-ratio: 1;
+        //height: 100%;
         width: 100%;
         object-fit: cover;
         object-position: center;

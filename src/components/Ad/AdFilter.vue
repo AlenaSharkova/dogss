@@ -56,7 +56,7 @@ watch(() => adStore.adCatalogFilter.gender,
 })*/
 
 if(!breedsStore.breedsList) {
-  breedsStore.updateBreedsList()
+ // breedsStore.updateBreedsList()
 }
 if(!regionsStore.regionsListFull) {
   regionsStore.updateRegionsListFull()
@@ -191,6 +191,9 @@ const showPriceRange = ref(false)
   max-height: calc(100vh - 100px);
   overflow: auto;
   padding: 0 0 20px 0;
+  @media (max-width: $sm) {
+    min-width: auto;
+  }
   &__title {
     margin-bottom: 8px;
     @include h5;
@@ -204,6 +207,9 @@ const showPriceRange = ref(false)
     margin-top: 20px;
     display: flex;
     gap: 8px;
+    @media (max-width: $xs) {
+      flex-direction: column-reverse;
+    }
   }
 }
 </style>

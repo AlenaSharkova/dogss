@@ -56,6 +56,7 @@ const repeatOtp = () => {
 const sendOtp = async (otp: string) => {
   await authStore.getSessionTokenWitchOtp(form.email.value, otp)
       .then(res => {
+        console.log('authStore.statusUser',authStore.statusUser)
         if(res?.token && authStore.statusUser === 'active') {
           console.log('переход в profile')
           router.push('/profile')
@@ -83,7 +84,7 @@ const onFocusEmail = () => {
         Вход
       </template>
       <template #subtitle>
-        Если Вы ещё не зарегистрированы на сервисе:
+        Если Вас ещё нет личного профиля на сервисе:
         <router-link to="/auth/registration" class="--link-registration">пройдите регистрацию</router-link>
       </template>
       <template #default>

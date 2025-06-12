@@ -9,7 +9,7 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
         photo: {
-            type: DataTypes.TEXT,
+            type: DataTypes.ARRAY(DataTypes.TEXT),
             allowNull: true,
         },
         address: {
@@ -26,11 +26,11 @@ module.exports = (sequelize) => {
             unique: true,
         },
         city: {
-            type: DataTypes.TEXT,
+            type: DataTypes.INTEGER,
             allowNull: true,
         },
         region: {
-            type: DataTypes.TEXT,
+            type: DataTypes.INTEGER,
             allowNull: true,
         },
         first_name: {
@@ -41,6 +41,14 @@ module.exports = (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
+        person_ads: {
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
+            allowNull: true,
+        },
+        person_favorites: {
+            type: DataTypes.ARRAY(DataTypes.INTEGER),
+            allowNull: true,
+        }
     }, {
         tableName: 'users',
         timestamps: false,

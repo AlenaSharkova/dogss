@@ -3,11 +3,13 @@ import {useCommonStore} from "~/stores/common.store";
 
 const commonStore = useCommonStore()
 
+const isLoadingPage = computed(() => commonStore.isLoadingPage)
+
 </script>
 
 <template>
   <Transition name="fade">
-    <div v-if="commonStore.isLoadingPage" class="common-loading">
+    <div v-if="isLoadingPage" class="common-loading">
       <div class="common-loading__circle">
 
       </div>

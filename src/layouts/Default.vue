@@ -12,14 +12,13 @@ const commonStore = useCommonStore()
 <template>
   <div class="default-layout">
     <CommonLoading />
-    <header class="header" :class="{'header--hidden': commonStore.isScrolled}">
+    <header class="header" :class="{'header--hidden': commonStore?.isScrolled}">
       <div class="header-wrapper">
         <nuxt-link to="/" class="header-logo">
           <img src="@/assets/image/svg/paw.svg">
         </nuxt-link>
         <div class="header-menu">
             <LayoutHeaderNav @close="isShowMenu=false" />
-            {{commonStore.isLoadingPage}}
         </div>
       </div>
     </header>

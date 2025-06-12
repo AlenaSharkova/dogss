@@ -1,18 +1,24 @@
 export default defineEventHandler(async (event)=>
 {
-    const sql = usePostgres()
-
-
     const body = await readBody(event)
 
     const AdList = event.context.AdList;
+    const Users = event.context.Users;
     const AdExportRegions = event.context.AdExportRegions;
 
     let adItemCreateResult
     //TODO: валидация
 
     try {
-        body.status = 'active'
+        const user = await Users.findByPk(body.owner);
+
+        if (!user) {
+            console.error(`Пользователь с ID ${body.owner} не найден!`);
+            throw createError({
+                statusCode: 500,
+                message: `Пользователь с ID ${body.owner} не найден!`,
+            });
+        }
         adItemCreateResult = await AdList.create(body);
 
         if (body.is_export && body.regionsExport && body.regionsExport.length ) {
@@ -59,8 +65,10 @@ export default defineEventHandler(async (event)=>
         return adItemCreateResult
     }
     catch (error) {
+        console.log('Ошибка при создании объявления ', error )
         throw createError({
             statusCode: 400,
+            message: error,
             statusMessage: 'Ошибка при создании объявления',
         })
 

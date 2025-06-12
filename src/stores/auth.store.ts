@@ -1,10 +1,12 @@
-import { defineStore } from 'pinia';
+import {defineStore, skipHydrate} from 'pinia';
 import AuthService from "~/service/auth.service";
 import {useCommonStore} from "~/stores/common.store";
+import { useLocalStorage } from '@vueuse/core'
 import type {
     UserCreateItemStruct,
     UserItemFullStruct,
 } from "~/struct/User/UserItemStruct";
+import init from "@parcel/watcher-wasm";
 
 
 export const useAuthStore = defineStore('authStore', () => {
@@ -13,30 +15,47 @@ export const useAuthStore = defineStore('authStore', () => {
 
     const authService = new AuthService(config.public.apiBaseUrl);
 
-    const sessionToken = ref();
-    const isUseCookie = ref(false);
-    const userFullData = ref<UserItemFullStruct | null>(null);
-    const statusUser = ref<"active" | 'unauthorized' | "unconfirmed" | "archive" | 'unknown'>('unknown')
-
-    const updateSessionToken = async (token: string) => {
-        localStorage.setItem("sessionToken", token)
-        console.log('updateSessionToken')
-
+    const sessionToken = ref('');
+    const sessionTokenCookie = ref(
         useCookie('sessionToken', {
             maxAge: 60 * 60 * 24 * 7,
             path: '/',
             sameSite: 'lax',
             secure: true,
             //secure: process.env.NODE_ENV === 'production',
-        }).value = token
-        console.log('sessionTokenCookie', useCookie('sessionToken'))
+    }));
+    const isUseCookie = ref(false);
+    const userFullData = ref<UserItemFullStruct | null>(null);
+    const statusUser = ref<"active" | 'unauthorized' | "unconfirmed" | "archive" | 'unknown'>('unknown')
+    const tokennn = skipHydrate(useLocalStorage<string>('sessionToken', ''))
+
+
+    const updateSessionToken = async (token: string) => {
+        //localStorage.setItem("sessionToken", token)
+        console.log('updateSessionToken')
+
+        tokennn.value = token
+        console.log('updateSessionToken', tokennn)
+
+        if(isUseCookie.value) {
+            sessionTokenCookie.value = token
+        }
+
+        console.log('sessionTokenCookie', useCookie('sessionToken'), sessionTokenCookie.value)
         getSessionToken()
+        console.log('sessionToken', sessionToken.value)
         await getUserFullData()
     }
+    const logout = async () => {
+        await updateSessionToken('')
+    }
     const getSessionToken = () => {
-        const token = useCookie('sessionToken').value
+        const token = sessionTokenCookie.value
 
-        sessionToken.value = isUseCookie.value? token: localStorage.getItem("sessionToken")
+        sessionToken.value = isUseCookie.value? token: tokennn.value
+
+
+        console.log('sessionToken', sessionToken.value)
     }
 
     async function sendEmailForLogin(email: string) {
@@ -86,8 +105,11 @@ export const useAuthStore = defineStore('authStore', () => {
         return await authService.verifyOtp(email, otp)
             .then(async (res) => {
                 if (res) {
+                    console.log('getSessionTokenWitchOtp 0', res)
+
                     await updateSessionToken(res.token)
                     console.log('getSessionTokenWitchOtp', res)
+
                     return res
                 }
             })
@@ -129,11 +151,15 @@ export const useAuthStore = defineStore('authStore', () => {
     async function getUserFullData() {
         console.log('getUserFullData', sessionToken.value)
         getSessionToken()
-        if(!sessionToken.value) return null
+        if(!sessionToken.value) {
+            userFullData.value = null
+            statusUser.value = 'unauthorized'
+            console.log('обновили пользователя', null)
+            return null
+        }
         await authService.getSession(sessionToken.value)
             .then((res) => {
-                console.log('getUserFullData 2', res)
-
+                console.log('getSession in getUserFullData', res)
                 if (res) {
                     userFullData.value = res
                     statusUser.value = res.status
@@ -158,10 +184,11 @@ export const useAuthStore = defineStore('authStore', () => {
         getUserFullData,
         updateSessionToken,
         checkEmailAvailability,
+        logout,
         sessionToken,
         userFullData,
         statusUser,
-        isUseCookie
+        isUseCookie,
     }
 })
 

@@ -17,6 +17,7 @@ export const useAdStore = defineStore('adStore', () => {
 
     const adService = new AdService(config.public.apiBaseUrl);
     const commonStore = useCommonStore()
+    const personalStore = usePersonalStore()
 
     const adCatalogList = ref<AdItemStruct[] | null>(null)
     const adCatalogListDetails = ref<AdListApiDetails | null>(null)
@@ -66,6 +67,21 @@ export const useAdStore = defineStore('adStore', () => {
         }
     }
     async function createAd(body: AdCreateItemStruct) {
+        await adService
+            .postAdItem(body)
+            .then(async (res) => {
+                await personalStore.updatePersonalList()
+                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
+                //if (res) adCreatedSuccessItem.value = res.value;
+                console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+    async function createDraftAd(body: AdCreateItemStruct) {
         await adService
             .postAdItem(body)
             .then((res) => {

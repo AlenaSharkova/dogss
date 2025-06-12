@@ -81,7 +81,8 @@ export const getYearsOld = (dateBirth: string | number | null = null) => {
 
     //const countWeek = currentDate.diff(dateBirth, 'week')
     const countDays = currentDate.diff(addedMonths, 'day')
-    console.log('test', dayjs.duration(currentDate.diff(dateBirth), 'year').humanize() , dayjs.duration(currentDate.diff(dateBirth), 'month').humanize()  )
+    console.log('test, ', {...dayjs.duration(currentDate.diff(dateBirth), 'day')}, dayjs.duration(currentDate.diff(dateBirth), 'year').humanize() , dayjs.duration(currentDate.diff(dateBirth), 'month').humanize(), countYears  )
+    console.log('countMonths, ', dayjs.duration(currentDate.diff(dateBirth), 'year').humanize() , dayjs.duration(currentDate.diff(dateBirth), 'month').humanize(), countYears  )
     return (countYears > 1? (dayjs.duration(countYears, 'year').humanize() + " "): "" ) +
         (countYears == 1 ? "1 год " : "" ) +
         (countMonths > 1? (dayjs.duration(countMonths, 'month').humanize() + " "): "") +
@@ -89,4 +90,88 @@ export const getYearsOld = (dateBirth: string | number | null = null) => {
         (countDays > 1 && countDays !== 30? dayjs.duration(countDays, 'day').humanize(): "") +
         (countDays == 1 ? "1 день ": "") +
         (countDays == 30 ? "30 дней ": "")
+}
+
+/**
+ * Вычисляет возраст в годах, месяцах и днях на основе даты рождения.
+ *
+ * @param {string|Date} birthDate - Дата рождения в формате, который понимает dayjs (например, 'YYYY-MM-DD').
+ * @param {string|Date} currentDate - (Необязательно) Дата, на которую вычисляется возраст. Если не указана, используется текущая дата.
+ * @returns {object} Объект с полями `years`, `months`, `days` и `exact` (строка с точным описанием возраста). Возвращает null, если дата рождения невалидна.
+ */
+export const calculateAge = (birthDate: string | number | null = null) => {
+    const currentDate = dayjs()
+    const timeZone = dayjs.tz.guess()
+
+    const birth = dayjs(birthDate).tz(timeZone).local();
+    const now = dayjs(currentDate).tz(timeZone).local();
+
+    if (!birth.isValid()) {
+        console.error('Неверный формат даты рождения.');
+        return null;
+    }
+
+    let years = now.year() - birth.year();
+    let months = now.month() - birth.month();
+    let days = now.date() - birth.date();
+
+    if (days < 0) {
+        months--;
+        const lastMonth = now.clone().month(now.month() - 1);
+        days = now.date() + lastMonth.daysInMonth() - birth.date();
+    }
+
+    if (months < 0) {
+        years--;
+        months = months + 12;
+    }
+    if(years < 0){
+        return {
+            years: 0,
+            months: 0,
+            days: 0,
+            exact: "Ошибка в дате рождения."
+        }
+    }
+
+    let exact = '';
+
+    if (years > 0) {
+        exact += `${years} ${getPluralForm(years, 'год', 'года', 'лет')} `;
+    }
+
+    if (months > 0) {
+        exact += `${months} ${getPluralForm(months, 'месяц', 'месяца', 'месяцев')} `;
+    }
+
+    if (days > 0) {
+        exact += `${days} ${getPluralForm(days, 'день', 'дня', 'дней')}`;
+    }
+    if (exact === '') {
+        exact = 'Меньше дня';
+    }
+    return exact
+}
+
+
+/**
+ * Функция для правильного склонения слов в зависимости от числа (pluralization).
+ *
+ * @param {number} number - Число.
+ * @param {string} one - Форма для 1 (например, "год").
+ * @param {string} few - Форма для 2, 3, 4 (например, "года").
+ * @param {string} many - Форма для 5, 6, 7, ... (например, "лет").
+ * @returns {string} - Правильная форма слова.
+ */
+const getPluralForm = (number: number, one: string, few: string, many: string) => {
+    const mod10 = number % 10;
+    const mod100 = number % 100;
+
+    if (mod10 === 1 && mod100 !== 11) {
+        return one;
+    } else if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+        return few;
+    } else {
+        return many;
+    }
 }

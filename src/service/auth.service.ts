@@ -55,15 +55,13 @@ export default class AuthService extends BaseApiService {
   }
 
   async getSession(sessionToken: string) {
-    const authStore = useAuthStore()
-
+    this.setAuthToken(sessionToken)
     const { data, error }
         = await useFetch<UserItemFullStruct>(this.RESOURCE + '/session', {
       method: "get",
       baseURL: this.baseURL,
       headers: {
         ...this.headers,
-        authorization: `Bearer ${sessionToken}`,
       },
     })
     console.log('data', data.value, error.value)
@@ -71,7 +69,6 @@ export default class AuthService extends BaseApiService {
     else return data.value;
   }
   async checkEmailAvailability(email: string) {
-    const authStore = useAuthStore()
     const { data, error }
         = await useFetch<any>(this.RESOURCE + '/check-email-availability', {
       method: "post",
@@ -79,14 +76,12 @@ export default class AuthService extends BaseApiService {
       body: { email },
       headers: {
         ...this.headers,
-        authorization: `Bearer ${authStore.sessionToken}`,
       },
     })
     if(error.value ) throw {...error.value};
     else return data.value;
   }
   async registrationEmail(body: UserCreateItemStruct) {
-    const authStore = useAuthStore()
     const { data, error }
         = await useFetch(this.RESOURCE + '/registration', {
       method: "post",
@@ -94,7 +89,6 @@ export default class AuthService extends BaseApiService {
       body: body,
       headers: {
         ...this.headers,
-        authorization: `Bearer ${authStore.sessionToken}`,
       },
     })
     if(error.value ) throw {...error.value};

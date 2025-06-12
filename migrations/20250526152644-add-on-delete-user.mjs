@@ -8,7 +8,7 @@ export async function up(data) {
 
   try {
     // 1. Найти пользователя
-    const users = await queryInterface.sequelize.query(
+    /*const users = await queryInterface.sequelize.query(
         `SELECT * FROM users WHERE email = :email`,
         {
           replacements: { email: userEmailToDelete },
@@ -30,7 +30,7 @@ export async function up(data) {
     await queryInterface.bulkDelete('users', { id: deletedUserData.id }, {});
 
     console.log(`Пользователь с email ${userEmailToDelete} успешно удален.`);
-
+*/
   } catch (error) {
     console.error("Ошибка при выполнении миграции up:", error);
     throw error;
@@ -42,7 +42,7 @@ export async function down(data) {
 
   try {
     // Проверяем, что у нас есть данные для восстановления
-    if (!deletedUserData) {
+   /* if (!deletedUserData) {
       console.warn("Нет данных для восстановления пользователя.  Миграция ничего не делает.");
       return;
     }
@@ -51,7 +51,7 @@ export async function down(data) {
     await queryInterface.bulkInsert('users', [deletedUserData], {});
 
     console.log(`Пользователь с email ${userEmailToDelete} успешно восстановлен.`);
-
+    */
   } catch (error) {
     console.error("Ошибка при выполнении миграции down:", error);
     throw error;

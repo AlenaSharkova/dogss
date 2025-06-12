@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
     const query = getQuery(event)
     const sequelize = event.context.sequelize;
     const Breeds = event.context.Breeds; // Получаем модель Breed из контекста Nitro
+
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
     if (!Breeds || !sequelize) {

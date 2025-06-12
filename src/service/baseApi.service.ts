@@ -13,6 +13,10 @@ export default class BaseApiService {
     'Content-Type': 'application/json',
     accept: 'application/json',
   };
+  protected multipartHeaders = {
+    'Content-Type': 'multipart/form-data',
+    accept: '/',
+  };
 
   get authHeader() {
     if (!this._token) return null;
@@ -25,6 +29,12 @@ export default class BaseApiService {
     return {
       ...this.defaultHeaders,
       ...(!!this.authHeader && this.authHeader),
+    };
+  }
+  get headersMultipart() {
+    return {
+      ...(!!this.authHeader && this.authHeader),
+      ...this.multipartHeaders,
     };
   }
   constructor(baseUrl: string) {

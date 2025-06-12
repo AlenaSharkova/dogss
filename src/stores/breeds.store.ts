@@ -29,6 +29,10 @@ export const useBreedsStore = defineStore('breedsStore', () => {
           });
   }
 
+  onMounted(() => {
+      updateBreedsList()
+  })
+
   return {
       breedsList,
       updateBreedsList

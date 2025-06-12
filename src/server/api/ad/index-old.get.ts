@@ -158,7 +158,7 @@ export default defineEventHandler<{query: {
             },
             //временнно
             count_image: item.count_image,
-            img: item.img,
+            photos: item.photos,
             //
 
             breed: adBreed[0],
