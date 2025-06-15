@@ -70,7 +70,7 @@ export const useAdStore = defineStore('adStore', () => {
         await adService
             .postAdItem(body)
             .then(async (res) => {
-                await personalStore.updatePersonalList()
+                await personalStore.updatePersonalAdList()
                 //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
                 //if (res) adCreatedSuccessItem.value = res.value;
                 console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)

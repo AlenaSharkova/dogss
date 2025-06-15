@@ -93,7 +93,7 @@ watch(() => authStore.statusUser,
 )
 
 const setDraftData = () => {
-  console.log('date_birth', props.itemDraftAd)
+  console.log('itemDraftAd', props.itemDraftAd)
   if(!props.itemDraftAd) return
   const {breed, type_ad, exportRegions, photos, geo_main, date_birth,
     name, gender, quantitative, description, price}
@@ -113,7 +113,10 @@ const setDraftData = () => {
   if(geo_main.city) selectCity.value = geo_main.city
   if(gender) selectGender.value.value = gender
   if(quantitative) selectQuantitative.value.value = quantitative
+  console.log('form.name = name', form.name, name)
   if(name) form.name = name
+  console.log('form.name = name 2', form.name, name)
+
   if(description) form.description = description
   if(price) form.price = String(price)
   if(date_birth) form.date_birth = date_birth
@@ -197,7 +200,7 @@ onBeforeUnmount(() => {
         форма
       </template>
       <template #default>
-
+      {{props.itemDraftAd}}
         <BaseInput
             v-model="form.name"
             title="Заголовок объявления"

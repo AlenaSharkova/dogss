@@ -7,11 +7,12 @@ const route = useRoute();
 const idAdDraft = ref(route.params.id as string)
 
 const personalStore = usePersonalStore()
-const adCurrentDraft = computed(() => personalStore.AdPersonalCurrentItemDraft)
+const adCurrentDraft = ref()
 
-onMounted(() => {
-  if(idAdDraft.value) {
-    personalStore.getPersonalAdCurrentDraft(idAdDraft.value)
+onMounted(async () => {
+  if (idAdDraft.value) {
+    await personalStore.getPersonalAdCurrentDraft(idAdDraft.value)
+    adCurrentDraft.value = personalStore.AdPersonalCurrentItemDraft
   }
 })
 
@@ -21,6 +22,7 @@ onMounted(() => {
   <div class="page-ads-draft">
     <LayoutWrapperPage >
       <BaseWrapperWithDogs image="dolmatian">
+        {{adCurrentDraft}}
         <FormCreateAd v-if="adCurrentDraft" :itemDraftAd="adCurrentDraft"/>
       </BaseWrapperWithDogs>
     </LayoutWrapperPage>

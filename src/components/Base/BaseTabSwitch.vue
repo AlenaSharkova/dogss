@@ -8,9 +8,9 @@ const props = withDefaults(
     }>(), {}
 )
 const selectedItem = defineModel<ISelectComponent | null>({default: null})
-selectedItem.value = props.items[0]
+if(selectedItem.value === undefined) selectedItem.value = props.items[0]
 
-const activeIndex = ref<0 | 1>(0)
+const activeIndex = ref(props.items.findIndex(item => item.value === selectedItem.value?.value))
 const selectItem = (index: 0 | 1) => {
   activeIndex.value = index;
   selectedItem.value = props.items[index]

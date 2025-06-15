@@ -24,7 +24,7 @@ export const usePersonalStore = defineStore('personalStore', () => {
     const AdPersonalCurrentItemActive = ref<AdItemStruct | null>(null)
     const AdPersonalCurrentItemDraft = ref<AdItemStruct | null>(null)
 
-    async function updatePersonalList() {
+    async function updatePersonalAdList() {
         await personalService.getPersonalAdList()
             .then((res) => {
                 console.log('ressss', res)
@@ -71,13 +71,13 @@ export const usePersonalStore = defineStore('personalStore', () => {
 
     onMounted(async () => {
         if(authStore.statusUser === 'active') {
-            await updatePersonalList()
+            await updatePersonalAdList()
         }
     })
     watch(() => authStore.statusUser,
         async (newValue) => {
             if(newValue == 'active') {
-                await updatePersonalList()
+                await updatePersonalAdList()
             }
         })
 
@@ -85,7 +85,7 @@ export const usePersonalStore = defineStore('personalStore', () => {
 
     return {
         AdPersonalList,
-        updatePersonalList,
+        updatePersonalAdList,
         getPersonalAdCurrentDraft,
         getPersonalAdCurrentActive,
         AdPersonalCurrentItemDraft,
