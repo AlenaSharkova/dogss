@@ -1,19 +1,13 @@
 import jwt from "jsonwebtoken";
 import {promisify} from "node:util";
 import {formattedAd} from "~/server/utils/formattedRequest.js";
+import {getUserAuth} from "~/server/services/auth.service.js";
 
 export default defineEventHandler(async (event) => {
-    console.log('event.context re', event.context)
     const authHeader = getHeader(event, 'authorization')
 
     const query = getQuery(event)
-
-    console.log('authHeader 00',  authHeader)
-
     const token = authHeader && authHeader.split(' ')[1];// Bearer <token>
-
-    console.log('token', token)
-
 
     const AdList = event.context.AdList;
     const Breeds = event.context.Breeds;
@@ -33,42 +27,18 @@ export default defineEventHandler(async (event) => {
             statusMessage: statusMessageServer
         });
     }
-    const secretKey = process.env.JWT_SECRET_KEY;
-    if (!secretKey) {
-        console.error('Ошибка: Переменная окружения JWT_SECRET_KEY не определена!');
-        throw createError({
-            statusCode: 500,
-            message: 'Internal Server Error',
-            statusMessage: statusMessageServer,
-        });
-    }
-
-    if (token == null) {
-        throw createError({
-            statusCode: 401,
-            message: 'Нет токена',
-            statusMessage
-        }); // Нет токена
-    }
-
-
 
     try {
-        const jwtVerify = promisify(jwt.verify);
-        const dataToken = await jwtVerify(token, secretKey);
+        let user
+        await getUserAuth(token, Users)
+            .then(res => user = res)
+            .catch(err => {
+                throw err
+            })
 
-        if(!dataToken?.userId) {
-            throw createError({ statusCode: 401, message: 'Неавторизованный пользователь: нет информации о пользователе в токене' }); // Исправлено: Выбрасываем ошибку
-        }
-        const user = await Users.findOne({where: {id: dataToken.userId}});
-
-        if(!user) {
-            throw createError({ statusCode: 401, message: 'Неавторизованный пользователь: пользователь не найден' }); // Исправлено: Выбрасываем ошибку
-        }
         if(user.status !== 'active') {
             throw createError({ statusCode: 401, message: 'Неактивный пользователь: статус пользователя: ' + user.status}); // Исправлено: Выбрасываем ошибку
         }
-        console.log('user 0000', user)
         try {
             if(query.id && query.status) {
                 const adItemDB = await AdList.findOne({
@@ -78,6 +48,15 @@ export default defineEventHandler(async (event) => {
                         owner: user.id
                     },
                     include: [
+                        {
+                            model: Users,
+                            as: 'UsersListFavoriteAd',
+                            required: false,
+                            through: {
+                                attributes: [],
+                            },
+                            where: { id: user.id },
+                        },
                         {
                             model: GeoRegions,
                             as: 'LocationRegion',
@@ -193,14 +172,6 @@ export default defineEventHandler(async (event) => {
 
     } catch (error) {
         console.error("Ошибка при верификации токена:", error);
-        if (error.name === 'TokenExpiredError') {
-            throw createError({ statusCode: 401, message: 'Token has expired' });
-        }
-        if (error.name === 'JsonWebTokenError') {
-            throw createError({ statusCode: 403, message: 'Invalid token' });
-        }
         throw error
-
-        //throw createError({ statusCode: 500, message: 'Failed to verify token' });
     }
 });

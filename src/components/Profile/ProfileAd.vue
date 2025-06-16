@@ -26,9 +26,7 @@ const selectTabTypeAd = ref(tabTypeAdList.value.find(item =>
 ))
 
 if(!selectTabTypeAd.value) {
-  throw createError({
-    statusCode: 404,
-  })
+  router.push({query: {type: 'active' } })
 }
 
 const goToDraftItem = (id: string | number) => {
@@ -47,11 +45,18 @@ watch(() => selectTabTypeAd.value?.value,
   <div class="profile-ad">
     <div class="profile-ad__row">
       <BaseTabSwitch :items="tabTypeAdList" v-model="selectTabTypeAd" />
+      <BaseButton
+          class="header-nav__actions-ad"
+          text="Подать новое объявление"
+          type="secondary"
+          size="small"
+          to="/create-ad" />
       <AdWrapperList>
         <CartAdItem
             v-if="selectTabTypeAd?.value === 'active'"
             v-for="item in personalAdActiveList"
             :item="item" />
+        <!--пустой список common-->
         <CartAdItem
             v-if="selectTabTypeAd?.value === 'draft'"
             v-for="item in personalAdDraftList"

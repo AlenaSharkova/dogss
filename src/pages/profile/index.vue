@@ -4,6 +4,7 @@ import CommonModalFile from "~/components/Common/CommonModalFile.vue";
 import {usePersonalStore} from "~/stores/personal.store";
 import {computed} from "vue";
 import ProfileAd from "~/components/Profile/ProfileAd.vue";
+import ProfileFavorites from "~/components/Profile/ProfileFavorites.vue";
 
 definePageMeta({
   requirementUser : 'authorized'
@@ -28,21 +29,27 @@ onMounted( () => {
     <LayoutWrapperPage >
       <div v-if="userFullData" class="page-profile__header">
         <div class="page-profile__header-title">
-          <span>Профиль</span>
+          <h1>Профиль</h1>
         </div>
         <div class="page-profile__header-name">
 
         </div>
       </div>
       userFullData: {{authStore.userFullData}}
-      <br><br><br><br>
-      <ProfileAd />
+      <BaseButton text="Мои объявления" to="/profile/ads" />
     </LayoutWrapperPage>
   </div>
 </template>
 
 <style scoped lang="scss">
 .page-profile {
+  width: 100%;
   margin-top: 20px;
+  &__header {
+    margin-bottom: 20px;
+    &-title {
+      @include h1();
+    }
+  }
 }
 </style>

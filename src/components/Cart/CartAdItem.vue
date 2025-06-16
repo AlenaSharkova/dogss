@@ -6,15 +6,16 @@ import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
 import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
 import CartAdItemContent from "~/components/Cart/CartAdItemContent.vue";
 
+const personalStore = usePersonalStore()
+
 const props = defineProps({
   item: {
     type: Object as PropType<AdItemStruct>,
     default: []
   }
 })
-
 const swiperInstance = ref()
-const isFavorite = ref(false)
+const isFavorite = ref(props.item.isFavorite || false)
 const isFocusHeart = ref(false)
 
 const onSwiper = (swiper: Swiper) => {
@@ -24,21 +25,46 @@ const onSwiper = (swiper: Swiper) => {
 const goToSlide = (index: number) => {
   swiperInstance.value.slideTo(index-1, 200)
 }
-
-const toFavorite = () => {
-  isFavorite.value = !isFavorite.value
+const onBlurHeart = () => {
+  isFocusHeart.value = false
 }
 const onFocusHeart = () => {
   isFocusHeart.value = true
 }
-const onBlurHeart = () => {
-  isFocusHeart.value = false
+const actionFavorites = async () => {
+  console.log('actionFavorites', props.item.id)
+  if(!isFavorite.value) await addToFavorites()
+  else await removeFromFavorites()
+}
+const addToFavorites = async () => {
+  await personalStore.addPersonalFavorite(props.item.id).then(() => {
+    isFavorite.value = !isFavorite.value
+  }).catch((err) => {
+    return err
+  })
+}
+const removeFromFavorites = async () => {
+  await personalStore.deletePersonalFavorite(props.item.id).then(() => {
+    isFavorite.value = !isFavorite.value
+  }).catch((err) => {
+    return err
+  })
+}
+const removeFromDraft = async () => {
+  console.log('actionFavorites', props.item.id)
+  await personalStore.deletePersonalAd(props.item.id)
 }
 const textRegionsExport = computed(() => {
   if(!props.item.exportRegions.isExport) return ''
   return `<p style="font-size: 12px">Возможна доставка в такие регионы, как:</p>
     ${props.item.exportRegions.regionsList?.map(region => region?.text).join('<br>')}`
 })
+const isActive = computed(() => props.item.status === 'active')
+
+watch(() => props.item.isFavorite,
+    (newValue) => {
+      isFavorite.value = newValue
+    })
 </script>
 
 <template>
@@ -66,13 +92,22 @@ const textRegionsExport = computed(() => {
             </div>
           </BaseWithMiniPopup>
 
-          <div class="cart-item__info-circle --heart"
-               @click.stop="toFavorite"
+          <div v-if="isActive"
+               class="cart-item__info-circle --top-right"
+               @click.stop="actionFavorites"
                @mouseenter="onFocusHeart"
                @mouseleave="onBlurHeart"
           >
             <div class="cart-item__info-circle__image">
               <BaseIconHeart :active="isFavorite" :hover="isFocusHeart"/>
+            </div>
+          </div>
+          <div v-else
+               class="cart-item__info-circle --top-right"
+               @click.stop="removeFromDraft"
+          >
+            <div class="cart-item__info-circle__image">
+              <BaseIconClose color="error" />
             </div>
           </div>
         </div>
@@ -153,7 +188,7 @@ const textRegionsExport = computed(() => {
       backdrop-filter: blur(6px);
       box-shadow: $box-shadow-second;
       bottom: 10px;
-      &.--heart {
+      &.--top-right {
         border-radius: 10px;
         right: 5px;
         left: auto;

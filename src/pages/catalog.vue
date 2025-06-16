@@ -13,7 +13,7 @@ definePageMeta({
 })
 const route = useRoute();
 const adStore = useAdStore()
-adStore.updateAdList()
+const authStore = useAuthStore()
 
 const breedsStore = useBreedsStore()
 const filterStore = useFilterStore()
@@ -21,9 +21,7 @@ const regionsStore = useRegionsStore()
 const router = useRouter();
 
 //breedsStore.updateBreedsList()
-const updateList = () => {
-  getCreate()
-}
+
 
 const adList = computed(() => adStore.adCatalogList )
 const adListDetails = computed(() => adStore.adCatalogListDetails )
@@ -36,10 +34,11 @@ const queryRegion = ref<string>('')
 const queryBreedsObj = ref<ISelectComponent[]| null>(null)
 const queryTypeObj = ref< ISelectComponent | null>(null)
 const queryRegionObj = ref< ISelectComponent[] | null>(null)
+const lastQuery = ref< AdQueryFilterStruct | null>(null)
 
 
 onBeforeUpdate(async () => {
-  await getCreate()
+  await getCreateReq()
   //document.title = title.value
 
   useHead({
@@ -47,12 +46,13 @@ onBeforeUpdate(async () => {
   });
 })
 
-const getCreate = async ( offset = 0 as number ) => {
+const getCreateReq = async ( offset = 0 as number ) => {
   const queryRoute = route.query as AdQueryFilterStruct
   const query = {
     ...queryRoute,
     offset
   }
+  lastQuery.value = query
   await adStore.updateAdList(query)
 
   console.log('adCatalogFilter', adStore.adCatalogFilter)
@@ -68,10 +68,16 @@ const getCreate = async ( offset = 0 as number ) => {
 
 }
 
-await getCreate()
+await getCreateReq()
 const changePage = (offset: number) => {
-  getCreate(offset)
+  getCreateReq(offset)
 }
+const statusUser = computed(() => authStore.statusUser)
+onMounted(async () => {
+  if(statusUser.value === 'active' && !authStore.isUseCookie && process.client) {
+    await adStore.updateAdListClient(lastQuery, true)
+  }
+})
 
 useHead({
   title: `Dogs - ${title.value || '' }`,
@@ -82,6 +88,9 @@ useHead({
   <div class="page-catalog">
     <LayoutWrapperPage>
       <h1 class="page-catalog__title" >{{title}}</h1>
+      {{authStore.statusUser}}//
+      {{statusUser}}
+
         <div v-if="(queryBreedsObj?.length || 0 ) > 1" class="page-catalog__breeds">
           <BaseMiniBlock
               v-for="(breed, index) in queryBreedsObj"
@@ -112,7 +121,7 @@ useHead({
         </div>
       </div>
       <br />
-      <BaseButton type="primary" @click="updateList()"  text="Обновить"/>
+      <BaseButton type="primary" @click="getCreateReq()"  text="Обновить"/>
     </LayoutWrapperPage>
 
   </div>

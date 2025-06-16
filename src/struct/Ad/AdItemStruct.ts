@@ -27,6 +27,7 @@ export interface AdItemStruct {
     status: 'active' | 'inactive' | 'archive';
     count_image: number;
     ownerDetails: any;
+    isFavorite: boolean;
 
     date_birth: string;
     created_at: string;

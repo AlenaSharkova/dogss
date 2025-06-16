@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 import AdService from '~/service/ad.service';
 import type {
     AdCreateItemStruct, AdFullFilterStruct,
-    AdItemStruct,
+    AdItemStruct, AdListApi,
     AdListApiDetails,
     AdListApiQuery,
     AdQueryFilterStruct
@@ -14,8 +14,12 @@ import {useCommonStore} from "~/stores/common.store";
 
 export const useAdStore = defineStore('adStore', () => {
     const config = useRuntimeConfig();
+    const authStore = useAuthStore()
+    authStore.getSessionToken()
+    const token = computed(() => String(authStore.sessionToken))
+    const adService = new AdService(config.public.apiBaseUrl, token.value);
+    console.log('adService', {...adService})
 
-    const adService = new AdService(config.public.apiBaseUrl);
     const commonStore = useCommonStore()
     const personalStore = usePersonalStore()
 
@@ -26,26 +30,29 @@ export const useAdStore = defineStore('adStore', () => {
     const filterStore = useFilterStore()
 
     async function updateAdList(query = null as AdQueryFilterStruct | null) {
-        console.log('query', query)
         if(query) {
             getQueryAd(query)
-            query.minAgeMonth = adCatalogFilter.value.ageCategory?.details.minAgeMonth
-            query.maxAgeMonth = adCatalogFilter.value.ageCategory?.details.maxAgeMonth
-            delete query.ageCategory
+            query = setQueryAd(query)
         }
         await adService.getAdList(query)
             .then((res) => {
-                if (res) {
-                    adCatalogList.value = res.result;
-                    adCatalogListDetails.value = {
-                        limit: res.limit,
-                        offset: res.offset,
-                        count: res.count,
-                    };
-                    adCatalogFilter.value.regions = res.queryDetails.regions
-                    adCatalogFilter.value.breeds = res.queryDetails.breeds
-                    adCatalogFilter.value.maxFullPrice = res.queryDetails.maxFullPrice
-                }
+                if (res) setFilterAd(res)
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+
+    async function updateAdListClient(query = null as AdQueryFilterStruct | null, hashAuthLocal = false) {
+        if(query) {
+            getQueryAd(query)
+            query = setQueryAd(query)
+        }
+        await adService.getAdListClient(query)
+            .then((res) => {
+                if (res) setFilterAd(res)
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
@@ -65,6 +72,24 @@ export const useAdStore = defineStore('adStore', () => {
         if(query.ageCategory) {
             adCatalogFilter.value.ageCategory = filterStore.ageList?.find(item => item.value === query.ageCategory ) || null
         }
+    }
+    function setQueryAd(query: AdQueryFilterStruct) {
+        query.minAgeMonth = adCatalogFilter.value.ageCategory?.details.minAgeMonth
+        query.maxAgeMonth = adCatalogFilter.value.ageCategory?.details.maxAgeMonth
+        delete query.ageCategory
+        return query
+    }
+    function setFilterAd(res: AdListApi) {
+        console.log('res.result ad', res.result)
+        adCatalogList.value = res.result;
+        adCatalogListDetails.value = {
+            limit: res.limit,
+            offset: res.offset,
+            count: res.count,
+        };
+        adCatalogFilter.value.regions = res.queryDetails.regions
+        adCatalogFilter.value.breeds = res.queryDetails.breeds
+        adCatalogFilter.value.maxFullPrice = res.queryDetails.maxFullPrice
     }
     async function createAd(body: AdCreateItemStruct) {
         await adService
@@ -102,6 +127,8 @@ export const useAdStore = defineStore('adStore', () => {
         updateAdList,
         createAd,
         adCreatedSuccessItem,
+        updateAdListClient,
+
     }
 })
 

@@ -7,6 +7,7 @@ import adListModel from '../models/AdList.js';
 import adExportRegionsModel from '../models/AdExportRegions.js';
 import usersModel from '../models/Users.js';
 import otpModel from '../models/Otp.js';
+import favoritesAdModel from '../models/FavoritesAd.js';
 
 //import config from '/config/config.js';
 //const env = process.env.NODE_ENV || 'development';
@@ -44,10 +45,11 @@ export default defineNitroPlugin(async  (nitroApp) => {
     const Users = usersModel(sequelize);
     const AdExportRegions = adExportRegionsModel(sequelize);
     const Otp = otpModel(sequelize);
+    const FavoritesAd = favoritesAdModel(sequelize);
 
-    // Определение связей Many-to-Many
+    // Определение связей Many-to-Many AdExportRegions
     AdList.belongsToMany(GeoRegions, {
-        through: AdExportRegions, // Используем связующую таблицу
+        through: AdExportRegions,
         foreignKey: 'ad_id',      // Внешний ключ в AdExportRegions, ссылающийся на AdList
         otherKey: 'region_id',     // Внешний ключ в AdExportRegions, ссылающийся на GeoRegions
         as: 'ExportRegions'          // Алиас для связи
@@ -57,6 +59,19 @@ export default defineNitroPlugin(async  (nitroApp) => {
         foreignKey: 'region_id',     // Внешний ключ в AdExportRegions, ссылающийся на GeoRegions
         otherKey: 'ad_id',      // Внешний ключ в AdExportRegions, ссылающийся на AdList
         as: 'AdListExport'              // Алиас для связи
+    });
+    // Определение связей Many-to-Many FavoritesAd
+    AdList.belongsToMany(Users, {
+        through: FavoritesAd,
+        foreignKey: 'ad_id',
+        otherKey: 'user_id',
+        as: 'UsersListFavoriteAd'
+    });
+    Users.belongsToMany(AdList, {
+        through: FavoritesAd,
+        foreignKey: 'user_id',
+        otherKey: 'ad_id',
+        as: 'FavoritesAdList'
     });
 
     GeoRegions.hasMany(AdList, {
@@ -105,6 +120,7 @@ export default defineNitroPlugin(async  (nitroApp) => {
         event.context.Users = Users;
         event.context.AdExportRegions = AdExportRegions;
         event.context.Otp = Otp;
+        event.context.FavoritesAd = FavoritesAd;
         console.log('model and sequelize added to context');
     });
    return {
@@ -115,7 +131,8 @@ export default defineNitroPlugin(async  (nitroApp) => {
             GeoCity,
             AdList,
             Users,
-            Otp
+            Otp,
+            FavoritesAd
         },
     };
 });

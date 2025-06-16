@@ -1,5 +1,10 @@
+import {getUserAuth} from "~/server/services/auth.service";
+
 export default defineEventHandler(async (event)=>
 {
+    const authHeader = getHeader(event, 'authorization')
+    const token = authHeader && authHeader.split(' ')[1];// Bearer <token>
+
     const body = await readBody(event)
 
     const AdList = event.context.AdList;
@@ -10,7 +15,12 @@ export default defineEventHandler(async (event)=>
     //TODO: валидация
 
     try {
-        const user = await Users.findByPk(body.owner);
+        let user
+        await getUserAuth(token, Users)
+            .then(res => user = res)
+            .catch(err => {
+                throw err
+            })
 
         if (!user) {
             console.error(`Пользователь с ID ${body.owner} не найден!`);

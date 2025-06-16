@@ -27,15 +27,15 @@ export const useAuthStore = defineStore('authStore', () => {
     const isUseCookie = ref(false);
     const userFullData = ref<UserItemFullStruct | null>(null);
     const statusUser = ref<"active" | 'unauthorized' | "unconfirmed" | "archive" | 'unknown'>('unknown')
-    const tokennn = skipHydrate(useLocalStorage<string>('sessionToken', ''))
+    const tokenLocalStore = skipHydrate(useLocalStorage<string>('sessionToken', ''))
 
 
     const updateSessionToken = async (token: string) => {
         //localStorage.setItem("sessionToken", token)
         console.log('updateSessionToken')
 
-        tokennn.value = token
-        console.log('updateSessionToken', tokennn)
+        tokenLocalStore.value = token
+        console.log('updateSessionToken', tokenLocalStore)
 
         if(isUseCookie.value) {
             sessionTokenCookie.value = token
@@ -52,10 +52,7 @@ export const useAuthStore = defineStore('authStore', () => {
     const getSessionToken = () => {
         const token = sessionTokenCookie.value
 
-        sessionToken.value = isUseCookie.value? token: tokennn.value
-
-
-        console.log('sessionToken', sessionToken.value)
+        sessionToken.value = (isUseCookie.value? token: tokenLocalStore.value) || ''
     }
 
     async function sendEmailForLogin(email: string) {

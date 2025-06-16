@@ -77,5 +77,7 @@ export const formattedAd = (item) => {
             //regionsList: item.GeoRegions
         },
         ownerDetails: item.Owner,
+        isFavorite: !!item.UsersListFavoriteAd?.length,
+        UsersListFavoriteAd: item.UsersListFavoriteAd,
     }
 }

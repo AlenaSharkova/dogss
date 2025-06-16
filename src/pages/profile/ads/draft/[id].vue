@@ -4,14 +4,14 @@ import FormCreateAd from "~/components/Form/FormCreateAd.vue";
 
 const route = useRoute();
 
-const idAdDraft = ref(route.params.id as string)
+const adIdDraft = ref(route.params.id as string)
 
 const personalStore = usePersonalStore()
 const adCurrentDraft = ref()
 
 onMounted(async () => {
-  if (idAdDraft.value) {
-    await personalStore.getPersonalAdCurrentDraft(idAdDraft.value)
+  if (adIdDraft.value) {
+    await personalStore.getPersonalAdCurrentDraft(adIdDraft.value)
     adCurrentDraft.value = personalStore.AdPersonalCurrentItemDraft
   }
 })

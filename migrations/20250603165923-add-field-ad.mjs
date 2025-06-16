@@ -29,7 +29,7 @@ export async function up(data) {
       type: DataTypes.INTEGER,
       allowNull: true,
     });*/
-    console.error(" Выполнении миграции up:");
+    //console.error(" Выполнении миграции up:");
 
 
     /*await queryInterface.addColumn('users', 'person_filters', {
@@ -42,7 +42,7 @@ export async function up(data) {
     });*/
    // await queryInterface.bulkDelete('ad_list', { userId: deletedUserData.id }, {});
 
-    await queryInterface.addConstraint('ad_list', {
+    /*await queryInterface.addConstraint('ad_list', {
       fields: ['owner'],
       type: 'foreign key',
       name: 'ad_list_owner_fkey', // Уникальное имя для ограничения
@@ -52,7 +52,7 @@ export async function up(data) {
       },
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
-    });
+    });*/
 
   } catch (error) {
     console.error("Ошибка при выполнении миграции up:", error);

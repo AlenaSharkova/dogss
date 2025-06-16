@@ -2,6 +2,7 @@ import BaseApiService from "~/service/baseApi.service";
 import type { PersonalAdListApiStruct} from "~/struct/Personal/PersonalAdListStruct";
 import token from "~/pages/auth/token.vue";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
+import type {ICommonApiSuccess} from "~/struct/Common/ICommonApi";
 
 export default class PersonalService extends BaseApiService {
   private readonly RESOURCE = '/api/personal';
@@ -49,4 +50,76 @@ export default class PersonalService extends BaseApiService {
       console.log('getPersonalAdList. errr', err);
     }
   }
+  async deletePersonalAd(adId: number | string | null) {
+    try {
+      const {data, error}
+          = await useFetch<ICommonApiSuccess>(this.RESOURCE + '/ad', {
+        method: "delete",
+        query: { adId },
+        baseURL: this.baseURL,
+        headers: {
+          ...this.headers,
+        },
+      })
+      if (error.value) throw {...error.value};
+      else return data.value;
+    } catch (err) {
+      console.log('getPersonalAdList. errr', err);
+    }
+  }
+  async getPersonalFavorite() {
+    try {
+      await nextTick()
+      const {data, error}
+          = await useFetch<{result: AdItemStruct[]}>(this.RESOURCE + '/favorites', {
+        method: "get",
+        baseURL: this.baseURL,
+        headers: {
+          ...this.headers,
+        },
+      })
+      if (error.value) throw {...error.value};
+      else return data.value;
+    } catch (err) {
+      console.log('getPersonalAdList. errr', err);
+    }
+  }
+
+  async postPersonalFavorite(adId: number ) {
+    try {
+      await nextTick()
+      const {data, error}
+          = await useFetch<ICommonApiSuccess>(this.RESOURCE + '/favorites', {
+        method: "post",
+        body: { adId },
+        baseURL: this.baseURL,
+        headers: {
+          ...this.headers,
+        },
+      })
+      if (error.value) throw {...error.value};
+      else return data.value;
+    } catch (err) {
+      console.log('postPersonalFavorite. errr', err);
+      throw err
+    }
+  }
+  async deletePersonalFavorite(adId: number | string | null) {
+    try {
+      const {data, error}
+          = await useFetch<ICommonApiSuccess>(this.RESOURCE + '/favorites', {
+        method: "delete",
+        query: { adId },
+        baseURL: this.baseURL,
+        headers: {
+          ...this.headers,
+        },
+      })
+      if (error.value) throw {...error.value};
+      else return data.value;
+    } catch (err) {
+      console.log('getPersonalAdList. errr', err);
+    }
+  }
+
 }

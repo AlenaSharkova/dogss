@@ -32,6 +32,8 @@ const pagesList = computed(() => {
 
 <template>
   <div v-if="data && maxPages > 1" class="pagination-list">
+    {{props.data}}
+    {{maxPages}}
     <div class="pagination-list__wrapper">
       <div class="pagination-list__pages">
         <div v-for="(page, index) in pagesList"

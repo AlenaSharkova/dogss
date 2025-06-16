@@ -5,7 +5,6 @@
 <template>
   <div class="base-loading">
     <div class="base-loading-wrapper">
-      logooo
       <div class="base-loading-ring">
         <img class="base-loading-ring__icon" src="@/assets/image/loading-ring.png">
       </div>

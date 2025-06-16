@@ -3,11 +3,16 @@
 import { Op} from "sequelize";
 import dayjs from "dayjs";
 import {formattedAd} from "~/server/utils/formattedRequest.js";
+import {getUserAuth} from "~/server/services/auth.service.js";
 
 export default defineEventHandler(async (event) => {
     console.log('event.context', event.context)
     const query = getQuery(event)
     const queryFull = {}
+    let userId = null
+
+    const authHeader = getHeader(event, 'authorization')
+    const token = authHeader && authHeader.split(' ')[1];// Bearer <token>
 
     const AdList = event.context.AdList;
     const Breeds = event.context.Breeds;
@@ -31,6 +36,14 @@ export default defineEventHandler(async (event) => {
     try {
         const queryBd = {}
         let sorting = []
+        let user
+        await getUserAuth(token, Users)
+            .then(res => user = res)
+            .catch(err => {
+                return ''
+            })
+
+        if (user?.id) userId = user.id;
         if (query.type) queryBd.type_ad = query.type;
         if (query.maxAgeMonth || query.minAgeMonth) {
             const fromAgeMonths = query.minAgeMonth? dayjs().subtract(Number(query.minAgeMonth), 'month'): 0;
@@ -91,6 +104,7 @@ export default defineEventHandler(async (event) => {
         if (query.limit) limit = query.limit;
         if (query.offset) offset = query.offset;
 
+        console.log('...queryBd', {...queryBd})
         const adListDB = await AdList.findAndCountAll({
             where: {
                 ...queryBd,
@@ -98,7 +112,17 @@ export default defineEventHandler(async (event) => {
             order: sorting,
             limit: limit,
             offset: offset,
+            distinct: true, // Добавляем distinct
             include: [
+                {
+                    model: Users, // Или FavoritesAd, если хотите получить данные из таблицы FavoritesAd
+                    as: 'UsersListFavoriteAd', //  Правильный алиас!
+                    required: false, // Важно!  Чтобы запрос работал, даже если объявление не в избранном
+                    through: {
+                        attributes: [],  // Не нужны атрибуты из промежуточной таблицы
+                    },
+                    where: { id: userId },
+                },
                 {
                     model: GeoRegions,
                     as: 'LocationRegion',
@@ -126,8 +150,8 @@ export default defineEventHandler(async (event) => {
 
         console.log('AdList a', adListDB.rows)
 
-        let result = await Promise.all(adListDB.rows.map(async (item) => {
-            return await formattedAd(item);
+        let result = await Promise.all(adListDB.rows.map((item) => {
+            return formattedAd(item);
         }))
         return {
             limit: Number(limit),
