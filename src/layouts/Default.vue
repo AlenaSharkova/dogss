@@ -6,7 +6,10 @@ import CommonAlertsList from "~/components/Common/CommonAlertsList.vue";
 
 const isShowMenu = ref(false)
 
+const breedsStore = useBreedsStore()
 const commonStore = useCommonStore()
+
+await breedsStore.updateBreedsList()
 </script>
 
 <template>
@@ -42,6 +45,7 @@ const commonStore = useCommonStore()
   background-color: $back;
 
   .header {
+    width: 100vw;
     position: fixed;
     right: 0;
     left: 0;
@@ -64,13 +68,13 @@ const commonStore = useCommonStore()
       height: 100%;
       margin: auto;
       max-width: 1920px;
-      padding: 0 50px;
+      padding: 0 55px 0 50px;
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 20px;
       @media (max-width: $md) {
-        padding: 0 30px;
+        padding: 0 35px 0 30px;
         gap: 10px;
       }
       @media (max-width: $sm) {

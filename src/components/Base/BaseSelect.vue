@@ -581,6 +581,7 @@ defineExpose({
   position: relative;
   font-size: 15px;
   font-weight: 400;
+  width: 100%;
   &.disable {
    pointer-events: none;
     opacity: 0.6;

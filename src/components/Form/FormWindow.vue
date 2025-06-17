@@ -43,9 +43,9 @@ const prev = () => {
             v-if="$slots.subtitle || $slots['subtitle-infallible']"
             class="form-window__header-subtitle"
         >
-          <span v-if="$slots.subtitle">
+          <div class="form-window__header-subtitle__default" v-if="$slots.subtitle">
             <slot name="subtitle" />
-          </span>
+          </div>
           <span v-if="$slots['subtitle-infallible']" class="subtitle-infallible">
             <slot name="subtitle-infallible" />
           </span>
@@ -107,11 +107,15 @@ const prev = () => {
       @include h3;
     }
     &-subtitle {
+      width: 100%;
       display: flex;
       align-items: center;
       flex-direction: column;
       @include subtitle-small;
       text-align: center;
+      &__default {
+        width: 100%;
+      }
       .subtitle-infallible {
         color: $error-text;
       }

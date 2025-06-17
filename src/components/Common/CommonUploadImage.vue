@@ -80,9 +80,10 @@ const isShowImageStore = (fileUploadInfo: ICommonUpload) => ['success', 'disable
   <div class="common-upload__file">
     <div class="common-upload__file-action">
       <BaseButton @click="fileRef.click()"
+                  :disabled="imageList.length >= 10"
                   rounded="rounded-l"
                   type="secondary"
-                  text="Выбрать файл">
+                  text="Выбрать изображения (до 10 штук)">
       </BaseButton>
     </div>
     <input class="common-upload__file-input" @change="readFile($event)" type="file" ref="fileRef"/>

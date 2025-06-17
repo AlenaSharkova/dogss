@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import {defineEmits} from "vue";
 import {useAuthStore} from "~/stores/auth.store";
+import BaseInfoCount from "~/components/Base/BaseInfoCount.vue";
 
 const emit = defineEmits(["close"]);
 
 const router = useRouter();
 const authStore = useAuthStore()
+const personalStore = usePersonalStore()
 
 const goToPage = (page: string) => {
   //router.push(page)
@@ -22,6 +24,7 @@ const getUserFullData = () => {
   authStore.getUserFullData()
 }
 const userFullData = computed(() => authStore.userFullData )
+const favoritesAdsCount = computed(() => personalStore.FavoritesList?.length || 0 )
 
 onMounted( () => {
   if (authStore.statusUser === 'unknown') {
@@ -50,6 +53,10 @@ onMounted( () => {
 
 
     <div class="header-nav__actions">
+      <router-link to="/profile/favorites" class="header-nav__actions-favorites">
+        <BaseIconHeart  />
+        <BaseInfoCount :text="favoritesAdsCount" class="header-nav__actions-favorites__count" />
+      </router-link>
       <BaseButton
           class="header-nav__actions-ad"
           text="Подать объявление"
@@ -111,8 +118,22 @@ onMounted( () => {
   }
   &__actions {
     display: flex;
+    align-items: center;
     gap: 5px;
     flex-shrink: 0;
+    &-favorites {
+      position: relative;
+      cursor: pointer;
+      width: 29px;
+      height: 29px;
+      margin-right: 10px;
+      &__count {
+        z-index: -1;
+        position: absolute;
+        top: -15px;
+        right: -10px;
+      }
+    }
     &-ad {
       text-wrap: nowrap;
     }

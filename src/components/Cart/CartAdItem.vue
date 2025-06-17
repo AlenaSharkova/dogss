@@ -17,6 +17,7 @@ const props = defineProps({
 const swiperInstance = ref()
 const isFavorite = ref(props.item.isFavorite || false)
 const isFocusHeart = ref(false)
+const isLoadFavorite = ref(false)
 
 const onSwiper = (swiper: Swiper) => {
   swiperInstance.value = swiper
@@ -37,17 +38,23 @@ const actionFavorites = async () => {
   else await removeFromFavorites()
 }
 const addToFavorites = async () => {
+  isLoadFavorite.value = true
   await personalStore.addPersonalFavorite(props.item.id).then(() => {
     isFavorite.value = !isFavorite.value
   }).catch((err) => {
     return err
+  }).finally(() => {
+    isLoadFavorite.value = false
   })
 }
 const removeFromFavorites = async () => {
+  isLoadFavorite.value = true
   await personalStore.deletePersonalFavorite(props.item.id).then(() => {
     isFavorite.value = !isFavorite.value
   }).catch((err) => {
     return err
+  }).finally(() => {
+    isLoadFavorite.value = false
   })
 }
 const removeFromDraft = async () => {
@@ -94,20 +101,26 @@ watch(() => props.item.isFavorite,
 
           <div v-if="isActive"
                class="cart-item__info-circle --top-right"
+               :class="{'--hidden': isLoadFavorite}"
                @click.stop="actionFavorites"
                @mouseenter="onFocusHeart"
                @mouseleave="onBlurHeart"
           >
-            <div class="cart-item__info-circle__image">
-              <BaseIconHeart :active="isFavorite" :hover="isFocusHeart"/>
+            <div class="cart-item__info-circle__content" >
+              <BaseIconHeart
+                  class="cart-item__info-circle__content-icon"
+                  :active="isFavorite"
+                  :hover="isFocusHeart"/>
             </div>
           </div>
           <div v-else
                class="cart-item__info-circle --top-right"
                @click.stop="removeFromDraft"
           >
-            <div class="cart-item__info-circle__image">
-              <BaseIconClose color="error" />
+            <div class="cart-item__info-circle__content">
+              <div class="cart-item__info-circle__content-icon">
+                <BaseIconClose color="error" />
+              </div>
             </div>
           </div>
         </div>
@@ -188,6 +201,17 @@ watch(() => props.item.isFavorite,
       backdrop-filter: blur(6px);
       box-shadow: $box-shadow-second;
       bottom: 10px;
+      transition: all 0.3s;
+      &:hover {
+        box-shadow: $box-shadow-second-dark;
+      }
+      &.--hidden {
+        pointer-events: none;
+        opacity: 0.6;
+        &:hover {
+          box-shadow: $box-shadow-second;
+        }
+      }
       &.--top-right {
         border-radius: 10px;
         right: 5px;
@@ -231,6 +255,17 @@ watch(() => props.item.isFavorite,
         img {
           width: 43px;
           height: auto;
+        }
+      }
+      &__content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        &-icon {
+          width: 20px;
+          height: 20px;
         }
       }
     }

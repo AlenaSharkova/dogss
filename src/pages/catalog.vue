@@ -88,9 +88,6 @@ useHead({
   <div class="page-catalog">
     <LayoutWrapperPage>
       <h1 class="page-catalog__title" >{{title}}</h1>
-      {{authStore.statusUser}}//
-      {{statusUser}}
-
         <div v-if="(queryBreedsObj?.length || 0 ) > 1" class="page-catalog__breeds">
           <BaseMiniBlock
               v-for="(breed, index) in queryBreedsObj"

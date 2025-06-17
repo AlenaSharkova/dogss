@@ -84,7 +84,9 @@ const onFocusEmail = () => {
         Вход
       </template>
       <template #subtitle>
-        Если Вас ещё нет личного профиля на сервисе:
+        <span>
+          Если Вас ещё нет личного профиля на сервисе:
+        </span>
         <router-link to="/auth/registration" class="--link-registration">пройдите регистрацию</router-link>
       </template>
       <template #default>

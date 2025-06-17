@@ -19,6 +19,8 @@ export default class BreedsService extends BaseApiService {
         ...this.headers,
       },
     })
+    console.log('getBreedsList', data.value)
+
     if(error.value ) throw {...error.value};
     else return data.value;
   }

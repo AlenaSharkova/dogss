@@ -131,12 +131,10 @@ export const usePersonalStore = defineStore('personalStore', () => {
             updateFavorites()
         }
     })
-    /*watch(() => authStore.statusUser,
+    watch(() => authStore.statusUser,
         async (newValue) => {
-            if(newValue == 'active') {
-                await updatePersonalAdList()
-            }
-        })*/
+            personalService.setAuthToken(authStore.sessionToken)
+        })
 
     return {
         AdPersonalList,

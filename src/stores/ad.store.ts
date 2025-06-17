@@ -120,6 +120,11 @@ export const useAdStore = defineStore('adStore', () => {
                 throw e.data
             });
     }
+
+    watch(() => authStore.statusUser,
+        async (newValue) => {
+            adService.setAuthToken(authStore.sessionToken)
+        })
     return {
         adCatalogList,
         adCatalogListDetails,

@@ -16,7 +16,6 @@ const favoritesList = computed(() => personalStore.FavoritesList)
 
 <template>
   <div class="profile-ad">
-    Фавориты
     <div class="profile-ad__row">
       <AdWrapperList>
         <CartAdItem

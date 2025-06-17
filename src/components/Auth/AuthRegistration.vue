@@ -194,7 +194,7 @@ if(!regionsStore.regionsList) {
               Шаг {{ currentStep }} из 4
             </span>
             <span class="auth-registration__progress-content__title">
-              {{ titleStep }}
+              {{ subtitle }}
             </span>
           </div>
           <div class="auth-registration__progressbar">
@@ -302,7 +302,7 @@ if(!regionsStore.regionsList) {
           Подтверждение почты
         </template>
         <template #subtitle>
-          Вы уже регистрировались в системе, требуется подтвердить почту
+          <span>Вы уже регистрировались в системе, требуется подтвердить почту</span>
         </template>
         <AuthOtpContent
             v-if="agreeConfirmUser"

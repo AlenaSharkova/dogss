@@ -11,6 +11,8 @@ import type {
 import type {ICommonUpload} from "~/struct/Common/ICommonUpload";
 import FormWindow from "./FormWindow.vue";
 import BaseInput from "../Base/BaseInput.vue";
+import {useBreedsStore} from "~/stores/breeds.store";
+
 
 const route = useRoute();
 
@@ -38,9 +40,11 @@ const form = reactive({
   description: '',
   price: '',
   date_birth: '',
-
+  count_dogs: {
+    male: '',
+    female: ''
+  }
 })
-
 
 const userFullData = computed(() => authStore.userFullData)
 const isActiveUser = computed(() => authStore.statusUser === 'active')
@@ -53,6 +57,7 @@ if(!regionsStore.regionsList) {
 }
 
 const breedsList = computed(() =>  breedsStore.breedsList)
+const approximateAgeList = computed(() =>  filterStore.approximateAgeList)
 const typeAdList = computed(() => filterStore.typeAdList)
 const genderList = computed(() => filterStore.genderList)
 const quantitativeList = computed(() => filterStore.quantitativeList)
@@ -61,6 +66,7 @@ const cityList = computed(() => regionsStore.cityList || [])
 const ageList = computed(() => filterStore.ageList)
 
 const selectBreed = ref<ISelectComponent>({})
+const selectApproximateAge = ref<ISelectComponent>({})
 const selectAdType = ref<ISelectTypeAd>( {})
 const selectRegionsExport = ref<ISelectNumber[]>( [])
 const selectAge = ref<ISelectComponent>({})
@@ -71,12 +77,50 @@ const selectCity = ref<ISelectNumber>({})
 const selectGender = ref<ISelectGender>( genderList.value[0] )
 const selectQuantitative = ref<IFilterQuantitative>( quantitativeList.value[0])
 const isExport = ref(false)
-
+const isUnknownDateOfBirth = ref(false)
+const isAgreedPrice  = ref(false)
+const isFreePrice  = ref(false)
+const currentStep = ref(1)
 
 const isErrorSelectedRegion = ref(false)
-const showErrorSelectedRegion = () => {
-  isErrorSelectedRegion.value = true
+
+const titleStep = computed(() => {
+  if(currentStep.value === 1) return 'Выберите тип объявления'
+  if(currentStep.value === 2) return 'Заполните данные собаки'
+  if(currentStep.value === 3) return 'Гео данные'
+  if(currentStep.value === 4) return 'Уточните данные объявления'
+})
+const disabledButton = computed(() => {
+  if(currentStep.value === 1) return !selectAdType.value.value
+  if(currentStep.value === 2) return !(selectBreed.value.value && (isUnknownDateOfBirth.value? selectApproximateAge.value.value: form?.date_birth) && ( form.count_dogs.female || form.count_dogs.male || selectQuantitative.value.value === 'one') && imageList.value.length)
+  if(currentStep.value === 3) return !(selectRegion.value.value && selectCity.value?.value && (selectRegionsExport.value[0]?.value || !isExport.value))
+  if(currentStep.value === 4) return !(form.name && (form.price !== '' || isAgreedPrice.value) )
+})
+const nextStep = async () => {
+  if(currentStep.value == 1) currentStep.value++
+  else if(currentStep.value === 2) currentStep.value++
+  else if(currentStep.value === 3) {
+    form.name = getNameAd()
+    currentStep.value++
+  }
+  else if(currentStep.value === 4) await createAdForm()
 }
+const getNameAd = () => {
+  switch (selectAdType.value.value) {
+    case 'purchase': return 'Продаётся собака'
+    case 'good-hands': return 'Собака в добрые руки'
+    case 'mating': return 'Предлагается вязка'
+    case 'lost': return 'Потерялась собака'
+    default: return ''
+  }
+}
+const prevStep = () => {
+  currentStep.value--
+}
+
+const widthProgress = computed(() => {
+  return (currentStep.value * 25) + '%'
+})
 
 watch(() => selectRegion.value,
     (newRegion) => {
@@ -91,7 +135,21 @@ watch(() => authStore.statusUser,
       }
     }
 )
-
+watch(() => isFreePrice.value, (newIsFreePrice) => {
+    if(newIsFreePrice) {
+      form.price = '0'
+      isAgreedPrice.value = false
+    }
+})
+watch(() => isAgreedPrice.value, (newIsAgreedPrice) => {
+    if(newIsAgreedPrice) {
+      form.price = ''
+      isFreePrice.value = false
+    }
+})
+const showErrorSelectedRegion = () => {
+  isErrorSelectedRegion.value = true
+}
 const setDraftData = () => {
   console.log('itemDraftAd', props.itemDraftAd)
   if(!props.itemDraftAd) return
@@ -113,9 +171,7 @@ const setDraftData = () => {
   if(geo_main.city) selectCity.value = geo_main.city
   if(gender) selectGender.value.value = gender
   if(quantitative) selectQuantitative.value.value = quantitative
-  console.log('form.name = name', form.name, name)
   if(name) form.name = name
-  console.log('form.name = name 2', form.name, name)
 
   if(description) form.description = description
   if(price) form.price = String(price)
@@ -183,7 +239,7 @@ if(authStore.statusUser === 'active') {
 }
 
 onBeforeUnmount(() => {
-  if(!props.itemDraftAd?.id) {
+  if(!props.itemDraftAd?.id && selectAdType.value.value) {
     createAdForm('draft')
   }
 })
@@ -192,93 +248,163 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="form-create-ad" v-if="isActiveUser" >
-    <FormWindow type="original" >
+    <FormWindow
+        type="original"
+        :is-prev="currentStep !== 1"
+        @prev="prevStep"
+        class="form-create-ad__block">
       <template #title>
         Подать объявление
       </template>
       <template #subtitle>
-        форма
+        <div class="form-create-ad__progress">
+          <div class="form-create-ad__progress-content">
+            <span class="form-create-ad__progress-content__step">
+              Шаг {{ currentStep }} из 4
+            </span>
+            <span class="form-create-ad__progress-content__title">
+              {{ titleStep }}
+            </span>
+          </div>
+          <div class="form-create-ad__progressbar">
+            <div
+                class="form-create-ad__progressbar-line"
+                :style="{width: widthProgress}"
+            >
+            </div>
+          </div>
+        </div>
+
       </template>
       <template #default>
-      {{props.itemDraftAd}}
-        <BaseInput
-            v-model="form.name"
-            title="Заголовок объявления"
-            :max-length="64"
-        />
-        <BaseSelect
-            :items="typeAdList"
-            v-model="selectAdType"
-            name="ad-type"
-            full-value
-            placeholder="Выберите тип объявления"
-        />
+        <template v-if="currentStep == 1">
 
-        <BaseSelect
-            v-if="breedsList?.length"
-            :items="breedsList"
-            v-model="selectBreed"
-            show-search
-            full-value
-            name="breed"
-            placeholder="Выберите породу"
-        />
-        <BaseInput v-model="form.date_birth" title="Дата рождения (DD.MM.YYYY)" mask="__.__.____" />
+          <BaseSelect
+              :items="typeAdList"
+              v-model="selectAdType"
+              name="ad-type"
+              full-value
+              placeholder="Выберите тип объявления"
+          />
+        </template>
+        <template v-if="currentStep == 2">
 
-        <BaseSelect
-            v-if="regionsList?.length"
-            :items="regionsList"
-            :show-error="isErrorSelectedRegion"
-            :rules="[ruleRegions]"
-            v-model="selectRegion"
-            show-search
-            name="ad-region"
-            full-value
-            placeholder="Выберите регион"
-        />
-        <BaseSelect
-            :disable="!selectRegion?.value"
-            :items="cityList"
-            v-model="selectCity"
-            show-search
-            name="ad-city"
-            full-value
-            placeholder="Выберите город"
-            @click="showErrorSelectedRegion"
-        />
+          <BaseSelect
+              v-if="breedsList?.length"
+              :items="breedsList"
+              v-model="selectBreed"
+              show-search
+              full-value
+              name="breed"
+              placeholder="Выберите породу"
+          />
+          <div class="form-create-ad__list-row">
 
-        <BaseInput
-            v-model="form.price"
-            title="Цена"
-            total-number
-            postfix=" ₽"
-            :max-length="10"
-            styleAmount />
-        <div class="form-create-ad__list-row">
-          <BaseSwitch v-model="isExport" />
-          <span>Возможно ли обговорить доставку в другие регионы?</span>
-        </div>
-        <BaseSelect
-          v-if="regionsList?.length && isExport"
-          :items="regionsList"
-          :rules="[ruleRegions]"
-          v-model="selectRegionsExport"
-          show-search
-          multiple
-          name="ad-region"
-          full-value
-          placeholder="Выберите регион для доставки"
-        />
-        <div class="form-create-ad__list-row">
-          <BaseTabSwitch :items="quantitativeList" v-model="selectQuantitative" />
-          <BaseTabSwitch v-if="selectQuantitative.value == 'one'" :items="genderList" v-model="selectGender" />
-        </div>
-        <BaseTextarea v-model="form.description" title="Описание объявления" />
-        <CommonUploadImage :isShow="true" v-model="imageList"/>
+            <BaseInput
+                v-if="!isUnknownDateOfBirth"
+                v-model="form.date_birth"
+                title="Дата рождения (DD.MM.YYYY)"
+                mask="__.__.____"
+                :rules="[ruleValidDate]"
+            />
+            <BaseSelect
+                v-else-if="approximateAgeList?.length"
+                :items="approximateAgeList"
+                v-model="selectApproximateAge"
+                full-value
+                name="approximate-age"
+                placeholder="Выберите примерный возраст"
+            />
+            <div class="form-create-ad__list-together">
+              <BaseSwitch v-model="isUnknownDateOfBirth" />
+              <p class="form-create-ad__list-date__text">Дата рождения неизвестна</p>
+            </div>
+          </div>
+          <div class="form-create-ad__list-row">
+            <BaseTabSwitch :items="quantitativeList" v-model="selectQuantitative" />
+            <BaseTabSwitch v-if="selectQuantitative.value == 'one'" :items="genderList" v-model="selectGender" />
+            <BaseInput v-if="selectQuantitative.value == 'litter'" total-number max-length="2" title="Количество девочек" v-model="form.count_dogs.female" />
+            <BaseInput v-if="selectQuantitative.value == 'litter'" total-number max-length="2" title="Количество мальчиков" v-model="form.count_dogs.male"  />
+          </div>
+          <CommonUploadImage :isShow="true" v-model="imageList"/>
+
+        </template>
+        <template v-if="currentStep == 3">
+          <BaseSelect
+              v-if="regionsList?.length"
+              :items="regionsList"
+              :show-error="isErrorSelectedRegion"
+              :rules="[ruleRegions]"
+              v-model="selectRegion"
+              show-search
+              name="ad-region"
+              full-value
+              placeholder="Выберите регион"
+          />
+          <BaseSelect
+              :disable="!selectRegion?.value"
+              :items="cityList"
+              v-model="selectCity"
+              show-search
+              name="ad-city"
+              full-value
+              placeholder="Выберите город"
+              @click="showErrorSelectedRegion"
+          />
+          <div class="form-create-ad__list-together">
+            <BaseSwitch v-model="isExport" />
+            <span>Возможно ли обговорить доставку в другие регионы?</span>
+          </div>
+          <BaseSelect
+              v-if="regionsList?.length && isExport"
+              :items="regionsList"
+              :rules="[ruleRegions]"
+              v-model="selectRegionsExport"
+              show-search
+              multiple
+              name="ad-region"
+              full-value
+              placeholder="Выберите регион для доставки"
+          />
+        </template>
+        <template v-if="currentStep == 4">
+          <BaseInput
+              v-model="form.name"
+              title="Заголовок объявления"
+              :max-length="64"
+          />
+          <div class="form-create-ad__list-row">
+            <BaseInput
+                v-model="form.price"
+                title="Цена"
+                total-number
+                postfix=" ₽"
+                :max-length="10"
+                :disabled="isAgreedPrice || isFreePrice"
+                styleAmount />
+            <div class="form-create-ad__list-together">
+              <BaseSwitch v-model="isAgreedPrice" />
+              <span>Договорная цена</span>
+            </div>
+            <div class="form-create-ad__list-together">
+              <BaseSwitch v-model="isFreePrice" />
+              <span>Бесплатно</span>
+            </div>
+          </div>
+          <BaseTextarea v-model="form.description" title="Описание объявления" />
+
+        </template>
+
 
       </template>
       <template #action-buttons>
-        <BaseButton text="Применить" @click="createAdForm" />
+        <BaseButton
+            v-if="currentStep !== 5"
+            :disabled="disabledButton"
+            text="Дальше"
+            type="teriary"
+            @click="nextStep"
+        />
       </template>
 
 
@@ -289,12 +415,68 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .form-create-ad {
+  &__block {
+    width: 800px;
+  }
+  &__progress {
+    margin: 20px 0;
+    &-content {
+      display: grid;
+      padding-bottom: 10px;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: end;
+      &__step {
+        text-align: start;
+        @include text-normal(500);
+      }
+      &__title {
+        @include h6;
+      }
+    }
+  }
+  &__progressbar {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: $light-teal;
+    background: $violet;
+    background: $violet-opacity;
+    background: #f4f4f4ff;
+    //background: #B2E1DA99;
+    position: relative;
+    overflow: hidden;
+    &-line {
+      position: absolute;
+      left: 0;
+      //background: $light-teal;
+
+      background: $light-teal;
+      background: $violet;
+
+      //background: $yellow;
+
+      top: 0;
+      bottom: 0;
+      z-index: 0;
+      border-radius: 2px;
+      transition: width 0.7s;
+    }
+  }
   &__list {
     &-row {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    &-together {
+      display: flex;
+      align-items: center;
       justify-content: flex-start;
       gap: 12px;
+      &__text {
+        text-wrap: nowrap;
+      }
     }
   }
 }

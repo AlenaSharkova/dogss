@@ -1,3 +1,5 @@
+import dayjs from "dayjs";
+
 export const ruleValidEmail = (value: string) =>
     !value.match(/^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i) && value
         ? "Неверный формат электронной почты"
@@ -6,6 +8,11 @@ export const ruleValidEmail = (value: string) =>
 export const ruleValidUserNikName = (value: string) =>
     !value.match(/^([a-zA-Z0-9._-]{5,}?)$/i) && value
         ? "Неверно введено имя"
+        : "";
+
+export const ruleValidDate = (value: string) =>
+    !dayjs(value).isValid() && value
+        ? "Неверная дата"
         : "";
 
 export const ruleValidPassword = (value: string) => {

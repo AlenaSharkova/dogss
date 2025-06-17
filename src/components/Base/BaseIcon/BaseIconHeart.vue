@@ -16,6 +16,8 @@ const props = defineProps({
 
 <style scoped lang="scss">
 .icon-heart {
+  width: inherit;
+  height: inherit;
   path {
     stroke: rgba(0, 0, 0, 0.65);
     fill: rgba(207, 26, 26, 0);
@@ -23,6 +25,11 @@ const props = defineProps({
     transition: all 0.2s;
   }
   &.hover {
+    path {
+      stroke: rgba(158, 21, 21, 0.65);
+    }
+  }
+  &:hover {
     path {
       stroke: rgba(158, 21, 21, 0.65);
     }

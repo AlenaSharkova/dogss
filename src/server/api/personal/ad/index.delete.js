@@ -49,7 +49,7 @@ export default defineEventHandler(async (event) => {
                     }
                 });
                 if (deletedRows === 0) {
-                    throw createError({ statusCode: 400, message: 'Объявление не найдено в избранном пользователя', statusMessage });
+                    throw createError({ statusCode: 400, message: 'Объявление не найдено', statusMessage });
                 }
             }
             else {

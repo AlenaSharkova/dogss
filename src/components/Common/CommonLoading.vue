@@ -9,7 +9,7 @@ const isLoadingPage = computed(() => commonStore.isLoadingPage)
 
 <template>
   <Transition name="fade">
-    <div v-if="false" class="common-loading">
+    <div v-if="isLoadingPage" class="common-loading">
       <div class="common-loading__circle">
 
       </div>

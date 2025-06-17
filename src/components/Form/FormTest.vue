@@ -36,7 +36,6 @@ console.log(JSON.stringify(a))
         Создать питомник
       </template>
       <template #subtitle>
-        форма
       </template>
       <template #default>
         <BaseInput v-model="form.name" title="Имя" >

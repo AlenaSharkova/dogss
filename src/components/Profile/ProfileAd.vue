@@ -21,13 +21,16 @@ const tabTypeAdList = computed( () => [
     value: 'draft',
   }
 ])
-const selectTabTypeAd = ref(tabTypeAdList.value.find(item =>
+
+const activeTab = ref(tabTypeAdList.value.find(item =>
     route.query.type === item.value
 ))
-
-if(!selectTabTypeAd.value) {
+if(!activeTab.value) {
   router.push({query: {type: 'active' } })
+  activeTab.value = tabTypeAdList.value[0]
 }
+const selectTabTypeAd = ref(activeTab.value)
+
 
 const goToDraftItem = (id: string | number) => {
   router.push(`/profile/ads/draft/${id}`)
@@ -38,6 +41,9 @@ watch(() => selectTabTypeAd.value?.value,
       //router.hasRoute("#active")
       router.push({query: {type: newTabValue } })
     })
+
+
+
 
 </script>
 
