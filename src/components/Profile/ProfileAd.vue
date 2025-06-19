@@ -33,6 +33,7 @@ const selectTabTypeAd = ref(activeTab.value)
 
 
 const goToDraftItem = (id: string | number) => {
+
   router.push(`/profile/ads/draft/${id}`)
 }
 
@@ -61,11 +62,14 @@ watch(() => selectTabTypeAd.value?.value,
         <CartAdItem
             v-if="selectTabTypeAd?.value === 'active'"
             v-for="item in personalAdActiveList"
-            :item="item" />
+            :key="item.id"
+            :item="item"
+        />
         <!--пустой список common-->
         <CartAdItem
             v-if="selectTabTypeAd?.value === 'draft'"
             v-for="item in personalAdDraftList"
+            :key="item.id"
             :item="item"
             @click="goToDraftItem(item.id)"
         />

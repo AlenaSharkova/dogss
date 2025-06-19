@@ -122,8 +122,11 @@ export const useAdStore = defineStore('adStore', () => {
     }
 
     watch(() => authStore.statusUser,
-        async (newValue) => {
+        async (newStatus) => {
             adService.setAuthToken(authStore.sessionToken)
+            if(newStatus === 'active') {
+                updateAdList()
+            }
         })
     return {
         adCatalogList,

@@ -80,6 +80,7 @@ const isExport = ref(false)
 const isUnknownDateOfBirth = ref(false)
 const isAgreedPrice  = ref(false)
 const isFreePrice  = ref(false)
+const isSaveDraft  = ref(false)
 const currentStep = ref(1)
 
 const isErrorSelectedRegion = ref(false)
@@ -237,9 +238,13 @@ if(authStore.statusUser === 'active') {
   fillPersonalData()
   setDraftData()
 }
-
+const toDraft = async () => {
+  await createAdForm('draft')
+  isSaveDraft.value = true
+  await router.push('/profile/ads?type=draft')
+}
 onBeforeUnmount(() => {
-  if(!props.itemDraftAd?.id && selectAdType.value.value) {
+  if(!props.itemDraftAd?.id && selectAdType.value.value && !isSaveDraft.value) {
     createAdForm('draft')
   }
 })
@@ -323,8 +328,10 @@ onBeforeUnmount(() => {
           <div class="form-create-ad__list-row">
             <BaseTabSwitch :items="quantitativeList" v-model="selectQuantitative" />
             <BaseTabSwitch v-if="selectQuantitative.value == 'one'" :items="genderList" v-model="selectGender" />
-            <BaseInput v-if="selectQuantitative.value == 'litter'" total-number max-length="2" title="Количество девочек" v-model="form.count_dogs.female" />
-            <BaseInput v-if="selectQuantitative.value == 'litter'" total-number max-length="2" title="Количество мальчиков" v-model="form.count_dogs.male"  />
+            <div class="form-create-ad__list-together">
+                <BaseInput v-if="selectQuantitative.value == 'litter'" total-number :max-length="2" title="Количество девочек" v-model="form.count_dogs.female" />
+                <BaseInput v-if="selectQuantitative.value == 'litter'" total-number :max-length="2" title="Количество мальчиков" v-model="form.count_dogs.male"  />
+              </div>
           </div>
           <CommonUploadImage :isShow="true" v-model="imageList"/>
 
@@ -399,12 +406,19 @@ onBeforeUnmount(() => {
       </template>
       <template #action-buttons>
         <BaseButton
+            :disabled="!selectAdType?.value || false"
+            text="Добавить в Черновики"
+            type="secondary"
+            @click="toDraft"
+        />
+        <BaseButton
             v-if="currentStep !== 5"
             :disabled="disabledButton"
             text="Дальше"
             type="teriary"
             @click="nextStep"
         />
+
       </template>
 
 
@@ -416,7 +430,10 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .form-create-ad {
   &__block {
-    width: 800px;
+    width: 100%;
+    @media (max-width: $sm) {
+      
+    }
   }
   &__progress {
     margin: 20px 0;
@@ -435,13 +452,16 @@ onBeforeUnmount(() => {
     }
   }
   &__progressbar {
+    margin-top: 10px;
     width: 100%;
     height: 4px;
     border-radius: 2px;
-    background: $light-teal;
     background: $violet;
     background: $violet-opacity;
-    background: #f4f4f4ff;
+    //background: #f4f4f4ff;
+    background: $white-text;
+    box-shadow: $box-shadow-second;
+
     //background: #B2E1DA99;
     position: relative;
     overflow: hidden;
@@ -449,12 +469,9 @@ onBeforeUnmount(() => {
       position: absolute;
       left: 0;
       //background: $light-teal;
-
-      background: $light-teal;
+      //background: $light-teal;
       background: $violet;
-
       //background: $yellow;
-
       top: 0;
       bottom: 0;
       z-index: 0;
@@ -468,6 +485,10 @@ onBeforeUnmount(() => {
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      @media (max-width: $sm) {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
     &-together {
       display: flex;

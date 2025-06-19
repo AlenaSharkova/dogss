@@ -25,6 +25,7 @@ export const useAuthStore = defineStore('authStore', () => {
             //secure: process.env.NODE_ENV === 'production',
     }));
     const isUseCookie = ref(false);
+    const lastPageRedirect = ref('');
     const userFullData = ref<UserItemFullStruct | null>(null);
     const statusUser = ref<"active" | 'unauthorized' | "unconfirmed" | "archive" | 'unknown'>('unknown')
     const tokenLocalStore = skipHydrate(useLocalStorage<string>('sessionToken', ''))
@@ -186,6 +187,7 @@ export const useAuthStore = defineStore('authStore', () => {
         userFullData,
         statusUser,
         isUseCookie,
+        lastPageRedirect
     }
 })
 

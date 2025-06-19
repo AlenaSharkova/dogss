@@ -60,6 +60,7 @@ defineProps({
     }
   }
   &-content {
+    width: 100%;
     @media (max-width: $sm) {
       //position: absolute;
       //backdrop-filter: blur(10px);

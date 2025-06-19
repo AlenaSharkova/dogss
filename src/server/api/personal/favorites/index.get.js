@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
         }
         console.log('user 0000', user)
         try {
-            let sorting = [ ['created_at', 'DESC'] ]
+            let sorting = [ ['created_at', 'ASC'] ]
 
             const adListDBActive = await AdList.findAll({
                 where: {

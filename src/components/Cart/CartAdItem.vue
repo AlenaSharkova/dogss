@@ -12,12 +12,18 @@ const props = defineProps({
   item: {
     type: Object as PropType<AdItemStruct>,
     default: []
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 })
 const swiperInstance = ref()
 const isFavorite = ref(props.item.isFavorite || false)
 const isFocusHeart = ref(false)
 const isLoadFavorite = ref(false)
+const isLoadDelete = ref(false)
+
 
 const onSwiper = (swiper: Swiper) => {
   swiperInstance.value = swiper
@@ -59,7 +65,9 @@ const removeFromFavorites = async () => {
 }
 const removeFromDraft = async () => {
   console.log('actionFavorites', props.item.id)
+  isLoadDelete.value = true
   await personalStore.deletePersonalAd(props.item.id)
+  isLoadDelete.value = false
 }
 const textRegionsExport = computed(() => {
   if(!props.item.exportRegions.isExport) return ''
@@ -75,7 +83,7 @@ watch(() => props.item.isFavorite,
 </script>
 
 <template>
-  <div class="cart-item">
+  <div class="cart-item" :class="{disabled: isLoadDelete}">
 
     <div class="cart-item__wrapper">
 
@@ -176,7 +184,11 @@ watch(() => props.item.isFavorite,
   //height: 100%;
   transition: all 0.2s ease-out;
   box-shadow: $box-shadow-primary-from;
-
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    filter: blur(3px);
+  }
   &:hover {
     //box-shadow: 0px 4px 24px 0px rgba(30, 30, 30, 0.25);
     //box-shadow: -7px 11px 16px 10px rgb(227 72 72 / 8%);

@@ -28,6 +28,8 @@ onMounted( () => {
           <h1>Избранные объявления</h1>
         </div>
       </div>
+
+
       <ProfileFavorites />
     </LayoutWrapperPage>
   </div>

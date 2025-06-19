@@ -132,8 +132,17 @@ export const usePersonalStore = defineStore('personalStore', () => {
         }
     })
     watch(() => authStore.statusUser,
-        async (newValue) => {
+        async (newStatus) => {
             personalService.setAuthToken(authStore.sessionToken)
+            if(newStatus === 'active') {
+                updatePersonalAdList()
+                updateFavorites()
+            } else {
+                AdPersonalList.value = null
+                AdPersonalCurrentItemActive.value = null
+                AdPersonalCurrentItemDraft.value = null
+                FavoritesList.value = null
+            }
         })
 
     return {

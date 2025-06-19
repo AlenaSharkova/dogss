@@ -55,11 +55,12 @@ const repeatOtp = () => {
 }
 const sendOtp = async (otp: string) => {
   await authStore.getSessionTokenWitchOtp(form.email.value, otp)
-      .then(res => {
+      .then( res => {
         console.log('authStore.statusUser',authStore.statusUser)
         if(res?.token && authStore.statusUser === 'active') {
           console.log('переход в profile')
-          router.push('/profile')
+          if(authStore.lastPageRedirect) router.push(authStore.lastPageRedirect)
+          else router.push('/profile')
         } else textInvalidOtp.value = 'Ошибка авторизации'
       })
       .catch(e => {

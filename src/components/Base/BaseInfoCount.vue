@@ -4,7 +4,7 @@ import type {IColorValue} from "~/struct/Common/IValueType";
 
 defineProps({
   color: String as PropType<IColorValue>,
-  text: String,
+  text: String | Number,
 })
 </script>
 

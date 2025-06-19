@@ -12,7 +12,7 @@ const authStore = useAuthStore()
 <template>
   <div class="page-create-ad">
     <LayoutWrapperPage >
-      <BaseWrapperWithDogs image="dolmatian">
+      <BaseWrapperWithDogs image="ginger_in_pool">
         <FormCreateAd />
       </BaseWrapperWithDogs>
     </LayoutWrapperPage>

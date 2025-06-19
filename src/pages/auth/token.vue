@@ -16,13 +16,19 @@ const getToken = async () => {
   console.log('route.query.code', route.query.code)
   commonStore.changeIsLoadingPage(true)
 
-  if(authStore.statusUser === 'active') await router.push('/profile')
+  if(authStore.statusUser === 'active') {
+    if(authStore.lastPageRedirect) await router.push(authStore.lastPageRedirect)
+    else await router.push('/profile')
+  }
 
   if (route.query.code) {
     commonStore.isLoadingPage = true
     await authStore.getSessionTokenWitchLink(route.query.code as string)
         .then(async res => {
-          if(authStore.statusUser === 'active') await router.push('/profile')
+          if(authStore.statusUser === 'active') {
+            if(authStore.lastPageRedirect) await router.push(authStore.lastPageRedirect)
+            else await router.push('/profile')
+          }
         })
         .catch((err) => {
           console.log('err 00', err)

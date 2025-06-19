@@ -82,7 +82,7 @@ export default defineEventHandler(async (event) => {
                 });
                 return formattedAd(adItemDB);
             }
-            let sorting = [ ['created_at', 'DESC'] ]
+            let sorting = [ ['created_at', 'ASC'] ]
 
             const adListDBActive = await AdList.findAll({
                 where: {
