@@ -130,7 +130,7 @@
                       @select="selectEnclosure"
                   />
               </div>
-              <label v-else   class="base-select__dropdown-list__point-text">
+              <label v-else class="base-select__dropdown-list__point-text">
                 <span>{{ option.text }}</span>
               </label>
 

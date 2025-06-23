@@ -5,6 +5,7 @@ import { Pagination } from 'swiper/modules';
 import type Swiper from "swiper";
 import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
 import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
+import BaseIconGeo from "~/components/Base/BaseIcon/BaseIconGeo.vue";
 
 const props = defineProps({
   item: {
@@ -36,7 +37,12 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
       <div class="cart-item__content-info">
         <p>{{item.breed?.text}}</p>
         <BaseWithMiniPopup :text="textMainRegions" position="left">
-          <span>{{item.geo_main.city?.text}}</span>
+          <div class="cart-item__content-info__city">
+            <BaseIconGeo class="cart-item__content-info__city-icon" color="dark"/>
+            <span class="cart-item__content-info__city-text" >{{item.geo_main.city?.text}}</span>
+          </div>
+
+
         </BaseWithMiniPopup>
         <div class="cart-item__content-address">
           <p v-if="item.approximate_age"> {{approximateAgeText}}</p>
@@ -110,6 +116,21 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
     flex-direction: column;
     align-items: flex-start;
     justify-content: start;
+    @include text-normal(400);
+    &__city {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      &:hover {
+        color: $violet;
+        :deep(.cart-item__content-info__city-icon) {
+          color: $violet;
+        }
+      }
+      &-icon {
+        width: 15px;
+      }
+    }
   }
   &-price {
     padding-top: 7px;

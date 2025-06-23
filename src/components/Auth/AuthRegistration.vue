@@ -103,7 +103,7 @@ const sendOtp = async (otp: string) => {
           console.log('res?.token', res?.token)
           //await authStore.getUserFullData()
           if(authStore.lastPageRedirect) await router.push(authStore.lastPageRedirect)
-          else await router.push('/personal')
+          else await router.push('/personal/profile')
         } else textInvalidOtp.value = 'Ошибка авторизации'
       })
       .catch(e => {

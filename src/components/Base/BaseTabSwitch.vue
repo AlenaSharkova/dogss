@@ -5,6 +5,7 @@ import type { ISelectComponent } from "~/struct/Common/ISelectComponent";
 const props = withDefaults(
     defineProps<{
       items: ISelectComponent[];
+      name: String
     }>(),
     {}
 );
@@ -12,8 +13,12 @@ const props = withDefaults(
 const selectedItem = defineModel<ISelectComponent | null>({ default: null });
 
 // Устанавливаем selectedItem при инициализации, если он не определен
-if (selectedItem.value === undefined && props.items.length > 0) {
-  selectedItem.value = props.items[0];
+console.log('Устанавливаем', selectedItem.value , !selectedItem.value, selectedItem.value.hasOwnProperty(), props.items )
+console.log('Устанавливаем 2', (!selectedItem.value || !selectedItem.value.hasOwnProperty()), ((!selectedItem.value || !selectedItem.value.hasOwnProperty()) && props.items.length > 0))
+if ((!selectedItem.value || !selectedItem.value.hasOwnProperty('value')) && props.items.length > 0) {
+  selectedItem.value = {...props.items[0]};
+} else if(selectedItem.value.hasOwnProperty('value') && !selectedItem.value.hasOwnProperty('text')) {
+  selectedItem.value = props.items.find((item) => item.value ===  selectedItem.value?.value) as ISelectComponent;
 }
 
 // Вычисляем индекс активного элемента на основе selectedItem
@@ -22,11 +27,12 @@ const activeIndex = computed(() => {
 });
 
 
-const selectItem = (index: number) => {
-  if (index >= 0 && index < props.items.length) {
-    selectedItem.value = props.items[index];
-  }
-};
+watch(() => selectedItem.value?.value,
+    (newValue) => {
+      selectedItem.value = props.items.find((item) => item.value === newValue) as ISelectComponent;
+    }
+)
+
 </script>
 
 <template>
@@ -40,17 +46,24 @@ const selectItem = (index: number) => {
           }"
       ></div>
       <div
-          v-for="(item, index) in items"
-          :key="item.value"
           class="base-tab-switch__item"
-          :class="{ '--active': activeIndex === index }"
-          @click="selectItem(index)"
-          :style="{
-             width: `${100 / props.items.length}%`,
-          }"
-      >
-        <span>{{ item.text }}</span>
+          v-for="(item, index) in items"
+          :key="item.value">
+        <input
+            v-model="selectedItem"
+            type="radio"
+            :value="item"
+            :name="`input-tab-switch-${name}`"
+            :id="`input-tab-switch-${name}-${item.value}`"
+        />
+        <label
+            :for="`input-tab-switch-${name}-${item.value}`"
+            :class="{ '--active': activeIndex === index }"
+        >
+          <span>{{ item.text }}</span>
+        </label>
       </div>
+
     </div>
   </div>
 </template>
@@ -68,24 +81,43 @@ const selectItem = (index: number) => {
     align-items: center;
     position: relative;
     width: 100%;
+    height: 100%;
   }
 
   &__item {
+    width: 100%;
+    height: 100%;
     cursor: pointer;
     color: $dark-text;
     transition: all 0.5s;
     z-index: 1;
     box-sizing: border-box;
-    padding: 14px 5px;
     text-align: center;
 
     &.--active {
+      span {
+        color: $white-text;
+      }
+    }
+
+    input {
+      display: none;
+    }
+    label {
+      display: block;
+      width: 100%;
+      height: 100%;
+      padding: 14px 5px;
+      cursor: pointer;
+    }
+    input:checked + label {
       color: $white-text;
     }
   }
 
   &__active {
     position: absolute;
+
     border-radius: 8px;
     height: 100%;
     top: 0;

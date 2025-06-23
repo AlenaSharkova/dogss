@@ -10,7 +10,7 @@ const maxCount = ref(10)
 const personalStore = usePersonalStore()
 
 const personalAdDraftList = computed(() => personalStore.AdPersonalList?.ad_draft);
-const countDrafts = computed(() => personalAdDraftList.value?.length);
+const countDrafts = computed(() => personalAdDraftList.value?.length || 0);
 const isShowModal = ref(!!countDrafts)
 
 watch(countDrafts, (newCount) => {
@@ -43,7 +43,7 @@ const goToDraftItem = (id: string | number) => {
       class="ad-have-drafts-modal"
       @close="closeModal"
   >
-    <FormWindow v-if="personalAdDraftList?.length" without-padding >
+    <FormWindow v-if="personalAdDraftList?.length" without-padding modal>
       <template #title>{{title}}</template>
       <template #subtitle>{{subtitle}}</template>
       <template #default>

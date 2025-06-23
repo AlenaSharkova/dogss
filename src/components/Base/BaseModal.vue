@@ -11,7 +11,7 @@ const props = defineProps({
 
 <template>
   <Transition name="fade">
-    <div v-if="isShowModal" class="base-modal">
+    <div v-if="isShowModal" class="base-modal" >
       <div @click="$emit('close')"  class="base-modal__mask"></div>
       <div class="base-modal__window">
         <slot></slot>
@@ -23,35 +23,34 @@ const props = defineProps({
 <style scoped lang="scss">
 .base-modal {
   position: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: start;
   z-index: 12;
   top: 0;
   left: 0;
   bottom: 0;
-  width: 100vw;
+  right: 0;
   overflow-y: auto;
   flex-shrink: 0;
-  backdrop-filter: blur(10px);
-  @media (max-width: $sm) {
-    width: 100%;
-    height: 100%;
-    z-index: 100;
+  &::-webkit-scrollbar {
+    display: none;
   }
+
 
   &__mask {
     cursor: pointer;
     display: block;
-    position: absolute;
+    position: fixed;
     width: 100vw;
+    height: 100vh;
     top: 0;
-    bottom: 0;
     left: 0;
-    background-color: #000;
-    opacity: 40%;
-    filter: blur(10px);
+    background-color: $violet-opacity-max;
+    //bottom: 0;
+    //backdrop-filter: blur(10px);
+
     z-index: 10;
+
+
+
 
   }
   &__window {
@@ -59,7 +58,10 @@ const props = defineProps({
     position: relative;
     align-items: center;
     justify-content: center;
-    z-index: 101;
+    padding: 40px 0;
+    z-index: 10;
+
+
     @media (max-width: $sm) {
       align-items: flex-end;
       z-index: 101;

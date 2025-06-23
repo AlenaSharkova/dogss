@@ -31,7 +31,7 @@ const prev = () => {
 
 <template>
   <div class="form-window"
-       :class="[`--type-${type}` ]"
+       :class="[`--type-${type}`, {'--modal': modal} ]"
   >
     <div class="form-window__content" :class="{'--without-padding': withoutPadding}">
       <div class="form-window__header">
@@ -72,6 +72,12 @@ const prev = () => {
   border-radius: 24px;
   box-shadow: 0px 4px 24px 0px rgba(30, 30, 30, 0.1);
   max-width: 1000px;
+  &.--modal {
+    @media (max-width: $sm) {
+      width: 100vw;
+      border-radius: 24px 24px 0 0;
+    }
+  }
   &.--type-default {
     background-color: white;
 

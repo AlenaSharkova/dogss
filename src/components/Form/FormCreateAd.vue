@@ -74,8 +74,7 @@ const imageList = ref<ICommonUpload[]>([])
 
 const selectRegion = ref<ISelectNumber>({})
 const selectCity = ref<ISelectNumber>({})
-const selectGender = ref<ISelectGender>( genderList.value[0] )
-const selectQuantitative = ref<IFilterQuantitative>( quantitativeList.value[0])
+const selectGender = ref<ISelectGender>( {} )
 const isExport = ref(false)
 const isUnknownDateOfBirth = ref(false)
 const isAgreedPrice  = ref(false)
@@ -84,7 +83,7 @@ const isSaveDraft  = ref(false)
 const currentStep = ref(1)
 
 const isErrorSelectedRegion = ref(false)
-
+console.log(1, JSON.stringify(genderList.value))
 const titleStep = computed(() => {
   if(currentStep.value === 1) return 'Выберите тип объявления'
   if(currentStep.value === 2) return 'Заполните данные собаки'
@@ -119,9 +118,9 @@ const prevStep = () => {
   currentStep.value--
 }
 
-const widthProgress = computed(() => {
-  return (currentStep.value * 25) + '%'
-})
+const widthProgress = computed(() => (currentStep.value * 25) + '%')
+const countDogs = computed(() => (props.itemDraftAd?.number_male || 0) + (props.itemDraftAd?.number_female || 0));
+const malePercentage = computed(() => ((props.itemDraftAd?.number_male || 0) / countDogs?.value) * 100)
 
 watch(() => selectRegion.value,
     (newRegion) => {
@@ -157,17 +156,33 @@ watch(() => selectAdType.value.value, (newType) => {
 const showErrorSelectedRegion = () => {
   isErrorSelectedRegion.value = true
 }
+
 const setDraftData = () => {
+  console.log(2, JSON.stringify(genderList.value))
+
   console.log('itemDraftAd', props.itemDraftAd)
   if(!props.itemDraftAd) return
   const {breed, type_ad, exportRegions, photos, geo_main, date_birth,
-    name, gender, quantitative, description, price}
+    name, number_female, number_male, is_contractual_price, description, price, approximate_age}
   = props.itemDraftAd
   if(breed) selectBreed.value = breed
   if(type_ad) selectAdType.value.value = type_ad
   if(exportRegions.isExport) isExport.value = exportRegions.isExport
   if(exportRegions.regionsList && isExport.value) selectRegionsExport.value = exportRegions.regionsList
-  //if(props.itemDraftAd?.breed) selectAge.value = props.itemDraftAd?.age
+  if(countDogs.value <= 1) selectGender.value.value = number_female? 'female': 'male'
+  else {
+    selectGender.value.value = 'litter'
+    console.log(' selectGender.value',  selectGender.value, countDogs.value)
+    if(number_female) form.number_dogs.female = String(number_female)
+    else if(number_male) form.number_dogs.male = String(number_male)
+  }
+  console.log(3, JSON.stringify(genderList.value))
+
+  if(is_contractual_price) isAgreedPrice.value = is_contractual_price
+  if(approximate_age) {
+    isUnknownDateOfBirth.value = true
+    selectApproximateAge.value.value = approximate_age
+  }
   if(photos) imageList.value = photos.map(url => {
     return {
       imageUrl: url,
@@ -176,12 +191,11 @@ const setDraftData = () => {
   })
   if(geo_main.region) selectRegion.value = geo_main.region
   if(geo_main.city) selectCity.value = geo_main.city
-  if(gender) selectGender.value.value = gender
-  if(quantitative) selectQuantitative.value.value = quantitative
   if(name) form.name = name
 
   if(description) form.description = description
-  if(price) form.price = String(price)
+  if(price !== null) form.price = String(price)
+  if(price === 0) isFreePrice.value = true
   if(date_birth) form.date_birth = date_birth
 }
 
@@ -229,12 +243,12 @@ const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | fa
     city_main: selectCity.value.value,
     //gender: selectQuantitative.value?.value == 'one'? selectGender.value.value || null: null,
     //quantitative: selectQuantitative.value?.value,
-    number_male: selectGender.value.value == 'litter'
+    number_male: selectGender.value.value === 'litter'
         ? Number(form.number_dogs.male)
-        : selectGender.value.value == 'male'? 1: 0,
-    number_female: selectGender.value.value == 'litter'
+        : (selectGender.value.value === 'male'? 1: 0),
+    number_female: selectGender.value.value === 'litter'
         ? Number(form.number_dogs.female)
-        : selectGender.value.value == 'female'? 1: 0,
+        : (selectGender.value.value === 'female'? 1: 0),
     approximate_age: isUnknownDateOfBirth.value
         ? selectApproximateAge.value.value: null,
     is_contractual_price: isAgreedPrice.value,
@@ -265,7 +279,6 @@ onBeforeUnmount(() => {
     createAdForm('draft')
   }
 })
-
 </script>
 
 <template>
@@ -342,9 +355,8 @@ onBeforeUnmount(() => {
               <p class="form-create-ad__list-date__text">Дата рождения неизвестна</p>
             </div>
           </div>
-
-          <BaseTabSwitch :items="genderList" v-model="selectGender" />
-          <div v-if="selectGender.value == 'litter'" class="form-create-ad__list-together">
+          <BaseTabSwitch :items="genderList" v-model="selectGender" name="gender"/>
+          <div v-if="selectGender.value === 'litter'" class="form-create-ad__list-together">
               <BaseInput total-number :max-length="2" title="Количество девочек" v-model="form.number_dogs.female" />
               <BaseInput total-number :max-length="2" title="Количество мальчиков" v-model="form.number_dogs.male"  />
             </div>

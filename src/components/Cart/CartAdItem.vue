@@ -76,21 +76,14 @@ const textRegionsExport = computed(() => {
     ${props.item.exportRegions.regionsList?.map(region => region?.text).join('<br>')}`
 })
 const isActive = computed(() => props.item.status === 'active')
+const countDogs = computed(() => (props.item.number_male || 0) + (props.item.number_female || 0));
+const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs.value) * 100)
+
 watch(() => props.item.isFavorite,
     (newValue) => {
       isFavorite.value = newValue
     })
-const malePercentage = ref(0);
-const femalePercentage = ref(0);
-const countDogs = ref(0);
-const countingGenderDogs = () => {
-  countDogs.value = props.item.number_male + props.item.number_female
-  malePercentage.value = (props.item.number_male / countDogs.value) * 100;
-  femalePercentage.value = 100 - malePercentage.value
-}
-onMounted(() => {
-  countingGenderDogs()
-});
+
 </script>
 
 <template>

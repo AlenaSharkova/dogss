@@ -46,7 +46,7 @@ onMounted( () => {
       <nuxt-link class="header-nav__item" to="/dev-new">
         dev-new
       </nuxt-link>
-      <nuxt-link class="header-nav__item" to="/personal">
+      <nuxt-link class="header-nav__item" to="/personal/profile">
         personal
       </nuxt-link>
     </div>

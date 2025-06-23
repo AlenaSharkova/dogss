@@ -23,7 +23,7 @@ export interface AdItemStruct {
     name: string;
     photos: string[];
     id: number;
-    price: number;
+    price: number | null;
     status: 'active' | 'inactive' | 'archive';
     count_image: number;
     ownerDetails: any;

@@ -2,21 +2,25 @@
 const sections = computed(() => [
     {
       link: 'profile',
+      icon: 'User',
       title: 'Профиль',
       count: 0
     },
     {
       link: 'favorites',
+      icon: 'Heart',
       title: 'Мои избранные',
       count: 0
     },
     {
       link: 'ads',
+      icon: 'Ad',
       title: 'Объявления',
       count: 0
     },
     {
       link: 'page',
+      icon: 'User',
       title: 'Страница пользователя',
       count: 0
     },
@@ -39,9 +43,7 @@ const isHiddenMenu = ref(false)
             class="personal-menu__nav-item"
             :to="`/personal/${item.link}`">
           <div class="personal-menu__nav-item__row">
-            <div class="personal-menu__nav-item__icon">
-              <BaseIconHeart hover />
-            </div>
+            <component class="personal-menu__nav-item__icon" :is="`BaseIcon${item.icon}`" />
             <p class="personal-menu__nav-item__text">{{ item.title }}</p>
 
           </div>
@@ -77,33 +79,30 @@ const isHiddenMenu = ref(false)
       background-color: $violet-opacity;
       z-index: 2;
       transition: all 0.4s;
-
-      //background-color: #22222222;
-      width: 250px;
       height: 250px;
       overflow: hidden;
-
-      width: 60px;
+      width: 49px;
       padding: 10px 5px;
 
-      //height: 20px;
       &:hover {
         padding: 10px;
 
         width: 250px;
         height: 250px;
-
+        color: $violet;
         //height: 250px;
+        .personal-menu__nav-item {
+          padding: 10px 15px;
+        }
       }
       &.--hidden {
-        width: 0;
-        padding: 10px;
+        box-sizing: border-box;
+        padding-left: 20px;
+        padding-right: 0px;
+        width: 0px;
         //height: 20px;
         border-radius: 0 0 20px  0;
-
-
       }
-
     }
     &__nav {
 
@@ -113,23 +112,33 @@ const isHiddenMenu = ref(false)
       &-item {
         overflow: hidden;
 
-        padding: 10px 15px;
+        padding: 10px 8px;
         border-radius: 10px;
         transition: all 0.2s;
         color: $white-text;
         &:hover {
           background-color: #B2E1DABB;
           color: $violet;
+          .personal-menu__nav-item__icon {
+            color: $violet;
+          }
         }
         &.--active {
           background-color: $light-teal;
           color: $violet;
+          .personal-menu__nav-item__icon {
+            color: $violet;
+          }
         }
         &__row {
           overflow: hidden;
           gap: 10px;
           display: flex;
           align-items: center;
+        }
+        &__icon {
+          flex-shrink: 0;
+          color: $white-text;
         }
         &__text {
           text-wrap: nowrap;
