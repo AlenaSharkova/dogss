@@ -53,7 +53,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         }
         if (authStore.statusUser === "active"
             && to.meta.requirementUser == 'unauthorized')
-            return navigateTo('/profile', {redirectCode: 301})
+            return navigateTo('/personal', {redirectCode: 301})
     }
 
     //commonStore.isLoadingPage = false
@@ -64,14 +64,14 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             return navigateTo('/auth/login', { redirectCode: 301 })
         if(authStore.statusUser === "active"
             && to.meta.requirementUser == 'unauthorized')
-            return navigateTo('/profile', { redirectCode: 301 })
+            return navigateTo('/personal', { redirectCode: 301 })
     } else if(authStore.isUseCookie) {
         if(authStore.statusUser !== "active"
             && to.meta.requirementUser === 'authorized')
             return navigateTo('/auth/login', { redirectCode: 301 })
         if(authStore.statusUser === "active"
             && to.meta.requirementUser == 'unauthorized')
-            return navigateTo('/profile', { redirectCode: 301 })
+            return navigateTo('/personal', { redirectCode: 301 })
     }
 
 */

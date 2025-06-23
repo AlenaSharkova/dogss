@@ -147,7 +147,7 @@
       </div>
     </div>
     <div class="dev-nav">
-      <router-link to="/dashboard/profile">Перейти в профиль</router-link>
+      <router-link to="/dashboard/personal">Перейти в профиль</router-link>
       <router-link to="/dashboard/panel-user">Перейти в панель управления</router-link>
       <router-link to="/dashboard/dev">DEV</router-link>
       <router-link to="/dashboard/registration">registration</router-link>

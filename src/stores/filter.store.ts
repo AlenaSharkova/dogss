@@ -125,6 +125,10 @@ export const useFilterStore = defineStore('filterStore', () => {
             text: 'Мальчик',
             value: 'male'
         },
+        {
+            text: 'Несколько собак / Помёт',
+            value: 'litter'
+        },
     ])
     const quantitativeList = ref<IFilterQuantitative[]>( [
 

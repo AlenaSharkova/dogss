@@ -8,7 +8,7 @@ import {DataTypes} from "sequelize";
 
 export async function up(data) {
   try {
-    const {queryInterface, Sequelize} = data.context;
+   /* const {queryInterface, Sequelize} = data.context;
 
     await queryInterface.createTable('favorites_ad', {
       ad_id: {
@@ -43,7 +43,7 @@ export async function up(data) {
         allowNull: false,
         defaultValue: Sequelize.literal('NOW()'),
       },
-    });
+    });*/
 
   } catch (error) {
     console.error("Ошибка при выполнении миграции up:", error);

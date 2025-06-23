@@ -25,7 +25,7 @@ const props = defineProps({
   position: fixed;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   z-index: 12;
   top: 0;
   left: 0;
@@ -43,10 +43,10 @@ const props = defineProps({
   &__mask {
     cursor: pointer;
     display: block;
-    position: fixed;
+    position: absolute;
     width: 100vw;
-    height: 100vh;
     top: 0;
+    bottom: 0;
     left: 0;
     background-color: #000;
     opacity: 40%;

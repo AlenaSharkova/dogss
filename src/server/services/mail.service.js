@@ -17,7 +17,7 @@ export async function sendOTPByEmail(email, otp, token) {
         const mailOptions = {
             from: 'Собака-улыбака alena.s_00@mail.ru',
             to: email,
-            subject: `Одноразовый пароль: ${otp}`,
+            subject: `ОTP: ${otp}`,
             text: `Ваш одноразовый пароль: ${otp}. Срок его действия истекает через 3 минуты после отправления.`,
             html: mailHtml(otp, token),
         };

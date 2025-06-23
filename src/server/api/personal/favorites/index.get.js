@@ -40,18 +40,18 @@ export default defineEventHandler(async (event) => {
         }
         console.log('user 0000', user)
         try {
-            let sorting = [ ['created_at', 'ASC'] ]
+            let sorting = [ ['created_at', 'DESC'] ]
 
             const adListDBActive = await AdList.findAll({
                 where: {
                     status: 'active'
                 },
-                order: sorting,
                 include: [
                     {
                         model: Users,
                         as: 'UsersListFavoriteAd', // Используем псевдоним, определенный в модели Users
                         where: { id: user.id },
+                        order: sorting,
                         through: {
                             model: FavoritesAd,
                             attributes: []  // Исключаем атрибуты из связующей таблицы

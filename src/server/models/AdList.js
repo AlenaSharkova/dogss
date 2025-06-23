@@ -64,6 +64,18 @@ module.exports = (sequelize) => {
         quantitative: {
             type: DataTypes.TEXT,
         },
+        number_male: {
+            type: DataTypes.INTEGER,
+        },
+        number_female: {
+            type: DataTypes.INTEGER,
+        },
+        approximate_age: {
+            type: DataTypes.TEXT,
+        },
+        is_contractual_price: {
+            type: DataTypes.BOOLEAN,
+        },
     }, {
         tableName: 'ad_list',
         timestamps: true,

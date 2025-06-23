@@ -5,7 +5,7 @@ import {computed, PropType} from "vue";
 
 const props = withDefaults(defineProps<
     {
-      name: string,
+      name?: string,
       size?: 'big' | 'medium' | "small" | "inherit",
       img?: string
 }>(),
@@ -18,6 +18,7 @@ const classes = computed(() => {
   return {
     [`--big-size`]: props.size === 'big',
     [`--medium-size`]: props.size === 'medium',
+    [`--small-size`]: props.size === 'small',
     [`--inherit-size`]: props.size === 'inherit',
   };
 });
@@ -60,7 +61,7 @@ const classes = computed(() => {
     }
   }
 
-  &.--medium-size {
+  &.--small-size {
       width: 54px;
       height: 54px;
       @media (max-width: $sm) {
@@ -74,7 +75,8 @@ const classes = computed(() => {
         }
     }
   }
-  &.--big-size {
+
+  &.--medium-size {
       width: 90px;
       height: 90px;
       @media (max-width: $md) {
@@ -90,6 +92,25 @@ const classes = computed(() => {
         @media (max-width: $sm) {
           font-size: 30px;
         }
+    }
+  }
+
+  &.--big-size {
+    width: 190px;
+    height: 190px;
+    @media (max-width: $md) {
+      width: 170px;
+      height: 170px;
+    }
+    @media (max-width: $sm) {
+      width: 150px;
+      height: 150px;
+    }
+    .base-profile__circle-text {
+      font-size: 40px;
+      @media (max-width: $sm) {
+        font-size: 30px;
+      }
     }
   }
   &-image {

@@ -14,31 +14,42 @@ const props = defineProps({
 })
 const filterStore = useFilterStore()
 
-const typeAd = computed(() => {
+const typeAdText = computed(() => {
   return filterStore.typeAdList?.find(type => type.value == props.item.type_ad)?.text || ''
 })
+const approximateAgeText = computed(() => {
+  return filterStore.approximateAgeList?.find(age => age.value == props.item.approximate_age)?.text || ''
+})
+const textMainRegions = computed(() => `Регион: ${props.item.geo_main.region.text}`)
 </script>
 
 <template>
   <div class="cart-item__content">
     <div class="cart-item__content-type" :class="item.type_ad">
-      <span>{{typeAd || 'Тип не указан'}}</span>
+      <span>{{typeAdText || 'Тип не указан'}}</span>
     </div>
     <div class="cart-item__content-row">
       <div class="cart-item__content-name">
         <span>{{item.name || 'Имя не указано'}}</span>
       </div>
 
-      <div class="cart-item__content-55">
+      <div class="cart-item__content-info">
         <p>{{item.breed?.text}}</p>
-        <p>{{item.geo_main.region.text}}</p>
-        <p>{{item.geo_main.city?.text}}</p>
-        <p> Рождение: {{formatDate(item.date_birth, 'DD MMMM YYYY')}}</p>
-        <p> {{getYearsOld(item.date_birth)}}</p>
-        <p> {{calculateAge(item.date_birth)}}</p>
+        <BaseWithMiniPopup :text="textMainRegions" position="left">
+          <span>{{item.geo_main.city?.text}}</span>
+        </BaseWithMiniPopup>
+        <div class="cart-item__content-address">
+          <p v-if="item.approximate_age"> {{approximateAgeText}}</p>
+          <p v-if="!item.approximate_age"> Рождение: {{formatDate(item.date_birth, 'DD MMMM YYYY')}}</p>
+          <p v-if="!item.approximate_age"> {{getYearsOld(item.date_birth)}}</p>
+          <p v-if="!item.approximate_age"> {{calculateAge(item.date_birth)}}</p>
+        </div>
       </div>
       <div class="cart-item__content-price">
-        <span v-if="item.price === 0">
+        <span v-if="item.is_contractual_price">
+          Договорная цена
+        </span>
+        <span v-else-if="item.price === 0">
           Бесплатно
         </span>
         <span v-else-if="item.price === null">
@@ -61,6 +72,8 @@ const typeAd = computed(() => {
   height: 220px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  justify-content: start;
   &-type {
 
     padding: 4px;
@@ -91,6 +104,12 @@ const typeAd = computed(() => {
   &-name {
     padding-top: 7px;
     @include h6;
+  }
+  &-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: start;
   }
   &-price {
     padding-top: 7px;

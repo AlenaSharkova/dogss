@@ -77,7 +77,7 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
   width: 100%;
   transition: border 0.3s;
 
-  box-shadow: $box-shadow-second;
+  box-shadow: $box-shadow-lite;
   span {
     &.hidden {
       opacity: 0;

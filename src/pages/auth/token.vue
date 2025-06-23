@@ -18,7 +18,7 @@ const getToken = async () => {
 
   if(authStore.statusUser === 'active') {
     if(authStore.lastPageRedirect) await router.push(authStore.lastPageRedirect)
-    else await router.push('/profile')
+    else await router.push('/personal')
   }
 
   if (route.query.code) {
@@ -27,7 +27,7 @@ const getToken = async () => {
         .then(async res => {
           if(authStore.statusUser === 'active') {
             if(authStore.lastPageRedirect) await router.push(authStore.lastPageRedirect)
-            else await router.push('/profile')
+            else await router.push('/personal')
           }
         })
         .catch((err) => {

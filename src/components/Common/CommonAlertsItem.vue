@@ -53,7 +53,7 @@ $modal-offset: 20px;
   color: white;
   border-radius: 8px;
   position: absolute;
-  box-shadow: $box-shadow-second;
+  box-shadow: $box-shadow-middle;
   bottom: 0;
   right: 0;
 

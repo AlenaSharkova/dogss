@@ -15,8 +15,8 @@ const favoritesList = computed(() => personalStore.FavoritesList)
 </script>
 
 <template>
-  <div class="profile-ad">
-    <div class="profile-ad__row">
+  <div class="personal-ad">
+    <div class="personal-ad__row">
       <AdWrapperList>
         <CartAdItem
             v-for="item in favoritesList"
@@ -32,7 +32,7 @@ const favoritesList = computed(() => personalStore.FavoritesList)
 </template>
 
 <style scoped lang="scss">
-.profile-ad {
+.personal-ad {
   &__row {
     display: flex;
     flex-direction: column;

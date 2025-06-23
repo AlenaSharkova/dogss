@@ -68,21 +68,30 @@ export const localDate = (date: string | number | null = null) => {
 export const getYearsOld = (dateBirth: string | number | null = null) => {
     const timeZone = dayjs.tz.guess()
 
-    const currentDate = dayjs().tz(timeZone).local()
-    const dateBirthDayjs = dayjs(dateBirth).tz(timeZone).local()
+    const now = dayjs().tz(timeZone).local()
+    const birth = dayjs(dateBirth).tz(timeZone).local()
 
-    const countYears = currentDate.diff(dateBirthDayjs, 'year')
+    if (!birth.isValid()) {
+        return null;
+    }
 
-    const addedYears = dateBirthDayjs.add(countYears, 'year');
-    console.log('subtractYears', addedYears.toString())
+    let countYears = now.year() - birth.year();
+    let countMonths = now.month() - birth.month();
+    let countDays = now.date() - birth.date();
 
-    const countMonths = currentDate.diff(addedYears, 'month')
-    const addedMonths = addedYears.add(countMonths, 'month');
+    if (countDays < 0) {
+        countMonths--;
+        const lastMonth = now.clone().month(now.month() - 1);
+        countDays = now.date() + lastMonth.daysInMonth() - birth.date();
+    }
+    if (countMonths < 0) {
+        countYears--;
+        countMonths = countMonths + 12;
+    }
+    if(countYears < 0){
+        return null;
+    }
 
-    //const countWeek = currentDate.diff(dateBirth, 'week')
-    const countDays = currentDate.diff(addedMonths, 'day')
-    console.log('test, ', {...dayjs.duration(currentDate.diff(dateBirth), 'day')}, dayjs.duration(currentDate.diff(dateBirth), 'year').humanize() , dayjs.duration(currentDate.diff(dateBirth), 'month').humanize(), countYears  )
-    console.log('countMonths, ', dayjs.duration(currentDate.diff(dateBirth), 'year').humanize() , dayjs.duration(currentDate.diff(dateBirth), 'month').humanize(), countYears  )
     return (countYears > 1? (dayjs.duration(countYears, 'year').humanize() + " "): "" ) +
         (countYears == 1 ? "1 год " : "" ) +
         (countMonths > 1? (dayjs.duration(countMonths, 'month').humanize() + " "): "") +
@@ -107,7 +116,6 @@ export const calculateAge = (birthDate: string | number | null = null) => {
     const now = dayjs(currentDate).tz(timeZone).local();
 
     if (!birth.isValid()) {
-        console.error('Неверный формат даты рождения.');
         return null;
     }
 
@@ -126,12 +134,8 @@ export const calculateAge = (birthDate: string | number | null = null) => {
         months = months + 12;
     }
     if(years < 0){
-        return {
-            years: 0,
-            months: 0,
-            days: 0,
-            exact: "Ошибка в дате рождения."
-        }
+        return null;
+
     }
 
     let exact = '';

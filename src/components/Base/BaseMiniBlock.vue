@@ -24,7 +24,7 @@ withDefaults(
   color: $white-text;
   width: max-content;
   border-radius: 10px;
-  box-shadow: $box-shadow-second;
+  box-shadow: $box-shadow-middle;
   &__wrapper {
     padding: 10px 15px;
   }

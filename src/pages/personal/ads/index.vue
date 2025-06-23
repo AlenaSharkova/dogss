@@ -3,8 +3,12 @@ import {useAuthStore} from "~/stores/auth.store";
 import CommonModalFile from "~/components/Common/CommonModalFile.vue";
 import {usePersonalStore} from "~/stores/personal.store";
 import {computed} from "vue";
-import ProfileAd from "~/components/Profile/ProfileAd.vue";
-import ProfileFavorites from "~/components/Profile/ProfileFavorites.vue";
+import PersonalAd from "~/components/Personal/PersonalAd.vue";
+import PersonalFavorites from "~/components/Personal/PersonalFavorites.vue";
+
+definePageMeta({
+  requirementUser : 'authorized'
+})
 
 const authStore = useAuthStore()
 const personalStore = usePersonalStore()
@@ -15,34 +19,33 @@ const userFullData = computed(() => authStore.userFullData)
 onMounted( () => {
   //мб не надо
   if (authStore.statusUser === 'unknown') {
-   // authStore.getUserFullData()
+    // authStore.getUserFullData()
   }
 })
 </script>
 
 <template>
-  <div class="page-ads-favorite">
+  <div class="page-personal-ads">
     <LayoutWrapperPage >
-      <div class="page-ads-favorite__header">
-        <div class="page-ads-favorite__header-title">
-          <h1>Избранные объявления</h1>
+
+      <div v-if="userFullData" class="page-personal-ads__header">
+        <div class="page-personal-ads__header-title">
+          <span>Мои объявления</span>
         </div>
       </div>
-
-
-      <ProfileFavorites />
+      <PersonalAd />
     </LayoutWrapperPage>
   </div>
 </template>
 
 <style scoped lang="scss">
-.page-ads-favorite {
-  width: 100%;
+.page-personal-ads {
   margin-top: 20px;
+  width: 100%;
   &__header {
     margin-bottom: 20px;
     &-title {
-      @include h1;
+      @include h1();
     }
   }
 }

@@ -101,6 +101,9 @@ const createTrigger = async () => {
 
 const updateStart = () => {
   return
+
+
+
   // Изменяем значение start
 /*
   startValue.value = `${commonStore.isHiddenHeader? '-=137px': '+=130px'}`
@@ -148,17 +151,17 @@ const isShowMenu = ref(false)
            :class="{fixed: classAdded}">
         <div class="user-site__head-nav__row">
           <Transition name="fade">
-            <div v-if="classAdded" class="user-site__head-nav__profile">
+            <div v-if="classAdded" class="user-site__head-nav__personal">
               <BaseProfileCircle
                   name="Николай Шарков"
-                  size="big"
+                  size="medium"
                   unfull
                   img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
-              <div class="user-site__head-nav__profile-content">
-                <div class="user-site__head-nav__profile-content__title">
+              <div class="user-site__head-nav__personal-content">
+                <div class="user-site__head-nav__personal-content__title">
                   <p>{{title}}</p>
                 </div>
-                <div class="user-site__head-nav__profile-content__action">
+                <div class="user-site__head-nav__personal-content__action">
                   <BaseButton text="Подпсиаться" size="medium"/>
                 </div>
               </div>
@@ -273,7 +276,7 @@ const isShowMenu = ref(false)
         gap: 16px;
       }
     }
-    &__profile {
+    &__personal {
       display: flex;
 
       gap: 15px;

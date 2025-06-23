@@ -4,12 +4,16 @@ import { ref} from 'vue'
 import {useCommonStore} from "~/stores/common.store";
 import CommonAlertsList from "~/components/Common/CommonAlertsList.vue";
 
+const route = useRoute()
+
 const isShowMenu = ref(false)
 
 const breedsStore = useBreedsStore()
 const commonStore = useCommonStore()
 
 await breedsStore.updateBreedsList()
+
+const isPersonalMenu = computed(() => route.path.startsWith('/personal'))
 </script>
 
 <template>
@@ -34,6 +38,7 @@ await breedsStore.updateBreedsList()
       </div>
       <CommonUpButton />
       <CommonAlertsList/>
+      <PersonalMenu v-if="isPersonalMenu" />
     </div>
   </div>
 </template>

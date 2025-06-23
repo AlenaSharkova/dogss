@@ -51,6 +51,10 @@ export interface AdItemStruct {
     city_main: number;
     gender: 'female' | 'male' | 'any' | null;
     quantitative: 'one' | 'litter';
+    number_male: number | null;
+    number_female: number | null;
+    approximate_age: string | null;
+    is_contractual_price: boolean;
 }
 
 export interface AdFullFilterStruct {
@@ -81,7 +85,7 @@ export interface AdCreateItemStruct {
     price: number | null;
     count_image: number;
 
-    date_birth: string;
+    date_birth: string | null;
     breed_id: number;
     type_ad: 'purchase' | 'good-hands' | 'mating' | 'lost';
     description: string;
@@ -92,6 +96,10 @@ export interface AdCreateItemStruct {
     city_main: number;
     gender: 'female' | 'male' | 'any' | null;
     quantitative: 'one' | 'litter';
+    number_male: number | null;
+    number_female: number | null;
+    approximate_age: string | null;
+    is_contractual_price: boolean;
     regionsExport?: number[] | null
 }
 
@@ -101,7 +109,7 @@ export interface ISelectTypeAd {
 }
 export interface ISelectGender {
     text?: string,
-    value?: 'female' | 'male' | 'any' | '';
+    value?: 'female' | 'male' | 'any' | 'litter';
 }
 export interface IFilterTypeAd {
     text: string,

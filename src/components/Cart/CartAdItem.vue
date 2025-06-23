@@ -5,6 +5,7 @@ import type Swiper from "swiper";
 import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
 import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
 import CartAdItemContent from "~/components/Cart/CartAdItemContent.vue";
+import items from "ajv/lib/vocabularies/applicator/items";
 
 const personalStore = usePersonalStore()
 
@@ -75,11 +76,21 @@ const textRegionsExport = computed(() => {
     ${props.item.exportRegions.regionsList?.map(region => region?.text).join('<br>')}`
 })
 const isActive = computed(() => props.item.status === 'active')
-
 watch(() => props.item.isFavorite,
     (newValue) => {
       isFavorite.value = newValue
     })
+const malePercentage = ref(0);
+const femalePercentage = ref(0);
+const countDogs = ref(0);
+const countingGenderDogs = () => {
+  countDogs.value = props.item.number_male + props.item.number_female
+  malePercentage.value = (props.item.number_male / countDogs.value) * 100;
+  femalePercentage.value = 100 - malePercentage.value
+}
+onMounted(() => {
+  countingGenderDogs()
+});
 </script>
 
 <template>
@@ -90,12 +101,20 @@ watch(() => props.item.isFavorite,
       <div class="cart-item__top">
         <div class="cart-item__info">
           <div class="cart-item__info-circle --left"
-               :class="[item.gender, item.quantitative]"
+               :class="[
+                   {litter: countDogs > 1},
+                   {male: item.number_male},
+                   {female: item.number_female},
+               ]"
+               :style="{
+                  '--male-percentage': `${malePercentage - 20}%`,
+                  '--female-percentage': `${malePercentage + 20}%`
+               }"
           >
             <div class="cart-item__info-circle__image">
-              <img v-if="item.quantitative == 'litter'" src="@/assets/image/svg/paws-white.svg" alt="">
-              <img v-else-if="item.gender == 'male'" src="@/assets/image/svg/dog-boy-white.svg" alt="">
-              <img v-else-if="item.gender == 'female'" src="@/assets/image/svg/dog-girl-white2.svg" alt="">
+              <img v-if="countDogs > 1" src="@/assets/image/svg/paws-white.svg" alt="">
+              <img v-else-if="item.number_male" src="@/assets/image/svg/dog-boy-white.svg" alt="">
+              <img v-else-if="item.number_female" src="@/assets/image/svg/dog-girl-white2.svg" alt="">
             </div>
           </div>
           <BaseWithMiniPopup
@@ -171,7 +190,9 @@ watch(() => props.item.isFavorite,
 
 <style scoped lang="scss">
 @use 'sass:map';
-
+:root {
+  --male-percentage: 50%; /* Пример значения.  Замените на нужное вам значение. */
+}
 .cart-item {
   //width: 300px;
   //height: 600px;
@@ -183,7 +204,7 @@ watch(() => props.item.isFavorite,
   position: relative;
   //height: 100%;
   transition: all 0.2s ease-out;
-  box-shadow: $box-shadow-primary-from;
+  box-shadow: $box-shadow-lite;
   &.disabled {
     opacity: 0.6;
     pointer-events: none;
@@ -192,7 +213,7 @@ watch(() => props.item.isFavorite,
   &:hover {
     //box-shadow: 0px 4px 24px 0px rgba(30, 30, 30, 0.25);
     //box-shadow: -7px 11px 16px 10px rgb(227 72 72 / 8%);
-    box-shadow: $box-shadow-primary-to;
+    box-shadow: $box-shadow-middle;
 
   }
   &__wrapper {
@@ -211,17 +232,17 @@ watch(() => props.item.isFavorite,
       border-radius: 0 10px 10px 0;
       background-color: rgba(144, 238, 144, 0.6);
       backdrop-filter: blur(6px);
-      box-shadow: $box-shadow-second;
+      box-shadow: $box-shadow-middle;
       bottom: 10px;
       transition: all 0.3s;
       &:hover {
-        box-shadow: $box-shadow-second-dark;
+        box-shadow: $box-shadow-dark;
       }
       &.--hidden {
         pointer-events: none;
         opacity: 0.6;
         &:hover {
-          box-shadow: $box-shadow-second;
+          box-shadow: $box-shadow-middle;
         }
       }
       &.--top-right {
@@ -245,9 +266,7 @@ watch(() => props.item.isFavorite,
           //background-color: rgba(245, 245, 220, 0.6);
         }
       }
-      &.litter {
-        background-color: rgba(144, 238, 144, 0.6);
-      }
+
       &.male {
         background-color: rgba(74, 178, 234, 0.6);
        // background-color: rgba(74, 178, 234, 0.6);
@@ -256,6 +275,13 @@ watch(() => props.item.isFavorite,
       &.female {
         background-color: rgba(239, 95, 205, 0.6);
 
+      }
+      &.litter {
+        background: linear-gradient(
+          50deg,
+          rgba(74, 178, 234, 0.6) var(--male-percentage), /* Синий цвет заканчивается немного раньше */
+          rgba(239, 95, 205, 0.6) var(--female-percentage), /* Розовый начинается */
+        );
       }
 
       &__image {

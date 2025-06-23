@@ -46,14 +46,14 @@ onMounted( () => {
       <nuxt-link class="header-nav__item" to="/dev-new">
         dev-new
       </nuxt-link>
-      <nuxt-link class="header-nav__item" to="/profile">
-        profile
+      <nuxt-link class="header-nav__item" to="/personal">
+        personal
       </nuxt-link>
     </div>
 
 
     <div class="header-nav__actions">
-      <router-link to="/profile/favorites" class="header-nav__actions-favorites">
+      <router-link to="/personal/favorites" class="header-nav__actions-favorites">
         <BaseIconHeart  />
         <BaseInfoCount :text="favoritesAdsCount" class="header-nav__actions-favorites__count" />
       </router-link>

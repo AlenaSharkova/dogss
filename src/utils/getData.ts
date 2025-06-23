@@ -20,7 +20,7 @@ export const abbreviationName = (name: string | null) => {
 
 export const maskParam = (paramName: string | null) => {
     if (paramName === 'card_number') return '____ ____ ____ ____'
-    else if (paramName === 'phone') return '_ ___ ___-__-__'
+    else if (paramName === 'phone') return ' (___) ___-__-__'
     else return ''
 }
 

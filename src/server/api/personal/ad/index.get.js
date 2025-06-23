@@ -82,7 +82,7 @@ export default defineEventHandler(async (event) => {
                 });
                 return formattedAd(adItemDB);
             }
-            let sorting = [ ['created_at', 'ASC'] ]
+            let sorting = [ ['created_at', 'DESC'] ]
 
             const adListDBActive = await AdList.findAll({
                 where: {
@@ -154,10 +154,46 @@ export default defineEventHandler(async (event) => {
                 return formattedAd(item);
             }))
 
+            const adListDBArchive = await AdList.findAll({
+                where: {
+                    status: 'archive',
+                    owner: user.id
+                },
+                order: sorting,
+                include: [
+                    {
+                        model: GeoRegions,
+                        as: 'LocationRegion',
+                    },
+                    {
+                        model: GeoRegions,
+                        as: 'ExportRegions',
+                        through: { attributes: [] }
+                    },
+                    {
+                        model: Breeds,
+                        as: 'Breed',
+                    },
+                    {
+                        model: GeoCity,
+                        as: 'LocationCity',
+                    },
+                    {
+                        model: Users,
+                        as: 'Owner',
+                    }
+                ],
+                required: true
+            });
+            let resultArchive= await Promise.all(adListDBArchive?.map(async (item) => {
+                return formattedAd(item);
+            }))
+
             return {
                 result: {
                     ad_draft: resultDraft,
                     ad_active: resultActive,
+                    ad_archive: resultArchive,
                 }
             }
         } catch (error) {

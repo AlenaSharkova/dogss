@@ -257,7 +257,7 @@ watch(
       //border: 1px solid  darken($light-teal, 8%);
       border: 1px solid $violet;
       //border: 1px solid #9FB4B2;
-      //box-shadow: $box-shadow-primary-from;
+      //box-shadow: $box-shadow-lite;
       .label-invalid {
         //display: none;
         /*opacity: 0;

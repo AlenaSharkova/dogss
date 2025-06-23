@@ -7,6 +7,10 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  withoutPadding: {
+    type: Boolean,
+    default: false,
+  },
   isPrev: {
     type: Boolean,
     required: false,
@@ -27,9 +31,9 @@ const prev = () => {
 
 <template>
   <div class="form-window"
-       :class="`--type-${type}`"
+       :class="[`--type-${type}` ]"
   >
-    <div class="form-window__content">
+    <div class="form-window__content" :class="{'--without-padding': withoutPadding}">
       <div class="form-window__header">
         <div v-if="isPrev" @click="prev" class="form-window__header-prev">
           <BaseIconArrow nav="left" />
@@ -84,7 +88,12 @@ const prev = () => {
     padding: 40px;
     @media (max-width: $sm) {
       padding: 30px 20px;
-
+    }
+    &.--without-padding {
+      padding: 40px 0;
+      @media (max-width: $sm) {
+        padding: 30px 0;
+      }
     }
   }
   &__header {

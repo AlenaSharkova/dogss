@@ -11,6 +11,7 @@ const authStore = useAuthStore()
 
 const personalAdActiveList = computed(() => personalStore.AdPersonalList?.ad_active);
 const personalAdDraftList = computed(() => personalStore.AdPersonalList?.ad_draft);
+const personalAdArchiveList = computed(() => personalStore.AdPersonalList?.ad_archive);
 const tabTypeAdList = computed( () => [
   {
     text: `Активные ( ${personalAdActiveList.value?.length || 0} )`,
@@ -19,6 +20,10 @@ const tabTypeAdList = computed( () => [
   {
     text: `Черновики ( ${personalAdDraftList.value?.length || 0} )`,
     value: 'draft',
+  },
+  {
+    text: `Архив ( ${personalAdArchiveList.value?.length || 0} )`,
+    value: 'archive',
   }
 ])
 
@@ -34,7 +39,7 @@ const selectTabTypeAd = ref(activeTab.value)
 
 const goToDraftItem = (id: string | number) => {
 
-  router.push(`/profile/ads/draft/${id}`)
+  router.push(`/personal/ads/draft/${id}`)
 }
 
 watch(() => selectTabTypeAd.value?.value,
@@ -49,8 +54,8 @@ watch(() => selectTabTypeAd.value?.value,
 </script>
 
 <template>
-  <div class="profile-ad">
-    <div class="profile-ad__row">
+  <div class="personal-ad">
+    <div class="personal-ad__row">
       <BaseTabSwitch :items="tabTypeAdList" v-model="selectTabTypeAd" />
       <BaseButton
           class="header-nav__actions-ad"
@@ -73,13 +78,20 @@ watch(() => selectTabTypeAd.value?.value,
             :item="item"
             @click="goToDraftItem(item.id)"
         />
+        <CartAdItem
+            v-if="selectTabTypeAd?.value === 'archive'"
+            v-for="item in personalAdArchiveList"
+            :key="item.id"
+            :item="item"
+            @click="goToDraftItem(item.id)"
+        />
       </AdWrapperList>
     </div>
   </div>
 </template>
 
 <style scoped lang="scss">
-.profile-ad {
+.personal-ad {
   &__row {
     display: flex;
     flex-direction: column;

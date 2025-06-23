@@ -29,31 +29,31 @@ svg {
   }
 
   &.violet path {
-    fill: $violet
+    stroke: $violet
   }
   &.dark path {
-    fill: $dark-text
+    stroke: $dark-text
   }
   &.white path {
-    fill: $white-text;
+    stroke: $white-text;
   }
   &.violet-opacity path {
-    fill: $violet-opacity;
+    stroke: $violet-opacity;
   }
   &.yellow path {
-    fill: $yellow;
+    stroke: $yellow;
   }
   &.second-yellow path {
-    fill: $second-yellow;
+    stroke: $second-yellow;
   }
   &.light-teal path {
-    fill: $light-teal;
+    stroke: $light-teal;
   }
   &.back path {
-    fill: $back;
+    stroke: $back;
   }
   &.error path {
-    fill: $error;
+    stroke: $error;
   }
 }
 </style>

@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
                 sorting = [ ['created_at', 'ASC'] ]
             }
         } else {
-          sorting = [ ['created_at', 'ASC'] ]
+          sorting = [ ['created_at', 'DESC'] ]
         }
         queryFull.maxFullPrice = await AdList.max('price')
 

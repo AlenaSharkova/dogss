@@ -40,7 +40,7 @@ const form = reactive({
   description: '',
   price: '',
   date_birth: '',
-  count_dogs: {
+  number_dogs: {
     male: '',
     female: ''
   }
@@ -93,7 +93,7 @@ const titleStep = computed(() => {
 })
 const disabledButton = computed(() => {
   if(currentStep.value === 1) return !selectAdType.value.value
-  if(currentStep.value === 2) return !(selectBreed.value.value && (isUnknownDateOfBirth.value? selectApproximateAge.value.value: form?.date_birth) && ( form.count_dogs.female || form.count_dogs.male || selectQuantitative.value.value === 'one') && imageList.value.length)
+  if(currentStep.value === 2) return !(selectBreed.value.value && (isUnknownDateOfBirth.value? selectApproximateAge.value.value: form?.date_birth) && ( form.number_dogs.female || form.number_dogs.male || selectQuantitative.value.value === 'one') && imageList.value.length)
   if(currentStep.value === 3) return !(selectRegion.value.value && selectCity.value?.value && (selectRegionsExport.value[0]?.value || !isExport.value))
   if(currentStep.value === 4) return !(form.name && (form.price !== '' || isAgreedPrice.value) )
 })
@@ -148,6 +148,12 @@ watch(() => isAgreedPrice.value, (newIsAgreedPrice) => {
       isFreePrice.value = false
     }
 })
+watch(() => selectAdType.value.value, (newType) => {
+    if(newType === 'good-hands') {
+      form.price = '0'
+      isFreePrice.value = true
+    }
+})
 const showErrorSelectedRegion = () => {
   isErrorSelectedRegion.value = true
 }
@@ -193,11 +199,10 @@ const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | fa
   const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => item.imageUrl) as string[]
 
   if(
-      (!dayjs(form.date_birth).isValid()
-      || !selectRegion.value.value
+      (/*!dayjs(form.date_birth).isValid()
+      || */!selectRegion.value.value
       || !selectCity.value.value
       || !selectAdType.value.value
-      || !selectQuantitative.value.value
       || !imageUploadList.length
       || !userFullData.value)
       && type === 'active'
@@ -209,10 +214,10 @@ const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | fa
     photos: imageUploadList,
     name: form.name,
     owner: userFullData.value.id,
-    price: Number(form.price.replace(/[^0-9]/g, "")),
+    price: form.price !== ''? Number(form.price.replace(/[^0-9]/g, "")): null,
     count_image: 4,
 
-    date_birth: dayjs(form.date_birth).isValid()?
+    date_birth: dayjs(form.date_birth).isValid() && !isUnknownDateOfBirth.value?
         dayjs(form.date_birth, 'DD.MM.YYYY').format('YYYY-MM-DD'): null,
     breed_id: selectBreed.value.value as number,
     type_ad: selectAdType.value.value,
@@ -222,8 +227,17 @@ const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | fa
     parents_dad: null,
     region_main: selectRegion.value.value,
     city_main: selectCity.value.value,
-    gender: selectQuantitative.value.value == 'one'? selectGender.value.value || null: null,
-    quantitative: selectQuantitative.value.value,
+    //gender: selectQuantitative.value?.value == 'one'? selectGender.value.value || null: null,
+    //quantitative: selectQuantitative.value?.value,
+    number_male: selectGender.value.value == 'litter'
+        ? Number(form.number_dogs.male)
+        : selectGender.value.value == 'male'? 1: 0,
+    number_female: selectGender.value.value == 'litter'
+        ? Number(form.number_dogs.female)
+        : selectGender.value.value == 'female'? 1: 0,
+    approximate_age: isUnknownDateOfBirth.value
+        ? selectApproximateAge.value.value: null,
+    is_contractual_price: isAgreedPrice.value,
     regionsExport: isExport.value && selectRegionsExport.value? selectRegionsExport.value.map(item => item.value) : null,
   }
 }
@@ -232,6 +246,9 @@ const createAdForm = async (type = 'active' as 'active' | 'draft') => {
   const body = getBody(type);
   if(!body) return
   await adStore.createAd(body)
+      .then(res => {
+        router.push('/personal/ads')
+      })
 }
 
 if(authStore.statusUser === 'active') {
@@ -241,7 +258,7 @@ if(authStore.statusUser === 'active') {
 const toDraft = async () => {
   await createAdForm('draft')
   isSaveDraft.value = true
-  await router.push('/profile/ads?type=draft')
+  await router.push('/personal/ads?type=draft')
 }
 onBeforeUnmount(() => {
   if(!props.itemDraftAd?.id && selectAdType.value.value && !isSaveDraft.value) {
@@ -325,14 +342,12 @@ onBeforeUnmount(() => {
               <p class="form-create-ad__list-date__text">Дата рождения неизвестна</p>
             </div>
           </div>
-          <div class="form-create-ad__list-row">
-            <BaseTabSwitch :items="quantitativeList" v-model="selectQuantitative" />
-            <BaseTabSwitch v-if="selectQuantitative.value == 'one'" :items="genderList" v-model="selectGender" />
-            <div class="form-create-ad__list-together">
-                <BaseInput v-if="selectQuantitative.value == 'litter'" total-number :max-length="2" title="Количество девочек" v-model="form.count_dogs.female" />
-                <BaseInput v-if="selectQuantitative.value == 'litter'" total-number :max-length="2" title="Количество мальчиков" v-model="form.count_dogs.male"  />
-              </div>
-          </div>
+
+          <BaseTabSwitch :items="genderList" v-model="selectGender" />
+          <div v-if="selectGender.value == 'litter'" class="form-create-ad__list-together">
+              <BaseInput total-number :max-length="2" title="Количество девочек" v-model="form.number_dogs.female" />
+              <BaseInput total-number :max-length="2" title="Количество мальчиков" v-model="form.number_dogs.male"  />
+            </div>
           <CommonUploadImage :isShow="true" v-model="imageList"/>
 
         </template>
@@ -390,11 +405,11 @@ onBeforeUnmount(() => {
                 :disabled="isAgreedPrice || isFreePrice"
                 styleAmount />
             <div class="form-create-ad__list-together">
-              <BaseSwitch v-model="isAgreedPrice" />
+              <BaseSwitch v-model="isAgreedPrice" :readonly="selectAdType.value === 'good-hands'" />
               <span>Договорная цена</span>
             </div>
             <div class="form-create-ad__list-together">
-              <BaseSwitch v-model="isFreePrice" />
+              <BaseSwitch v-model="isFreePrice" :readonly="selectAdType.value === 'good-hands'"/>
               <span>Бесплатно</span>
             </div>
           </div>
@@ -423,7 +438,7 @@ onBeforeUnmount(() => {
 
 
     </FormWindow>
-
+    <AdHaveDraftsModal v-if="!itemDraftAd" />
   </div>
 </template>
 
@@ -460,7 +475,7 @@ onBeforeUnmount(() => {
     background: $violet-opacity;
     //background: #f4f4f4ff;
     background: $white-text;
-    box-shadow: $box-shadow-second;
+    box-shadow: $box-shadow-lite;
 
     //background: #B2E1DA99;
     position: relative;

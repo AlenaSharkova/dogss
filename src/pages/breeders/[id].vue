@@ -5,7 +5,7 @@ import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {useAdStore} from "~/stores/ad.store";
 import CartAdItem from "~/components/Cart/CartAdItem.vue";
 import {Autoplay, EffectCoverflow} from "swiper/modules";
-import UserSiteHead from "~/components/User/UserSite/UserSiteHead.vue";
+import BreedersSiteHead from "~/components/Breeders/BreedersSite/BreedersSiteHead.vue";
 import BaseIconPaws from "~/components/Base/BaseIcon/BaseIconPaws.vue";
 
 definePageMeta({
@@ -58,7 +58,7 @@ const adList = computed(() => adStore.adCatalogList )
 <template>
   <div class="page-breeder">
     <div class="page-breeder__row">
-      <UserSiteHead :title="`Питомник ${usersData?.name}`" />
+      <BreedersSiteHead :title="`Питомник ${usersData?.name}`" />
       <div class="page-breeder__title">
         <h1>Питомник {{usersData?.name}}</h1>
       </div>

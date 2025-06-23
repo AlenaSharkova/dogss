@@ -72,7 +72,7 @@ const pagesList = computed(() => {
       @include subtitle-small(500);
       transition: all 0.1s;
       cursor: pointer;
-      box-shadow: $box-shadow-second;
+      box-shadow: $box-shadow-lite;
       &:hover {
         //TODO: (design) придумать hover, как и для кнопки базовой
       }

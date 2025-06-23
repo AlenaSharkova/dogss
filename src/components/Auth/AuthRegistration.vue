@@ -103,7 +103,7 @@ const sendOtp = async (otp: string) => {
           console.log('res?.token', res?.token)
           //await authStore.getUserFullData()
           if(authStore.lastPageRedirect) await router.push(authStore.lastPageRedirect)
-          else await router.push('/profile')
+          else await router.push('/personal')
         } else textInvalidOtp.value = 'Ошибка авторизации'
       })
       .catch(e => {
@@ -240,6 +240,7 @@ if(!regionsStore.regionsList) {
               :max-length="64"
               @onError="(val: boolean) => (form.last_name.valid = val)"
           />
+          <!--TODO: а он прям нужен при регистрации?-->
           <BaseInput
               v-model="form.phone.value"
               title="Введите номер телефона"

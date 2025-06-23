@@ -45,7 +45,7 @@ const model = computed({
   cursor: pointer;
   min-width: 52px;
   &.readonly {
-    background-color: var(--border, #D3D8E6);
+    opacity: 0.6;
   }
   input {
     display: none;
