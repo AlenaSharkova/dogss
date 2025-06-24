@@ -22,7 +22,7 @@ export default class UsersService extends BaseApiService {
     if(error.value ) throw {...error.value};
     else return data.value;
   }
-  async getUsersData(id: number | string) {
+  async getUserData(id: number | string) {
     const {data, error} = await useFetch<any>(this.RESOURCE, {
       method: "get",
       baseURL: this.baseURL,

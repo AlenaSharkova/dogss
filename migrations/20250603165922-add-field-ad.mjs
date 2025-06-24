@@ -29,16 +29,16 @@ export async function up(data) {
       type: DataTypes.INTEGER,
       allowNull: true,
     });*/
-    console.error(" Выполнении миграции up:");
+    //console.error(" Выполнении миграции up:");
 
-    await queryInterface.addColumn('users', 'person_ads', {
+    /*await queryInterface.addColumn('users', 'person_ads', {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
       allowNull: true,
     });
     await queryInterface.addColumn('users', 'person_favorites', {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
       allowNull: true,
-    });
+    });*/
     /*await queryInterface.addColumn('users', 'person_filters', {
       type: DataTypes.ARRAY(DataTypes.INTEGER),
       allowNull: true,

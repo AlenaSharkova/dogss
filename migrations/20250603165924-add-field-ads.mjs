@@ -9,7 +9,7 @@ import {DataTypes} from "sequelize";
 export async function up(data) {
   try {
     const {queryInterface, Sequelize} = data.context;
-
+/*
     await queryInterface.addColumn('ad_list', 'number_male', {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -26,7 +26,7 @@ export async function up(data) {
       type: DataTypes.BOOLEAN,
       allowNull: true,
     });
-
+*/
   } catch (error) {
     console.error("Ошибка при выполнении миграции up:", error);
     throw error; // Важно: Пробрасываем ошибку, чтобы umzug знал, что миграция не удалась

@@ -2,16 +2,21 @@
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import {formatAmountInput, formatDate, getYearsOld} from "~/utils/formatData";
 import type Swiper from "swiper";
+import type {UserItemPublicPreviewStruct, UserItemPublicStruct} from "~/struct/User/UserItemStruct";
+import {computed} from "vue";
 
 
-defineProps({
-  item: {
-    type: Object as PropType<AdItemStruct>,
+const props = defineProps({
+  user: {
+    type: Object as PropType<UserItemPublicPreviewStruct>,
     default: []
   }
 })
 
 const swiperInstance = ref()
+
+const userFullName = computed(() => `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`)
+
 
 const onSwiper = (swiper: Swiper) => {
   swiperInstance.value = swiper
@@ -19,12 +24,13 @@ const onSwiper = (swiper: Swiper) => {
 const router = useRouter();
 
 const goToBreeder = (id: number) => {
-  router.push(`/breeders/${id}`)
+  //router.push(`/breeders/${id}`)
+  router.push(`/user/${id}`)
 }
 </script>
 
 <template>
-  <div @click="goToBreeder(item.id)" v-if="item" class="cart-breeder-item">
+  <div @click="goToBreeder(user.id)" class="cart-breeder-item">
     <div class="cart-breeder-item__wrapper">
       <div class="cart-breeder-item__photo">
         <img src="/image/123.jpg">
@@ -32,12 +38,8 @@ const goToBreeder = (id: number) => {
       <div class="cart-breeder-item__content">
         <div class="cart-breeder-item__content-wrapper">
           <div class="cart-breeder-item__content-name">
-            <p>Имя: {{item.name}}</p>
-            <p>Mail: {{item.email}}</p>
-            <p>Цена: {{formatAmountInput(item.price)}} ₽</p>
-            <p> Рождение: {{formatDate(item.date, 'DD MMMM YYYY')}}</p>
-            <p> Возраст: {{getYearsOld(item.date)}}</p>
-            <p> Мать: {{item.ownerDetails?.name}}</p>
+            <p>Имя: {{userFullName}}</p>
+            <p>Mail: {{user.personal_data.email}}</p>
           </div>
         </div>
       </div>

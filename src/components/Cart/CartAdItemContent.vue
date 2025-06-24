@@ -21,7 +21,7 @@ const typeAdText = computed(() => {
 const approximateAgeText = computed(() => {
   return filterStore.approximateAgeList?.find(age => age.value == props.item.approximate_age)?.text || ''
 })
-const textMainRegions = computed(() => `Регион: ${props.item.geo_main.region.text}`)
+const textMainRegions = computed(() => `Регион: ${props.item.geo_main.region?.text}`)
 </script>
 
 <template>

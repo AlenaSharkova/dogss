@@ -17,12 +17,11 @@ usersStore.updateUsersList()
       <LayoutWrapperPage>
         <div class="page-breeders-group__list">
           <CartBreederItem
-              v-for="(item, index) in usersList"
+              v-for="(user, index) in usersList"
               :key="index"
               class="page-breeders__list-item"
-              :item="item">
-            <CartBreederItem  />
-            {{item}}
+              :user="user">
+            <CartBreederItem />
 
           </CartBreederItem>
         </div>

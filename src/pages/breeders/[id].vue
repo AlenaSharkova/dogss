@@ -29,7 +29,7 @@ const selectBreed = ref({
 
 idBreeder.value = route.params.id as string
 
-usersStore.getUsersData(idBreeder.value)
+usersStore.getUserViewData(idBreeder.value)
 
 
 onMounted(() => {

@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import UsersService from '~/service/users.service';
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import {useCommonStore} from "~/stores/common.store";
+import type {UserItemPublicPreviewStruct, UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 
 
 export const useUsersStore = defineStore('usersStore', () => {
@@ -11,8 +12,8 @@ export const useUsersStore = defineStore('usersStore', () => {
 
   const usersService = new UsersService(config.public.apiBaseUrl);
 
-  let usersList = ref<AdItemStruct[] | null>(null)
-  const userData = ref<AdItemStruct | null>(null)
+  let usersList = ref<UserItemPublicPreviewStruct[] | null>(null)
+  const userViewData = ref<UserItemPublicStruct | null>(null)
 
     async function updateUsersList() {
         await usersService
@@ -29,11 +30,11 @@ export const useUsersStore = defineStore('usersStore', () => {
           });
   }
 
-  async function getUsersData(id: string | number) {
+  async function getUserViewData(id: string | number) {
       await usersService
-        .getUsersData(id)
+        .getUserData(id)
         .then((res) => {
-          if (res) userData.value = res.value;
+          if (res) userViewData.value = res;
         })
           .catch(e => {
               commonStore.addUserErrorAlert(e.data?.statusMessage)
@@ -46,7 +47,7 @@ export const useUsersStore = defineStore('usersStore', () => {
   return {
       usersList,
       updateUsersList,
-      getUsersData,
-      userData
+      getUserViewData,
+      userViewData
   }
 })

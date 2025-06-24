@@ -163,7 +163,7 @@ watch(() => props.item.isFavorite,
           </swiper-slide>
           <div v-if="!item.photos.length"
                class="cart-item__swiper-slide --empty">
-            <img class="cart-item__swiper-img" src="@/assets/image/default_cart.png" :alt="`dog-${item.id}-${indexImg}`">
+            <img class="cart-item__swiper-img" src="@/assets/image/default_cart.png" loading="lazy" :alt="`dog-${item.id}-${item.indexImg}`">
           </div>
 
           <div class="cart-item__swiper-pagination"></div>

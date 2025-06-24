@@ -1,17 +1,21 @@
 <script setup lang="ts">
-
-import {useAuthStore} from "~/stores/auth.store";
-import {usePersonalStore} from "~/stores/personal.store";
-import {computed, ref} from "vue";
+import {computed, type PropType, ref} from "vue";
 import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";
+import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
 
+const props = defineProps({
+  user: {
+    type: Object as PropType<UserItemPublicStruct>,
+    default: null
+  }
+})
 const router = useRouter();
 const route = useRoute();
-const personalStore = usePersonalStore()
-const authStore = useAuthStore()
 
 const classAdded = ref(false)
+const isActiveIndex = ref(0)
 
 const tabNavList = reactive([
   {
@@ -26,7 +30,7 @@ const tabNavList = reactive([
   },
   {
     name: "Объявления",
-    id: "ad",
+    id: "ads",
     isActive: false,
   },
   {
@@ -35,12 +39,16 @@ const tabNavList = reactive([
     isActive: false,
   },
 ])
-const activeTabId = computed(() => tabNavList.find(item => item.isActive).id )
+const activeTabId = computed(() => tabNavList?.find(item => item.isActive)?.id )
+const userFullName = computed(() => `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`)
 
-const isActiveIndex = ref(0)
 const lineWidthTabNum = computed(() => 100 / tabNavList.length )
 const lineWidthTab = computed(() => lineWidthTabNum.value +'%' )
 const lineLeftTab = computed(() => isActiveIndex.value * lineWidthTabNum.value + '%' )
+
+const targetElement = useTemplateRef<HTMLElement>('target-element')
+const scrollTriggerInstance = ref<globalThis.ScrollTrigger | null>(null);
+const animationInstance = ref<gsap.core.Tween | null>(null);
 
 
 const changeTab = (idSelect: string) => {
@@ -50,20 +58,51 @@ const changeTab = (idSelect: string) => {
       router.push({query: {type: ''}})
       item.isActive = true
       isActiveIndex.value = index
+      router.push({hash: `#${item.id}`})
     } else {
       item.isActive = false
     }
   })
 }
+const createTrigger = async () => {
 
-const userFullData = computed(() => authStore.userFullData)
-const userFullName = computed(() => userFullData.value? `${userFullData.value?.personal_data.first_name} ${userFullData.value?.personal_data.last_name}`: '')
+  if (scrollTriggerInstance.value) {
+    scrollTriggerInstance.value.kill(); // Убиваем старый ScrollTrigger
+  }
+  animationInstance.value = gsap.to('.personal-header__bottom-nav', {
+    //поменяла см. breeder
+    height: '125px',
+    duration: 1,
+    scrollTrigger: {
+      trigger: ".personal-header",
+      //поменяла см. breeder
+      start: `bottom +=90px`,
+      end: "bottom +=90px",
+      scrub: true,
+      onEnter: () => {
+        classAdded.value = true
+      },
+      onLeaveBack: () => {
+        classAdded.value = false
+      },
+    }
+  });
+
+}
+
+onMounted(async () => {
+  gsap.registerPlugin(ScrollTrigger); // Убедитесь, что ScrollTrigger зарегистрирован
+  console.log('targetElement.value 1', targetElement.value)
+
+  await createTrigger()
+
+});
 
 
 </script>
 
 <template>
-  <div v-if="userFullData" class="personal-header">
+  <div class="personal-header">
     <div class="personal-header__wrapper">
       <BaseProfileCircle img="/image/beautiful_dogs/smiles_in_lavender.jpg" :name="userFullName" size="big" />
       <div class="personal-header__content">
@@ -75,6 +114,24 @@ const userFullName = computed(() => userFullData.value? `${userFullData.value?.p
         <div ref="target-element" class="personal-header__bottom-nav"
              :class="{fixed: classAdded}">
           <div class="personal-header__bottom-nav__row">
+            <Transition name="fade">
+              <div v-if="classAdded" class="personal-header__bottom-nav__personal">
+                <BaseProfileCircle
+                    name="Николай Шарков"
+                    size="medium"
+                    unfull
+                    img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
+                <div class="personal-header__bottom-nav__personal-content">
+                  <div class="personal-header__bottom-nav__personal-content__title">
+                    <p>{{userFullName}}</p>
+                  </div>
+                  <!--<div class="personal-header__bottom-nav__personal-content__action">
+                    <BaseButton text="Подпсиаться" size="medium"/>
+                  </div>
+                  -->
+                </div>
+              </div>
+            </Transition>
             <nav class="personal-header__bottom-nav__list">
               <div class="personal-header__bottom-nav__item"
                    v-for="tab in tabNavList"
@@ -118,7 +175,7 @@ const userFullName = computed(() => userFullData.value? `${userFullData.value?.p
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
   }
   &__content{
     &-name {
@@ -130,14 +187,20 @@ const userFullName = computed(() => userFullData.value? `${userFullData.value?.p
     width: 100%;
     margin-top: auto;
     &-nav {
-      backdrop-filter: blur(6px);
       width: 100%;
       height: 90px;
       display: flex;
       justify-content: center;
       will-change: header;
+      background-color: #47456D00;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s;
+
+
 
       &.fixed {
+        background-color: $violet-opacity;
+
         z-index: 10;
         position: fixed;
         top: 0px;
@@ -159,11 +222,11 @@ const userFullName = computed(() => userFullData.value? `${userFullData.value?.p
 
         @media (max-width: $md) {
           padding: 15px 30px;
-          gap: 10px;
+          gap: 0px;
         }
         @media (max-width: $sm) {
           padding: 15px 20px;
-          gap: 16px;
+          gap: 0px;
         }
       }
       &__personal {

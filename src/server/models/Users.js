@@ -1,4 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const {formattedAd} = require("~/server/utils/formattedRequest.js");
 
 module.exports = (sequelize) => {
     return sequelize.define('Users', {
@@ -48,7 +49,13 @@ module.exports = (sequelize) => {
         person_favorites: {
             type: DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: true,
-        }
+            where: {
+                status: {
+                    [Sequelize.Op.in]: ['active', 'archive']
+                }
+            },
+            required: false
+        },
     }, {
         tableName: 'users',
         timestamps: false,

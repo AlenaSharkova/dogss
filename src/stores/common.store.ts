@@ -62,12 +62,12 @@ export const useCommonStore = defineStore('commonStore', () => {
         isHiddenHeaderSite.value = isScrolled.value;
       }
   )
+  if(process.client) {
+      handleScroll();
+      window.addEventListener('scroll', () => handleScroll());
+      isInit.value = true;
+  }
 
-  onMounted(() => {
-    handleScroll();
-    window.addEventListener('scroll', () => handleScroll());
-    isInit.value = true;
-  });
   onUnmounted(() => {
     window.removeEventListener('scroll', () => handleScroll());
   });

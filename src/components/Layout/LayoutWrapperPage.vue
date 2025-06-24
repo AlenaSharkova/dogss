@@ -4,11 +4,15 @@ defineProps({
     type: Boolean,
     default: true
   },
+  isPaddingY: {
+    type: Boolean,
+    default: true
+  },
 })
 </script>
 
 <template>
-  <div class="wrapper-page" :class="{'--without-padding-x': !isPaddingX}">
+  <div class="wrapper-page" :class="{'--without-padding-x': !isPaddingX, '--without-padding-y': !isPaddingY}">
     <slot></slot>
   </div>
 </template>
@@ -19,6 +23,10 @@ defineProps({
   &.--without-padding-x {
     padding-left: 0!important;
     padding-right: 0!important;
+  }
+  &.--without-padding-y {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
   }
   @media (max-width: $md) {
     padding: 50px 35px 50px 30px;

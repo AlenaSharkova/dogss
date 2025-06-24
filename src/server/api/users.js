@@ -1,6 +1,6 @@
 import breeds from "~/demoData/new_breeds.json";
 import connection from "express";
-import {formattedUserGlobal} from "~/server/utils/formattedRequest.js";
+import {formattedUserGlobal, formattedUserGlobalShort} from "~/server/utils/formattedRequest.js";
 
 
 export default defineEventHandler(async (event)=>
@@ -11,10 +11,12 @@ export default defineEventHandler(async (event)=>
     const Users = event.context.Users;
     const GeoCity = event.context.GeoCity;
     const GeoRegions = event.context.GeoRegions;
+    const AdList = event.context.AdList;
+    const Breeds = event.context.Breeds;
 
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
-    if (!Users || !GeoCity  || !GeoRegions || !sequelize) {
+    if (!Users || !GeoCity  || !AdList || !GeoRegions || !sequelize) {
         console.error('Breeds model or sequelize is not available in the context');
         throw createError({
             statusCode: 500,
@@ -33,6 +35,33 @@ export default defineEventHandler(async (event)=>
                     {
                         model: GeoRegions,
                         as: 'LocationUserRegion',
+                    },
+                    {
+                        model: AdList,
+                        as: 'UserAdList',
+                        include: [
+                            {
+                                model: GeoRegions,
+                                as: 'LocationRegion',
+                            },
+                            {
+                                model: GeoRegions,
+                                as: 'ExportRegions',
+                                through: { attributes: [] }
+                            },
+                            {
+                                model: Breeds,
+                                as: 'Breed',
+                            },
+                            {
+                                model: GeoCity,
+                                as: 'LocationCity',
+                            },
+                            {
+                                model: Users,
+                                as: 'Owner',
+                            }
+                        ],
                     }
                 ]
             });
@@ -57,7 +86,7 @@ export default defineEventHandler(async (event)=>
                     }
                 ]}
             );
-            return usersList.map(user => formattedUserGlobal(user))
+            return usersList.map(user => formattedUserGlobalShort(user))
         }
     } catch (error) {
         throw createError({

@@ -1,10 +1,52 @@
 import type {Database} from "db0";
 import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
+import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 
 
 export interface UserItemFullStruct {
     id: number;
     status: 'active' | 'unconfirmed' | 'archive';
+    created_at: string;
+    personal_data: {
+        photo: string;
+        email: string;
+        first_name: string;
+        last_name: string;
+        phone: string;
+        //TODO:created_at
+        geo_main: {
+            region: ISelectNumber,
+            city: ISelectNumber,
+            address: string | null,
+        },
+    }
+}
+export interface UserItemPublicAdStruct {
+    active: AdItemStruct[],
+    archive: AdItemStruct[]
+}
+export interface UserItemPublicStruct {
+    id: number;
+    status: 'active' | 'unconfirmed' | 'archive';
+    created_at: string;
+    personal_data: {
+        photo: string;
+        email: string;
+        first_name: string;
+        last_name: string;
+        phone: string;
+        //TODO:created_at
+        geo_main: {
+            region: ISelectNumber,
+            city: ISelectNumber,
+            address: string | null,
+        },
+    },
+    ad_list: UserItemPublicAdStruct
+}
+export interface UserItemPublicPreviewStruct {
+    id: number;
+    status: 'active';
     created_at: string;
     personal_data: {
         photo: string;

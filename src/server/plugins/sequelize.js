@@ -106,6 +106,10 @@ export default defineNitroPlugin(async  (nitroApp) => {
         onDelete: 'CASCADE',
         as: 'Owner'
     });
+    Users.hasMany(AdList, {
+        foreignKey: 'owner',
+        as: 'UserAdList'
+    });
 
     Otp.belongsTo(Users, { foreignKey: 'userId', onDelete: 'CASCADE',  as: 'User' });
 

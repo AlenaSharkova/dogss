@@ -1,6 +1,8 @@
 html {
   width: 100vw;
   @include scrollbar();
+  scroll-behavior: smooth;
+
 }
 body {
   margin: 0;

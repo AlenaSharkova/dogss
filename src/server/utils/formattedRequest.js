@@ -1,16 +1,50 @@
 
-export const formattedUserGlobal = (userData) => {
+export const formattedUserGlobal = (user) => {
     return {
-        email: userData.email,
-        first_name: userData.first_name,
-        id: userData.id,
-        last_name: userData.last_name,
-        photo: userData.photo,
-        status: userData.status,
-        geo_main: {
-            region: userData.LocationUserRegion,
-            city: userData.LocationUserCity,
-            address: userData.address,
+        id: user.id,
+        status: user.status,
+        personal_data: {
+            email: user.email,
+            id: user.id,
+            last_name: user.last_name,
+            photo: user.photo,
+            first_name: user.first_name,
+            status: user.status,
+            geo_main: {
+                city: user.LocationUserCity,
+                region: user.LocationUserRegion,
+                address: user.address,
+            }
+        },
+        ad_list: {
+            active: user.UserAdList.reduce((list, ad) => {
+                if (ad.status === 'active') list.push(formattedAd(ad))
+
+                return list
+            }, []),
+            archive: user.UserAdList.reduce((list, ad) => {
+                if (ad.status === 'archive') list.push(formattedAd(ad))
+                return list
+            }, []),
+        }
+    };
+}
+export const formattedUserGlobalShort  = (user) => {
+    return {
+        id: user.id,
+        status: user.status,
+        personal_data: {
+            email: user.email,
+            id: user.id,
+            last_name: user.last_name,
+            photo: user.photo,
+            first_name: user.first_name,
+            status: user.status,
+            geo_main: {
+                city: user.LocationUserCity,
+                region: user.LocationUserRegion,
+                address: user.address,
+            }
         }
     };
 }
