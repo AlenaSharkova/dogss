@@ -30,6 +30,9 @@ const props = defineProps({
   right: 0;
   overflow-y: auto;
   flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -60,6 +63,7 @@ const props = defineProps({
     justify-content: center;
     padding: 40px 0;
     z-index: 10;
+    width: max-content;
 
 
     @media (max-width: $sm) {

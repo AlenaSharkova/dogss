@@ -10,7 +10,7 @@ module.exports = (sequelize) => {
             allowNull: false,
         },
         photo: {
-            type: DataTypes.ARRAY(DataTypes.TEXT),
+            type: DataTypes.TEXT,
             allowNull: true,
         },
         address: {

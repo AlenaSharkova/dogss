@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     const statusMessage = 'Ошибка личных данных, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
-    if (!AdList || !sequelize) {
+    if (!AdList || !Users || !sequelize) {
         console.error('Model or sequelize is not available in the context');
         throw createError({
             statusCode: 500,

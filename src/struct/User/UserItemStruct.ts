@@ -71,6 +71,23 @@ export interface UserCreateItemStruct {
     region: number,
     city: number,
 }
+export interface UserChangeItemStruct {
+    email?: string;
+    first_name?: string;
+    last_name?: string;
+    phone?: string;
+    photo?: string;
+    region?: number,
+    city?: number,
+}
+export interface UserFormItemStruct {
+    email: string;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    region: ISelectNumber,
+    city: ISelectNumber,
+}
 
 /*
 export interface AdListApiDetails {

@@ -4,6 +4,7 @@ import {formatAmountInput, formatDate, getYearsOld} from "~/utils/formatData";
 import type Swiper from "swiper";
 import type {UserItemPublicPreviewStruct, UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import {computed} from "vue";
+import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";
 
 
 const props = defineProps({
@@ -32,9 +33,11 @@ const goToBreeder = (id: number) => {
 <template>
   <div @click="goToBreeder(user.id)" class="cart-breeder-item">
     <div class="cart-breeder-item__wrapper">
-      <div class="cart-breeder-item__photo">
-        <img src="/image/123.jpg">
-      </div>
+      <BaseProfileCircle
+          :name="userFullName"
+          size="medium"
+          unfull
+          :img="user.personal_data.photo" />
       <div class="cart-breeder-item__content">
         <div class="cart-breeder-item__content-wrapper">
           <div class="cart-breeder-item__content-name">

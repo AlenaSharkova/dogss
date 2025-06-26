@@ -195,16 +195,10 @@ if(!regionsStore.regionsList) {
               Шаг {{ currentStep }} из 4
             </span>
             <span class="auth-registration__progress-content__title">
-              {{ subtitle }}
+              {{ titleStep }}
             </span>
           </div>
-          <div class="auth-registration__progressbar">
-            <div
-                class="auth-registration__progressbar-line"
-                :style="{width: widthProgress}"
-            >
-            </div>
-          </div>
+          <BaseProgressBar :width-progress="widthProgress" />
         </div>
         <span>Если Вы уже зарегистрированы на сервисе: </span>
         <router-link to="/auth/login" class="--link-registration">перейдите к странице входа</router-link>

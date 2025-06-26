@@ -27,6 +27,9 @@ export default defineEventHandler(async (event)=>
     try {
         if (query?.id) {
             const user = await Users.findOne({
+                where: {
+                    id: query.id
+                },
                 include: [
                     {
                         model: GeoCity,

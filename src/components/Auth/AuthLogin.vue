@@ -60,7 +60,7 @@ const sendOtp = async (otp: string) => {
         if(res?.token && authStore.statusUser === 'active') {
           console.log('переход в profile')
           if(authStore.lastPageRedirect) router.push(authStore.lastPageRedirect)
-          else router.push('/profile')
+          else router.push('/personal/profile')
         } else textInvalidOtp.value = 'Ошибка авторизации'
       })
       .catch(e => {

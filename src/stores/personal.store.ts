@@ -6,6 +6,7 @@ import type {
 } from "~/struct/Ad/AdItemStruct";
 import {useCommonStore} from "~/stores/common.store";
 import type {PersonalAdListStruct} from "~/struct/Personal/PersonalAdListStruct";
+import type {UserChangeItemStruct} from "~/struct/User/UserItemStruct";
 
 
 export const usePersonalStore = defineStore('personalStore', () => {
@@ -125,6 +126,21 @@ export const usePersonalStore = defineStore('personalStore', () => {
             });
     }
 
+    async function changeUserData(data: UserChangeItemStruct) {
+        await personalService.patchUser(data)
+            .then((res) => {
+                console.log('ressss update user', res)
+                if (res) {
+                    authStore.getUserFullData()
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+
     onMounted(() => {
         if(authStore.statusUser === 'active') {
             updatePersonalAdList()
@@ -156,7 +172,8 @@ export const usePersonalStore = defineStore('personalStore', () => {
         updateFavorites,
         FavoritesList,
         deletePersonalAd,
-        deletePersonalFavorite
+        deletePersonalFavorite,
+        changeUserData
     }
 })
 

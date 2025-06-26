@@ -11,6 +11,10 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  limit: {
+    type: Number,
+    default: 1
+  },
 });
 const emit = defineEmits(["close"]);
 const imageList = defineModel<ICommonUpload[]>({default: []});
@@ -80,10 +84,10 @@ const isShowImageStore = (fileUploadInfo: ICommonUpload) => ['success', 'disable
   <div class="common-upload__file">
     <div class="common-upload__file-action">
       <BaseButton @click="fileRef.click()"
-                  :disabled="imageList.length >= 10"
+                  :disabled="imageList.length >= limit"
                   rounded="rounded-l"
                   type="secondary"
-                  text="Выбрать изображения (до 10 штук)">
+                  :text="`Выбрать изображения (Максимум: ${limit})`">
       </BaseButton>
     </div>
     <input class="common-upload__file-input" @change="readFile($event)" type="file" ref="fileRef"/>

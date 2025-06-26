@@ -104,7 +104,7 @@ onMounted(async () => {
 <template>
   <div class="personal-header">
     <div class="personal-header__wrapper">
-      <BaseProfileCircle img="/image/beautiful_dogs/smiles_in_lavender.jpg" :name="userFullName" size="big" />
+      <BaseProfileCircle :img="user.personal_data.photo" :name="userFullName" size="big" />
       <div class="personal-header__content">
         <h2 class="personal-header__content-name">
           {{ userFullName}}
@@ -117,7 +117,7 @@ onMounted(async () => {
             <Transition name="fade">
               <div v-if="classAdded" class="personal-header__bottom-nav__personal">
                 <BaseProfileCircle
-                    name="Николай Шарков"
+                    :name="userFullName"
                     size="medium"
                     unfull
                     img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
