@@ -1,6 +1,7 @@
 import type {Database} from "db0";
 import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
+import type {ICommonFormValid} from "~/struct/Common/ICommonForm";
 
 
 export interface UserItemFullStruct {
@@ -12,7 +13,6 @@ export interface UserItemFullStruct {
         email: string;
         first_name: string;
         last_name: string;
-        phone: string;
         //TODO:created_at
         geo_main: {
             region: ISelectNumber,
@@ -34,7 +34,6 @@ export interface UserItemPublicStruct {
         email: string;
         first_name: string;
         last_name: string;
-        phone: string;
         //TODO:created_at
         geo_main: {
             region: ISelectNumber,
@@ -53,7 +52,6 @@ export interface UserItemPublicPreviewStruct {
         email: string;
         first_name: string;
         last_name: string;
-        phone: string;
         //TODO:created_at
         geo_main: {
             region: ISelectNumber,
@@ -67,7 +65,6 @@ export interface UserCreateItemStruct {
     email: string;
     first_name: string;
     last_name: string;
-    phone: string;
     region: number,
     city: number,
 }
@@ -75,16 +72,14 @@ export interface UserChangeItemStruct {
     email?: string;
     first_name?: string;
     last_name?: string;
-    phone?: string;
     photo?: string;
     region?: number,
     city?: number,
 }
 export interface UserFormItemStruct {
-    email: string;
-    first_name: string;
-    last_name: string;
-    phone: string;
+    email: ICommonFormValid<string>;
+    first_name: ICommonFormValid<string>;
+    last_name: ICommonFormValid<string>;
     region: ISelectNumber,
     city: ISelectNumber,
 }

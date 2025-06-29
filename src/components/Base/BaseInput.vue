@@ -32,6 +32,7 @@ interface Props {
 
   rules?: any[]
   type?: string;
+  errorBackground: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
   type: 'text'
@@ -152,7 +153,7 @@ watch(
 </script>
 
 <template>
-  <div class="base-field">
+  <div class="base-field" @click.stop>
     <div class="base-field__item" :class="{ invalid: invalidText && !isDisabledInvalidText || errorCustomer, focused: focused, '--no-title': !title, disabled: disabled}">
       <input
         :id="formName"
@@ -204,7 +205,7 @@ watch(
         </label>
       </Transition>
       <Transition name="invalid">
-        <label v-if="errorCustomer && !focused" class="label-invalid" :for="formName">
+        <label v-if="errorCustomer && !focused" class="label-invalid" :class="{'--error-background': errorBackground}" :for="formName">
           {{ errorCustomer }}
         </label>
       </Transition>
@@ -259,6 +260,7 @@ watch(
       //border: 1px solid #9FB4B2;
       //box-shadow: $box-shadow-lite;
       .label-invalid {
+
         //display: none;
         /*opacity: 0;
         transition: none;
@@ -344,6 +346,13 @@ watch(
       font-weight: 500;
       animation: anim-invalid 0.2s;
       //transition: opacity 0.2s, top 0.2s;
+      &.--error-background {
+        border-radius: 3px;
+        background-color: $error;
+
+        color: $white-text;
+        padding: 2px 5px;
+      }
     }
     .label-fullness {
       flex-shrink: 0;

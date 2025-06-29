@@ -224,10 +224,9 @@ const fullnessInput = computed(() => {
       left: 0;
       font-size: 12px;
       line-height: 12px;
-      color: #DB1237;
+      color: $error-text;
       font-weight: 500;
       transition: all 0.2s;
-
     }
     .label-fullness {
       flex-shrink: 0;

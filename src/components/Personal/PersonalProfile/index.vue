@@ -7,10 +7,14 @@ import PersonalProfilePhoto from "~/components/Personal/PersonalProfile/Personal
 
 const authStore = useAuthStore()
 
+const isShowChangeInfo = ref(false)
+
 const userFullData = computed(() => authStore.userFullData)
 const userFullName = computed(() => `${userFullData.value?.personal_data.last_name} ${userFullData.value?.personal_data.first_name}` )
 
-
+const showChangeInfo = () => {
+  isShowChangeInfo.value = true
+}
 </script>
 
 <template>
@@ -23,8 +27,13 @@ const userFullName = computed(() => `${userFullData.value?.personal_data.last_na
       </div>
       <PersonalOffers class="personal-profile__offers" />
       <PersonalProfileProgress class="personal-profile__progress" />
-      <PersonalProfileForm
+      <PersonalProfileInfo
           v-if="userFullData"
+          :user="userFullData"
+          @change="showChangeInfo()"
+          class="personal-profile__progress" />
+      <PersonalProfileForm
+          v-if="userFullData && isShowChangeInfo"
           :user="userFullData"
           class="personal-profile__progress" />
     </div>

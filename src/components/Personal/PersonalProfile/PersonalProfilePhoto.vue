@@ -29,19 +29,21 @@ const updatePhoto = () => {
   personalStore.changeUserData({photo: imageList.value[0].imageUrl})
       .then(() => {
         imageList.value = []
-        deleteImageStorage()
+        deleteImageStorage(oldPhoto.value)
         isShowChangePhoto.value = false
       })
       .catch(() => { return } )
 }
 const hiddenChangePhoto = () => {
-  imageList.value = []
   //
-  deleteImageStorage()
+  if(imageList.value?.length) deleteImageStorage(imageList.value[0].imageUrl)
+  imageList.value = []
   isShowChangePhoto.value = false
 }
-const deleteImageStorage = async () => {
-  await uploadStore.deleteFileStorage(oldPhoto.value)
+const deleteImageStorage = async (photo: string | null) => {
+  if(photo) {
+    await uploadStore.deleteFileStorage(photo)
+  }
 }
 
 

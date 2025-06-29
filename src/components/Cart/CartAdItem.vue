@@ -206,7 +206,7 @@ watch(() => props.item.isFavorite,
   &:hover {
     //box-shadow: 0px 4px 24px 0px rgba(30, 30, 30, 0.25);
     //box-shadow: -7px 11px 16px 10px rgb(227 72 72 / 8%);
-    box-shadow: $box-shadow-middle;
+    box-shadow: $box-shadow-middle-wide;
 
   }
   &__wrapper {

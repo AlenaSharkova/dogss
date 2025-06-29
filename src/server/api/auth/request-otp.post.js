@@ -55,7 +55,7 @@ export default defineEventHandler(async (event) => {
             } else {
                 throw createError({
                     statusCode: 400,
-                    message: 'Email or phone number is required',
+                    message: 'Email is required',
                     statusMessage,
                 })
             }

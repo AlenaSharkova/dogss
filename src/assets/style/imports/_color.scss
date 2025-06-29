@@ -1,10 +1,10 @@
-$primary: #161616;
+/*$primary: #161616;
 $primary-grey: #b2e1da;
 $turquoise: #00dfea;
 $dark-green: #4EA995;
 $grey: #e6e6e6;
 $light-black: #6c6c6c;
-$err: #b10121;
+$err: #b10121;*/
 
 $error: #E57373;
 $error-text: #F44336;
@@ -25,6 +25,7 @@ $violet-opacity-max: #47456D44;
 $yellow: #F2C94C;
 $second-yellow: #E0A96F;
 $light-teal: #B2E1DA;
+$light-teal-66: #B2E1DA66;
 $back: #f4f4f4;
 $green: #2E4A41;
 
@@ -32,5 +33,6 @@ $link: rgba(42, 34, 200, 0.8);
 
 //TODO: определить фиолетовая подсветка (71, 69, 109) или (51, 51, 51)
 $box-shadow-dark : 0px 4px 6px 0px rgba(71, 69, 109, 50%);
-$box-shadow-middle : 0px 4px 24px 10px rgba(71, 69, 109, 25%);
+$box-shadow-middle : 0px 4px 6px 0px rgba(71, 69, 109, 25%);
 $box-shadow-lite : 0px 4px 6px 0px rgba(71, 69, 109, 10%);
+$box-shadow-middle-wide : 0px 4px 24px 10px rgba(71, 69, 109, 25%);

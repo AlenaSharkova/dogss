@@ -11,7 +11,7 @@ const breedsStore = useBreedsStore()
 const commonStore = useCommonStore()
 
 
-const isPersonalMenu = computed(() => route.path.startsWith('/personal'))
+const isPersonalMenu = computed(() => route.path.startsWith('/personal') || route.query.type === 'personal')
 </script>
 
 <template>

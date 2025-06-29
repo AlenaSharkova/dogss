@@ -16,6 +16,7 @@ const form = reactive({
     value: '',
     valid: false
   },
+  //нет в бд phone
   phone: '',
   otp: '',
 })

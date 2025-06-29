@@ -1,25 +1,27 @@
 <script setup lang="ts">
+
+const authStore = useAuthStore()
 const sections = computed(() => [
     {
-      link: 'profile',
+      link: '/personal/profile',
       icon: 'User',
       title: 'Профиль',
       count: 0
     },
     {
-      link: 'favorites',
+      link: '/personal/favorites',
       icon: 'Heart',
       title: 'Мои избранные',
       count: 0
     },
     {
-      link: 'ads',
+      link: '/personal/ads',
       icon: 'Ad',
       title: 'Объявления',
       count: 0
     },
     {
-      link: 'page',
+      link: `/user/${authStore.userFullData?.id}?type=personal`,
       icon: 'User',
       title: 'Страница пользователя',
       count: 0
@@ -41,7 +43,7 @@ const isHiddenMenu = ref(false)
             :key="item.link"
             active-class="--active"
             class="personal-menu__nav-item"
-            :to="`/personal/${item.link}`">
+            :to="item.link">
           <div class="personal-menu__nav-item__row">
             <component class="personal-menu__nav-item__icon" :is="`BaseIcon${item.icon}`" />
             <p class="personal-menu__nav-item__text">{{ item.title }}</p>
@@ -56,7 +58,7 @@ const isHiddenMenu = ref(false)
 <style scoped lang="scss">
   .personal-menu {
     position: fixed;
-    top: 200px;
+    top: 130px;
     left: 0;
     z-index: 2;
 
