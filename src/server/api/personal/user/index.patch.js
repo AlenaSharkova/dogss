@@ -61,6 +61,9 @@ export default defineEventHandler(async (event) => {
             if (body.city) {
                 user.city = body.city;
             }
+            if (body.contact_methods) {
+                user.contact_methods = body.contact_methods;
+            }
 
             await user.save();
 

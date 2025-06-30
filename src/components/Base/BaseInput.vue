@@ -32,10 +32,11 @@ interface Props {
 
   rules?: any[]
   type?: string;
-  errorBackground: boolean
+  errorBackground?: boolean
 }
 const props = withDefaults(defineProps<Props>(), {
-  type: 'text'
+  type: 'text',
+  errorBackground: false
 })
 
 const isShowPassword = ref(false);
@@ -65,9 +66,7 @@ const onInput = (e: InputEvent & { target: HTMLInputElement }) => {
   if (props.totalNumber) {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   }
-  if (props.mask) {
-    formMask(e)
-  }
+  formMask(e.target.value)
 
   if(props.validCharacters) {
     const re = new RegExp(`[^${props.validCharacters}]`, 'g')
@@ -107,8 +106,9 @@ const onInput = (e: InputEvent & { target: HTMLInputElement }) => {
 const actionPassword = () => {
   isShowPassword.value = !isShowPassword.value
 };
-const onFocus = (e: FocusEvent) => {
+const onFocus = (e: FocusEvent & { target: HTMLInputElement }) => {
   toggleFocused(true);
+  formMask(e.target.value, true)
   emits('focus', e);
 };
 const toggleFocused = (value: boolean) => {
@@ -125,21 +125,53 @@ const fullnessInput = computed(() => {
     return `${props.modelValue.length} / ${props.maxLength}`;
   } else return ''
 })
-const formMask = (e: InputEvent & { target: HTMLInputElement }) => {
+const generateMask = () => {
+  const regex = /([*])\((\d+)\)/g; // Находим символы '_' или '*' в скобках с числом
+  return props.mask?.replace(regex, (match, char, count) => {
+    return char.repeat(parseInt(count, 10)); // Повторяем символ указанное количество раз
+  }) || '';
+}
+const formMask = (value: string, isFocus = false) => {
   if(props.mask) {
-    let matrix_def = props.mask;
+
+    let matrix_def = generateMask()
     let matrix = matrix_def;
     let i = 0;
-    let def = matrix.replace(/\D/g, '');
-    let val = e.target.value.replace(/\D/g, '');
-    if (def.length >= val.length) val = def;
-    e.target.value = matrix.replace(/./g, (a) => {
-      return /[_\d]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? '' : a;
+    const beforeCustomer = matrix.split('*')[0]
+    const beforeSpace = matrix.split(' ')[0]
+    //let def = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
+    //let def = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+    let val = value.replace(/[^a-zA-Z0-9_]/g, '');
+    if(isFocus) {
+      let def = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
+
+      if (def.length >= val.length) {
+        //i = val.length
+        value = def;
+
+        emits('update:model-value', value);
+        emits('input', value);
+        return false;
+      }
+    } else {
+      let def = matrix.replace(/[^a-zA-Z0-9_]/g, '');
+      if (def.length >= val.length) {
+        val = def;
+      }
+    }
+
+    console.log('def', val,  i)
+
+    value = matrix.replace(/./g, (a) => {
+      return /[\w^*]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? '' : a;
     });
+    emits('update:model-value', value);
+    emits('input', value);
   }
 };
 watch(() => props.modelValue,  () => {
   checkRules(true);
+  formMask(props.modelValue)
 })
 watch(
     () => props.invalidText,
@@ -149,6 +181,10 @@ watch(
       }
     }
 )
+onMounted(() => {
+  formMask(props.modelValue)
+
+})
 
 </script>
 

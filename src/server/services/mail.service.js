@@ -23,7 +23,7 @@ export async function sendOTPByEmail(email, otp, token) {
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent:', info.messageId); // Выводим Message ID для отслеживания
+        console.log('Email sent:', info.messageId, info.rejected); // Выводим Message ID для отслеживания
         if (info.rejected.length > 0) {
             throw createError({
                 statusCode: 400,

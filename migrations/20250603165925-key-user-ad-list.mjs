@@ -9,11 +9,11 @@ import {DataTypes} from "sequelize";
 export async function up(data) {
   try {
     //ноу
-    const {queryInterface, Sequelize} = data.context;
+  /*  const {queryInterface, Sequelize} = data.context;
     Users.hasMany(AdList, {
       foreignKey: 'user_ad_list',
       as: 'UserAdList'
-    });
+    });*/
   } catch (error) {
     console.error("Ошибка при выполнении миграции up:", error);
     throw error; // Важно: Пробрасываем ошибку, чтобы umzug знал, что миграция не удалась

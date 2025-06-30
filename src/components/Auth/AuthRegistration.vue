@@ -241,7 +241,7 @@ if(!regionsStore.regionsList) {
               type="tel"
               form-name="phone"
               :rules="[ruleValidNumberPhone]"
-              mask="+7 (___) ___ __-__"
+              mask="+7 (***) *** **-**"
               @onError="(val: boolean) => (form.phone.valid = val)"
           />
         </template>

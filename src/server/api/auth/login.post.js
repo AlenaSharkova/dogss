@@ -61,7 +61,7 @@ export default defineEventHandler(async (event) => {
     }
     try {
         const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // Срок действия 3 минут
-        console.log('expiresAt', expiresAt)
+        console.log('expiresAt', expiresAt, otp)
         // Удаляем предыдущую запись с OTP и token, если есть
         await Otp.destroy({where: {userId: user.id}});
 

@@ -46,6 +46,10 @@ module.exports = (sequelize) => {
             type: DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: true,
         },
+        contact_methods: {
+            type: DataTypes.JSON,
+            allowNull: true,
+        },
         person_favorites: {
             type: DataTypes.ARRAY(DataTypes.INTEGER),
             allowNull: true,

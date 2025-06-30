@@ -14,6 +14,14 @@ import timezone from 'dayjs/plugin/timezone';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
+
+export const formatPhone = (paramValue: string) => {
+    return paramValue.replace(/^(\d)(\d{3})(\d{3})(\d{2})(\d{2})$/, '+$1 ($2) $3 $4-$5')
+}
+export const formatPhoneApi = (paramValue: string) => {
+    return paramValue.replace(/[\D]/g, "")
+}
 export const formatAmountInput = (amount: number | string ) => {
     if (typeof(amount) === 'number' ) {
         return amount.toLocaleString('ru-RU');

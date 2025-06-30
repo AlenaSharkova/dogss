@@ -63,6 +63,32 @@ export const ruleValidNumberPhone = (value: number | string) =>
         ? "Введите номер телефона в верном формате"
         : "";
 
+export const isValidTelegram = (value: string) =>
+    // Допускаются ссылки:
+    // - t.me/username
+    // - telegram.me/username
+    // - https://t.me/username
+    // - https://telegram.me/username
+    // - @username (проверка только наличия символа @)
+    !/^@([a-zA-Z0-9_]+)$/.test(value)
+        ? "Для добавления контакта телеграм введите имя пользователя через @"
+        : "";
+
+export const isValidWhatsApp = (value: string | number) =>
+    !/^\+7\s\(\d{3}\)\s\d{3}\s\d{2}-\d{2}$/.test(value.toString())
+        ? "Для добавления контакта WhatsApp введите только номер телефона"
+        : "";
+
+export const isValidVKLink = (value: string) =>
+    // Допускаются ссылки:
+    // - vk.com/id12345
+    // - vk.com/username
+    // - https://vk.com/id12345
+    // - https://vk.com/username
+    !/^(https?:\/\/vk\.com\/[a-zA-Z0-9_.]+)$|^@([a-zA-Z0-9_]+)$/.test(value)
+        ? "Для связи по ВКонтакте введите ссылку в формате https://vk.com/.."
+        : "";
+
 export const ruleValidLinkURL = (value: string) => {
     const URLRegex = /(^https?:\/\/)?[a-z0-9~_\-\.]+\.[a-z]{2,9}(\/|:|\?[!-~]*)?$/i;
     return URLRegex.test(value) ? "" : "Вы ввели некорректный URL или адрес ссылки";

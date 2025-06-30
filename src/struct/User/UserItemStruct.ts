@@ -13,6 +13,7 @@ export interface UserItemFullStruct {
         email: string;
         first_name: string;
         last_name: string;
+        contact_methods: UserContactMethodsOptimalStruct<string>;
         //TODO:created_at
         geo_main: {
             region: ISelectNumber,
@@ -34,6 +35,7 @@ export interface UserItemPublicStruct {
         email: string;
         first_name: string;
         last_name: string;
+        contact_methods: UserContactMethodsOptimalStruct<string>;
         //TODO:created_at
         geo_main: {
             region: ISelectNumber,
@@ -52,6 +54,7 @@ export interface UserItemPublicPreviewStruct {
         email: string;
         first_name: string;
         last_name: string;
+        contact_methods: UserContactMethodsOptimalStruct<string>;
         //TODO:created_at
         geo_main: {
             region: ISelectNumber,
@@ -75,6 +78,7 @@ export interface UserChangeItemStruct {
     photo?: string;
     region?: number,
     city?: number,
+    contact_methods?: UserContactMethodsOptimalStruct<string>;
 }
 export interface UserFormItemStruct {
     email: ICommonFormValid<string>;
@@ -82,8 +86,29 @@ export interface UserFormItemStruct {
     last_name: ICommonFormValid<string>;
     region: ISelectNumber,
     city: ISelectNumber,
+    contact_methods: UserContactMethodsOptimalStruct<string>
 }
-
+export interface UserContactMethodsStruct<T> {
+    email: T,
+    phone: T,
+    tg: T,
+    whatsapp: T,
+    vk: T,
+}
+export interface UserContactMethodsOptimalStruct<T> {
+    email?: T,
+    phone?: T,
+    tg?: T,
+    whatsapp?: T,
+    vk?: T,
+}
+export interface UserContactMethodsFormItemStruct {
+    value: string,
+    isSelect: boolean,
+    isEdit: boolean,
+    valueInput: string,
+    validInput: boolean
+}
 /*
 export interface AdListApiDetails {
     limit: number;

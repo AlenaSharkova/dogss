@@ -2,6 +2,8 @@
 
 import type {PropType} from "vue";
 import type {UserItemFullStruct} from "~/struct/User/UserItemStruct";
+import UserContactMethodsSelectItem from "~/components/User/UserContactMethodsSelectItem.vue";
+import UserContactMethodsView from "~/components/User/UserContactMethodsView.vue";
 
 const props = defineProps({
   user: {
@@ -34,6 +36,8 @@ const info = reactive([
       icon: 'BaseIcon'
     },
 ])
+
+const contacts = computed(() => props.user.personal_data.contact_methods)
 </script>
 
 <template>
@@ -50,6 +54,11 @@ const info = reactive([
           <div class="personal-profile-info__item-value">
             {{item.value}}
           </div>
+        </div>
+        <div class="personal-profile-info__contacts">
+          <UserContactMethodsView
+              :contacts="contacts"
+          />
         </div>
       </div>
     </div>
@@ -106,5 +115,6 @@ const info = reactive([
       color: $violet;
     }
   }
+
 }
 </style>

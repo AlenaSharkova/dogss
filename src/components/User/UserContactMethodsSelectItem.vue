@@ -4,6 +4,7 @@ import type {IContactValue} from "~/struct/Common/IValueType";
 import {ruleNotEmpty, ruleValidEmail} from "~/utils/commonRules";
 import type {PropType} from "vue";
 import type {UserItemFullStruct} from "~/struct/User/UserItemStruct";
+import {formatPhone, formatPhoneApi} from "~/utils/formatData";
 
 const props = defineProps({
   isEdit: {
@@ -35,6 +36,15 @@ const toggleEditValueMethod = (idSelect: IContactValue) => {
 
   if(props.isEdit) emit("closeEditChange", idSelect)
   else emit("editChange", idSelect)
+}
+const formatedValue = (value: string) => {
+  if(value.startsWith("https://vk.com/") && props.name === 'vk') {
+    return value.replace("https://vk.com/", "@")
+  } else if(props.name === 'phone' || props.name === 'whatsapp') {
+    return formatPhone(value)
+  } else if( props.name === 'tg' ) {
+    return "@" + value
+  } else return value
 }
 </script>
 
@@ -70,11 +80,11 @@ const toggleEditValueMethod = (idSelect: IContactValue) => {
             />
           </div>
           <div v-else class="contact-methods-select__item-value">
-            <p>{{ value }}</p>
+            <p>{{ formatedValue(value) }}</p>
           </div>
         </Transition>
       </div>
-        <div @click.stop="toggleEditValueMethod('email')" class="contact-methods-select__item-edit">
+        <div v-if="isEdit || value" @click.stop="toggleEditValueMethod('email')" class="contact-methods-select__item-edit">
           <Transition name="fade" mode="out-in">
             <BaseIconChange v-if="!isEdit" class="icon" />
             <BaseIconClose v-else color="dark" class="icon" />
@@ -85,7 +95,7 @@ const toggleEditValueMethod = (idSelect: IContactValue) => {
 
 <style scoped lang="scss">
 $color-email: #E0A96F;
-$color-phone: #808080;
+$color-phone: #1b0e43;
 $color-tg: #27a7e7;
 $color-whatsapp: #2cb742;
 $color-vk: #4d7198;
@@ -183,13 +193,15 @@ $color-vk: #4d7198;
     }
   }
   &-value {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
     p {
-      width: 100%;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
     }
-
   }
   &-change {
     overflow: hidden;

@@ -9,6 +9,7 @@ export const formattedUserGlobal = (user) => {
             last_name: user.last_name,
             photo: user.photo,
             first_name: user.first_name,
+            contact_methods: user.contact_methods,
             status: user.status,
             geo_main: {
                 city: user.LocationUserCity,
@@ -58,6 +59,7 @@ export const formattedUserAuth = (user) => {
             last_name: user.last_name,
             photo: user.photo,
             first_name: user.first_name,
+            contact_methods: user.contact_methods,
             status: user.status,
             geo_main: {
                 city: user.LocationUserCity,

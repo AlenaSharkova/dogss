@@ -333,7 +333,8 @@ onBeforeUnmount(() => {
                 v-if="!isUnknownDateOfBirth"
                 v-model="form.date_birth"
                 title="Дата рождения (DD.MM.YYYY)"
-                mask="__.__.____"
+                mask="**.**.****"
+                total-number
                 :rules="[ruleValidDate]"
             />
             <BaseSelect

@@ -1,10 +1,28 @@
 <script setup lang="ts">
 
 import type {IContactValue} from "~/struct/Common/IValueType";
-import {ruleNotEmpty, ruleValidEmail} from "~/utils/commonRules";
+import {isValidTelegram, isValidVKLink, isValidWhatsApp, ruleNotEmpty, ruleValidEmail} from "~/utils/commonRules";
 import UserContactMethodsSelectItem from "~/components/User/UserContactMethodsSelectItem.vue";
+import type {
+  UserContactMethodsFormItemStruct, UserContactMethodsOptimalStruct,
+  UserContactMethodsStruct,
+} from "~/struct/User/UserItemStruct";
+import {formatPhoneApi} from "~/utils/formatData";
+import type {PropType} from "vue";
 
-const methods = ref({
+const props = defineProps({
+  contactsSession: {
+    type: Object as PropType<UserContactMethodsOptimalStruct<string>>,
+    required: true
+  },
+  emailSession: {
+    type: String,
+    required: true
+  }
+})
+const methodsListSelect = defineModel<UserContactMethodsOptimalStruct<string>>({default: []})
+
+const methods = ref<UserContactMethodsStruct<UserContactMethodsFormItemStruct>>({
   email: {
     value: '',
     isSelect: false,
@@ -41,14 +59,35 @@ const methods = ref({
     validInput: false
   },
 })
+
+
 /*const isSelectMethod = (methodId: string) => {
   listMethodsSelect.value.includes(methodId)
 }*/
+const getContactsSession = () => {
+  for(let id in props.contactsSession) {
+    let itemForm = methods.value[id as keyof UserContactMethodsStruct<UserContactMethodsFormItemStruct>]
+    let item = props.contactsSession[id as keyof UserContactMethodsOptimalStruct<string>]
+    itemForm.value = item as string
+    itemForm.valueInput = item as string
+    itemForm.isSelect = true
+    itemForm.validInput = true
+  }
+  if(methods.value.email.value === '') {
+    methods.value.email.value = props.emailSession
+    methods.value.email.valueInput = props.emailSession
+    methods.value.email.validInput = true
+  }
+}
 const saveChangeMethod = (idSelect: IContactValue) => {
   const methodItem = methods.value[idSelect]
   console.log('save', methodItem)
   if(methodItem.validInput) {
-    methodItem.value = methodItem.valueInput
+    if( idSelect === 'phone' || idSelect === 'whatsapp' ){
+      methodItem.value = formatPhoneApi(methodItem.valueInput)
+    } else if( idSelect === 'tg' ) {
+      methodItem.value = methodItem.valueInput.replace("@", "")
+    } else methodItem.value = methodItem.valueInput
     methodItem.isEdit = false
   }
 }
@@ -56,18 +95,22 @@ const toggleActivity  = (idSelect: IContactValue) => {
   const methodItem = methods.value[idSelect]
   if(!methodItem.isSelect && !methodItem.value) {
     for (let id in methods.value) {
-      methods.value[id].isEdit = id === idSelect
+      let item = methods.value[id as keyof UserContactMethodsStruct<UserContactMethodsFormItemStruct>]
+      item.isEdit = id === idSelect
+      item.isSelect = (id === idSelect || (item.isSelect? !!item.value: false))
     }
+  } else {
+    methodItem.isSelect = !methodItem.isSelect
   }
-  methodItem.isSelect = !methodItem.isSelect
   //methodItem.isEdit = false
 }
 const editValueMethod = (idSelect: IContactValue) => {
   for (let id in methods.value) {
-    methods.value[id].isEdit = id === idSelect
+    let item = methods.value[id as keyof UserContactMethodsStruct<UserContactMethodsFormItemStruct>]
+    item.isEdit = id === idSelect
+    item.isSelect = id === idSelect || !!item.value
   }
   methods.value[idSelect].isSelect = true
-
 }
 const closeEditValueMethod = (idSelect: IContactValue) => {
   const methodItem = methods.value[idSelect]
@@ -77,6 +120,23 @@ const closeEditValueMethod = (idSelect: IContactValue) => {
     methods.value[idSelect].isSelect = false
   }
 }
+
+watch(() => methods.value,
+    (newMethodsList) => {
+      const activeMethods: UserContactMethodsOptimalStruct<string> = {}
+      for (let id in newMethodsList) {
+        let item = newMethodsList[id as keyof UserContactMethodsStruct<UserContactMethodsFormItemStruct>]
+        if(item.isSelect && item.value) {
+          activeMethods[id as keyof UserContactMethodsStruct<UserContactMethodsFormItemStruct>]
+              = item.value
+        }
+      }
+      methodsListSelect.value = activeMethods
+    }, { deep: true })
+
+onMounted(() => {
+  getContactsSession()
+})
 </script>
 
 <template>
@@ -118,9 +178,10 @@ const closeEditValueMethod = (idSelect: IContactValue) => {
               v-model="methods.phone.valueInput"
               title="Номер телефона"
               type="tel"
+              total-number
               form-name="phone"
               :rules="[ruleValidNumberPhone]"
-              mask="+7 (___) ___ __-__"
+              mask="+7 (***) *** **-**"
               errorBackground
               @onError="(val: boolean) => (methods.phone.validInput = val)"
           />
@@ -137,9 +198,10 @@ const closeEditValueMethod = (idSelect: IContactValue) => {
         >
           <BaseInput
               v-model="methods.tg.valueInput"
-              title="E-mail"
+              title="Telegram"
+              mask="@*(40)"
               form-name="tg"
-              :rules="[ruleValidEmail, ruleNotEmpty]"
+              :rules="[isValidTelegram, ruleNotEmpty]"
               :max-length="254"
               errorBackground
               @onError="(val: boolean) => (methods.tg.validInput = val)"
@@ -157,11 +219,14 @@ const closeEditValueMethod = (idSelect: IContactValue) => {
         >
           <BaseInput
               v-model="methods.whatsapp.valueInput"
-              title="E-mail"
+              title="WhatsApp"
               form-name="whatsapp"
-              :rules="[ruleValidEmail, ruleNotEmpty]"
+              :rules="[isValidWhatsApp, ruleNotEmpty]"
               :max-length="254"
               errorBackground
+              type="tel"
+              total-number
+              mask="+7 (***) *** **-**"
               @onError="(val: boolean) => (methods.whatsapp.validInput = val)"
           />
         </UserContactMethodsSelectItem>
@@ -177,9 +242,10 @@ const closeEditValueMethod = (idSelect: IContactValue) => {
         >
           <BaseInput
               v-model="methods.vk.valueInput"
-              title="E-mail"
+              title="ВКонтакте"
               form-name="vk"
-              :rules="[ruleValidEmail, ruleNotEmpty]"
+              mask="https://vk.com/*(40)"
+              :rules="[isValidVKLink, ruleNotEmpty]"
               :max-length="254"
               errorBackground
               @onError="(val: boolean) => (methods.vk.validInput = val)"
