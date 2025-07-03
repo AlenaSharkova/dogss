@@ -31,16 +31,16 @@ const goToBreeder = (id: number) => {
 </script>
 
 <template>
-  <div @click="goToBreeder(user.id)" class="cart-breeder-item">
-    <div class="cart-breeder-item__wrapper">
+  <div @click="goToBreeder(user.id)" class="card-breeder-item">
+    <div class="card-breeder-item__wrapper">
       <BaseProfileCircle
           :name="userFullName"
           size="medium"
           unfull
           :img="user.personal_data.photo" />
-      <div class="cart-breeder-item__content">
-        <div class="cart-breeder-item__content-wrapper">
-          <div class="cart-breeder-item__content-name">
+      <div class="card-breeder-item__content">
+        <div class="card-breeder-item__content-wrapper">
+          <div class="card-breeder-item__content-name">
             <p>Имя: {{userFullName}}</p>
             <p>Mail: {{user.personal_data.email}}</p>
           </div>
@@ -51,7 +51,7 @@ const goToBreeder = (id: number) => {
 </template>
 
 <style scoped lang="scss">
-.cart-breeder-item {
+.card-breeder-item {
   cursor: pointer;
   border-radius: 24px;
   overflow: hidden;

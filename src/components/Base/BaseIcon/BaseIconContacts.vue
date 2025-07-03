@@ -50,7 +50,7 @@ defineProps({
   width: inherit;
 }
 svg {
-  transition: all 0.3s ease;
+  transition: all 0.3s;
   width: inherit;
   height: auto;
   color: inherit;

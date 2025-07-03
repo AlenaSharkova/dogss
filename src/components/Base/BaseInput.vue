@@ -20,6 +20,7 @@ interface Props {
   invalidText?: string;
   maxLength?: number;
   totalNumber?: boolean;
+  totalNumberMask?: boolean;
   disabled?: boolean;
   password?: boolean;
   showFullnes?: boolean;
@@ -36,7 +37,8 @@ interface Props {
 }
 const props = withDefaults(defineProps<Props>(), {
   type: 'text',
-  errorBackground: false
+  errorBackground: false,
+  totalNumberMask: false
 })
 
 const isShowPassword = ref(false);
@@ -63,11 +65,23 @@ const onBlur = (e: InputEvent & { target: HTMLInputElement }) => {
   emits('blur', e.target.value);
 };
 const onInput = (e: InputEvent & { target: HTMLInputElement }) => {
+  console.log('onInput e.inputType00', e.inputType, e.target.selectionStart)
   if (props.totalNumber) {
     e.target.value = e.target.value.replace(/[^0-9]/g, '');
   }
-  formMask(e.target.value)
-
+  if(props.postfix) {
+    e.target.value = e.target.value + props.postfix
+    e.target.setSelectionRange(e.target.value.length-props.postfix.length, e.target.value.length-props.postfix.length,)
+  }
+  console.log('onInput1 e.inputType00', e.inputType, e.target.selectionStart)
+  if(props.mask) {
+    let res = formMask(e.target.value, false, e)
+    e.target.value = res.value
+    if (e.inputType == 'insertText' || e.inputType == 'deleteContentBackward') {
+      e.target.selectionStart = res.position || 0;
+      e.target.selectionEnd = res.position || 0;
+    }
+  }
   if(props.validCharacters) {
     const re = new RegExp(`[^${props.validCharacters}]`, 'g')
     console.log(re, e.target.value.replace(re, ''))
@@ -96,19 +110,24 @@ const onInput = (e: InputEvent & { target: HTMLInputElement }) => {
       }
     }
   }
-  if(props.postfix) {
-    e.target.value = e.target.value + props.postfix
-    e.target.setSelectionRange(e.target.value.length-props.postfix.length, e.target.value.length-props.postfix.length,)
-  }
+
   emits('update:model-value', e.target.value);
   emits('input', e.target.value);
+
+
 };
 const actionPassword = () => {
   isShowPassword.value = !isShowPassword.value
 };
 const onFocus = (e: FocusEvent & { target: HTMLInputElement }) => {
   toggleFocused(true);
-  formMask(e.target.value, true)
+  if(props.mask) {
+    const res = formMask(e.target.value, true)
+    if(props.mask) {
+      emits('update:model-value', res.value);
+      emits('input', res.value);
+    }
+  }
   emits('focus', e);
 };
 const toggleFocused = (value: boolean) => {
@@ -131,47 +150,163 @@ const generateMask = () => {
     return char.repeat(parseInt(count, 10)); // Повторяем символ указанное количество раз
   }) || '';
 }
-const formMask = (value: string, isFocus = false) => {
-  if(props.mask) {
 
-    let matrix_def = generateMask()
-    let matrix = matrix_def;
-    let i = 0;
+const onKeyDown = (e: KeyboardEvent & { target: HTMLInputElement }) => {
+  if(props.mask) {
+    let matrix = generateMask()
     const beforeCustomer = matrix.split('*')[0]
     const beforeSpace = matrix.split(' ')[0]
-    //let def = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
-    //let def = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
-    let val = value.replace(/[^a-zA-Z0-9_]/g, '');
-    if(isFocus) {
-      let def = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
+    let positionStart = e.target.selectionStart as number;
+    let positionEnd = e.target.selectionEnd as number;
 
-      if (def.length >= val.length) {
-        //i = val.length
-        value = def;
-
-        emits('update:model-value', value);
-        emits('input', value);
-        return false;
+    let beforeSymbolMask = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
+    console.log('beforeSymbolMask', e, beforeSymbolMask, beforeCustomer, beforeSpace)
+    if (positionStart < beforeSymbolMask.length && (e.keyCode == 37 || e.keyCode == 0)) {
+      /*val = val.substring(1) + val[0];
+      if (val === 'undefined') {
+        val = '';
       }
-    } else {
-      let def = matrix.replace(/[^a-zA-Z0-9_]/g, '');
-      if (def.length >= val.length) {
-        val = def;
+      position = 5;*/
+      e.target.selectionStart = beforeSymbolMask.length + 1
+      e.target.selectionEnd = beforeSymbolMask.length + 1
+      //e.preventDefault();
+
+    }
+    /*if(e.keyCode == 37 || e.keyCode == 39)
+      e.preventDefault();*/
+  }
+}
+const formMask = (value: string, isFocus = false, e?: InputEvent & { target: HTMLInputElement } ) => {
+
+  let matrix_def = generateMask()
+  let matrix = matrix_def;
+  let i = 0;
+
+
+
+  const beforeCustomer = matrix.split('*')[0]
+  const beforeSpace = matrix.split(' ')[0]
+  let beforeSymbolMask = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
+  console.log('beforeSymbolMask00', beforeSymbolMask)
+
+  let positionDefaultSymbol = 0
+  let textBefore = ''
+  let position = 0;
+  if(e && !isFocus) {
+    position = (e.target.selectionStart as number) < beforeSymbolMask.length? beforeSymbolMask.length: (e.target.selectionStart as number) ;
+    textBefore = value.substr(0, position);
+    positionDefaultSymbol = position - textBefore.replace(/\w/g, '').length;
+    console.log('e.inputType00', e.inputType, position)
+
+  }
+  //let def = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
+  //let def = e.target.value.replace(/[^a-zA-Z0-9]/g, '');
+  if(props.totalNumberMask) {
+
+  }
+  let val = props.totalNumberMask?
+      value.replace(/[\D]/g, ''):
+      value.replace(/[^a-zA-Z0-9_/:.]/g, '')
+
+  console.log('eeeee', e, value)
+
+  if(isFocus) {
+    let def = beforeCustomer.length < beforeSpace.length? beforeCustomer: beforeSpace
+
+    if (def.length >= val.length) {
+      //i = val.length
+      value = def;
+      console.log('value', value)
+
+
+      return {value, position};
+    }
+  } else  {
+
+
+    let def = props.totalNumberMask?
+        matrix.replace(/[\D]/g, ''):
+        matrix.replace(/[^a-zA-Z0-9_/:.]/g, '')
+
+    if (def.length >= val.length) {
+      val = def;
+    }
+    /*if (val.length > 0 && val[0] !== '7') {
+      val = '7' + val.substring(1);
+    }
+    if (val.length === 0) {
+      val = '7';
+    }*/
+
+    console.log('def 0', val,  def)
+    let forSlice = props.totalNumberMask?
+        matrix.replace(/[^0-9_*]/g, ''):
+        matrix.replace(/[^a-zA-Z0-9_*/:.]/g, '')
+
+    val = val.slice(0, forSlice.length)
+    console.log('def 1', val,  def)
+
+
+    value = matrix.replace(/./g, (a, index) => {
+      console.log(i, value, val.length, val, a, /[*]/.test(a), beforeSymbolMask.length)
+      const forTest = props.totalNumberMask?
+          /[0-9_]/g.test(a):
+          /[a-zA-Z0-9_/:.]/g.test(a)
+
+      if (i >= val.length ) return '';
+      else if (/[*]/.test(a)) {
+        return val.charAt(i++);
+      } else if (forTest) {
+
+        i++
+
+        return a;
+      } else {
+        //i++
+        if(e) {
+          console.log(i, positionDefaultSymbol, position, index)
+
+          if (positionDefaultSymbol > i  && position - index < 2 && e.inputType == 'insertText') {
+            (position as number)++;
+          } else if (
+              positionDefaultSymbol == i
+              && (position as number) - index > 1
+              && e.inputType == 'deleteContentBackward'
+          ) {
+            (position as number)--;
+          }
+        }
+        return a;
+      }
+
+    });
+
+    // Ensure the cursor position is always after '+7'
+    /*if (position < 3) {
+      position = 3;
+    }*/
+
+    if(e) {
+      console.log('e.inputType', e.inputType, position)
+      if (e.inputType == 'insertText' || e.inputType == 'deleteContentBackward') {
+        e.target.selectionStart = position || 0;
+        e.target.selectionEnd = position || 0;
       }
     }
 
-    console.log('def', val,  i)
+    console.log('def', val,  i, value)
 
-    value = matrix.replace(/./g, (a) => {
+    /*value = matrix.replace(/./g, (a) => {
       return /[\w^*]/.test(a) && i < val.length ? val.charAt(i++) : i >= val.length ? '' : a;
-    });
-    emits('update:model-value', value);
-    emits('input', value);
+    });*/
+    return {value, position};
+
   }
+
 };
 watch(() => props.modelValue,  () => {
   checkRules(true);
-  formMask(props.modelValue)
+  //formMask(props.modelValue)
 })
 watch(
     () => props.invalidText,
@@ -182,7 +317,12 @@ watch(
     }
 )
 onMounted(() => {
-  formMask(props.modelValue)
+  const res = formMask(props.modelValue)
+  if(props.mask) {
+    emits('update:model-value', res.value);
+    emits('input', res.value);
+
+  }
 
 })
 
@@ -201,6 +341,7 @@ onMounted(() => {
         class="base-input"
         :disabled="disabled"
         @blur="onBlur"
+        @keydown="onKeyDown"
         @input="onInput"
         @focus="onFocus"
       />

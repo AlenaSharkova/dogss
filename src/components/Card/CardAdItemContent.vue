@@ -25,33 +25,33 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
 </script>
 
 <template>
-  <div class="cart-item__content">
-    <div class="cart-item__content-type" :class="item.type_ad">
+  <div class="card-item__content">
+    <div class="card-item__content-type" :class="item.type_ad">
       <span>{{typeAdText || 'Тип не указан'}}</span>
     </div>
-    <div class="cart-item__content-row">
-      <div class="cart-item__content-name">
+    <div class="card-item__content-row">
+      <div class="card-item__content-name">
         <span>{{item.name || 'Имя не указано'}}</span>
       </div>
 
-      <div class="cart-item__content-info">
+      <div class="card-item__content-info">
         <p>{{item.breed?.text}}</p>
         <BaseWithMiniPopup :text="textMainRegions" position="left">
-          <div class="cart-item__content-info__city">
-            <BaseIconGeo class="cart-item__content-info__city-icon" color="dark"/>
-            <span class="cart-item__content-info__city-text" >{{item.geo_main.city?.text}}</span>
+          <div class="card-item__content-info__city">
+            <BaseIconGeo class="card-item__content-info__city-icon" color="dark"/>
+            <span class="card-item__content-info__city-text" >{{item.geo_main.city?.text}}</span>
           </div>
 
 
         </BaseWithMiniPopup>
-        <div class="cart-item__content-address">
+        <div class="card-item__content-address">
           <p v-if="item.approximate_age"> {{approximateAgeText}}</p>
           <p v-if="!item.approximate_age"> Рождение: {{formatDate(item.date_birth, 'DD MMMM YYYY')}}</p>
           <p v-if="!item.approximate_age"> {{getYearsOld(item.date_birth)}}</p>
           <p v-if="!item.approximate_age"> {{calculateAge(item.date_birth)}}</p>
         </div>
       </div>
-      <div class="cart-item__content-price">
+      <div class="card-item__content-price">
         <span v-if="item.is_contractual_price">
           Договорная цена
         </span>
@@ -63,7 +63,7 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
         </span>
         <span v-else>{{formatAmountInput(item.price)}} ₽</span>
       </div>
-      <div class="cart-item__content-owner">
+      <div class="card-item__content-owner">
         <span>Мать: {{item.ownerDetails?.first_name}} {{item.ownerDetails?.last_name}}</span>
       </div>
     </div>
@@ -73,7 +73,7 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
 <style scoped lang="scss">
 @use 'sass:map';
 
-.cart-item__content {
+.card-item__content {
   padding: 12px 0;
   height: 220px;
   display: flex;
@@ -123,7 +123,7 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
       gap: 8px;
       &:hover {
         color: $violet;
-        :deep(.cart-item__content-info__city-icon) {
+        :deep(.card-item__content-info__city-icon) {
           color: $violet;
         }
       }

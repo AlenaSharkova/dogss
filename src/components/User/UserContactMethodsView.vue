@@ -48,6 +48,9 @@ const getHref = (id: IContactValue, item: string) => {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 15px;
+  @media (max-width: $xs) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 a[href^="mailto:"] {
   font-size: 16px;

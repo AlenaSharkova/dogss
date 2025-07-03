@@ -18,8 +18,9 @@ defineProps({
 svg {
   width: inherit;
   height: auto;
+  transition: all 0.3s;
   &.up {
-    transform: rotate(180deg);
+    transform: rotateX(180deg);
   }
   &.left {
     transform: rotate(90deg);

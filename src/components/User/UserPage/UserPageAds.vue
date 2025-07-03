@@ -33,14 +33,14 @@ const selectTabTypeAd = ref(activeTab.value)
     <div class="user-page-ads__row">
       <BaseTabSwitch :items="tabTypeAdList" v-model="selectTabTypeAd" />
       <AdWrapperList v-if="adsList">
-        <CartAdItem
+        <CardAdItem
             v-if="selectTabTypeAd?.value === 'active'"
             v-for="item in adsList.active"
             :key="item.id"
             :item="item"
         />
         <!--TODO: пустой список common-->
-        <CartAdItem
+        <CardAdItem
             v-if="selectTabTypeAd?.value === 'archive'"
             v-for="item in adsList.archive"
             :key="item.id"

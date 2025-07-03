@@ -3,6 +3,7 @@ import type {PropType} from "vue";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {UserItemPublicPreviewStruct, UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import UserPageAds from "~/components/User/UserPage/UserPageAds.vue";
+import UserContactMethodsView from "~/components/User/UserContactMethodsView.vue";
 
 
 const props = defineProps({
@@ -21,6 +22,9 @@ const props = defineProps({
       <UserPageAbout id="about" class="user-page__block" />
 
       <UserPageAds id="ads" :ads-list="user.ad_list" class="user-page__block" />
+<UserContactMethodsView
+        :contacts="user.personal_data.contact_methods"
+    />
     </LayoutWrapperPage>
   </div>
 </template>

@@ -943,7 +943,7 @@ defineExpose({
 }
 .slide-dropdown-leave-active,
 .slide-dropdown-enter-active {
-  transition: all 0.2s ease;
+  transition: all .2s ease;
   overflow: hidden;
 }
 .slide-dropdown-enter-from,

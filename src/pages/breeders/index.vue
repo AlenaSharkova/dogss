@@ -16,14 +16,14 @@ usersStore.updateUsersList()
     <div class="page-breeders-group">
       <LayoutWrapperPage>
         <div class="page-breeders-group__list">
-          <CartBreederItem
+          <CardBreederItem
               v-for="(user, index) in usersList"
               :key="index"
               class="page-breeders__list-item"
               :user="user">
-            <CartBreederItem />
+            <CardBreederItem />
 
-          </CartBreederItem>
+          </CardBreederItem>
         </div>
       </LayoutWrapperPage>
     </div>

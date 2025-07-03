@@ -3,7 +3,7 @@ import {useUsersStore} from "~/stores/users.store";
 import {computed} from "vue";
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {useAdStore} from "~/stores/ad.store";
-import CartAdItem from "~/components/Cart/CartAdItem.vue";
+import CardAdItem from "~/components/Card/CardAdItem.vue";
 import {Autoplay, EffectCoverflow} from "swiper/modules";
 import BreedersSiteHead from "~/components/Breeders/BreedersSite/BreedersSiteHead.vue";
 import BaseIconPaws from "~/components/Base/BaseIcon/BaseIconPaws.vue";

@@ -27,6 +27,10 @@ const props = defineProps({
     type: String as PropType<IContactValue>,
     default: '',
   },
+  type: {
+    type: String as PropType<'view' | 'change'>,
+    default: 'view',
+  },
 })
 const emit = defineEmits(['saveChange', 'editChange', 'closeEditChange'])
 const saveChangeMethod = (idSelect: IContactValue) => {
@@ -53,7 +57,9 @@ const formatedValue = (value: string) => {
         class="contact-methods-select__item"
         :class="[
           {'--selected': isSelect,
-          '--edit': isEdit},
+          '--edit': isEdit,
+          '--view': type === 'view',
+          },
           `--${name}`
          ]"
     >
@@ -84,7 +90,7 @@ const formatedValue = (value: string) => {
           </div>
         </Transition>
       </div>
-        <div v-if="isEdit || value" @click.stop="toggleEditValueMethod('email')" class="contact-methods-select__item-edit">
+        <div v-if="(isEdit || value) && type !== 'view'" @click.stop="toggleEditValueMethod('email')" class="contact-methods-select__item-edit">
           <Transition name="fade" mode="out-in">
             <BaseIconChange v-if="!isEdit" class="icon" />
             <BaseIconClose v-else color="dark" class="icon" />
@@ -106,13 +112,20 @@ $color-vk: #4d7198;
   box-shadow: $box-shadow-middle;
   transition: all .3s;
   cursor: pointer;
-  height: 190px;
+  height: 205px;
   padding: 20px;
   position: relative;
   flex: 10%;
   overflow: hidden;
   &:hover {
     box-shadow: $box-shadow-dark;
+  }
+  &.--view {
+    height: 150px;
+    flex: 1;
+    .contact-methods-select__item-img {
+      padding-top: 10px;
+    }
   }
   &.--edit {
     flex: 23%;
@@ -152,9 +165,7 @@ $color-vk: #4d7198;
     transition: all .3s;
     &.--edit {
       padding-top: 0;
-      .icon {
-        width: 24px;
-      }
+      transform: scale(0.6);
     }
     &.--vk {
       .icon {
@@ -188,6 +199,7 @@ $color-vk: #4d7198;
     }
 
     .icon {
+
       width: 44px;
       color: #4CAF50;
     }
@@ -197,6 +209,8 @@ $color-vk: #4d7198;
     justify-content: center;
     align-items: center;
     margin-top: 10px;
+    @include h6;
+
     p {
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -208,7 +222,6 @@ $color-vk: #4d7198;
     display: flex;
     flex-direction: column;
     gap: 17px;
-    padding: 0px 5px 7px;
     width: auto;
     align-items: center;
 
@@ -230,7 +243,7 @@ $color-vk: #4d7198;
     align-items: center;
     backdrop-filter: blur(6px);
     box-shadow: $box-shadow-middle;
-    transition: all 0.3s;
+    transition: all .3s;
     background-color: rgba(227, 237, 227, 0.6);
     cursor: pointer;
     .icon {

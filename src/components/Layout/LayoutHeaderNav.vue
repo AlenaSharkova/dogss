@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import {defineEmits} from "vue";
+import {computed, defineEmits} from "vue";
 import {useAuthStore} from "~/stores/auth.store";
 import BaseInfoCount from "~/components/Base/BaseInfoCount.vue";
+import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";
+import LayoutHeaderPersonalMenu from "~/components/Layout/LayoutHeaderPersonalMenu.vue";
 
 const emit = defineEmits(["close"]);
 
@@ -32,61 +34,57 @@ onMounted( () => {
   }
 })
 
+const userFullName = computed(() => userFullData.value? `${userFullData.value?.personal_data.first_name} ${userFullData.value?.personal_data.last_name}`: '')
+
+const isShowPersonalMenu = ref(false)
+const togglePersonalMenu = () => {
+  isShowPersonalMenu.value = !isShowPersonalMenu.value
+}
+const isShowMobileMenu = ref(false)
+
+const toggleMobileMenu = () => {
+  console.log('isShowMobileMenu.value', isShowMobileMenu.value)
+  isShowMobileMenu.value = !isShowMobileMenu.value
+  console.log('isShowMobileMenu.value', isShowMobileMenu.value)
+
+}
 </script>
 
 <template>
   <div class="header-nav">
-    <div class="header-nav__links">
-      <nuxt-link class="header-nav__item" to="/breeders">
-        Питомник
-      </nuxt-link>
-      <nuxt-link class="header-nav__item" to="/catalog">
-        Каталог
-      </nuxt-link>
-      <nuxt-link class="header-nav__item" to="/dev-new">
-        dev-new
-      </nuxt-link>
-      <nuxt-link class="header-nav__item" to="/personal/profile">
-        personal
-      </nuxt-link>
+    <div class="header-nav__wrapper">
+      <div class="header-nav__links">
+        <nuxt-link class="header-nav__item" active-class="--active"  to="/breeders">
+          Заводчики
+        </nuxt-link>
+        <nuxt-link class="header-nav__item" active-class="--active" to="/catalog">
+          Найти питомца
+        </nuxt-link>
+      </div>
+
+
+      <div class="header-nav__actions">
+        <router-link to="/personal/favorites" class="header-nav__actions-favorites">
+          <BaseIconHeart  />
+          <BaseInfoCount :text="favoritesAdsCount" class="header-nav__actions-favorites__count" />
+        </router-link>
+        <BaseButton
+            class="header-nav__actions-ad"
+            text="Подать объявление"
+            size="small"
+            to="/create-ad" />
+        <BaseButton
+            v-if="!userFullData"
+            class="header-nav__actions-login"
+            text="Войти"
+            size="small"
+            to="/auth/login"
+            type="secondary" />
+
+      </div>
     </div>
 
 
-    <div class="header-nav__actions">
-      <router-link to="/personal/favorites" class="header-nav__actions-favorites">
-        <BaseIconHeart  />
-        <BaseInfoCount :text="favoritesAdsCount" class="header-nav__actions-favorites__count" />
-      </router-link>
-      <BaseButton
-          class="header-nav__actions-ad"
-          text="Подать объявление"
-          size="small"
-          to="/create-ad" />
-      <BaseButton
-          v-if="!userFullData"
-          class="header-nav__actions-login"
-          text="Войти"
-          size="small"
-          to="/auth/login"
-          type="secondary" />
-      <span v-else-if="userFullData">Привет, {{userFullData.personal_data.email}} </span>
-
-      <BaseButton
-          v-if="userFullData"
-          class="header-nav__actions-login"
-          text="Войти"
-          size="small"
-          to="/auth/login"
-          type="secondary" />
-      <BaseButton
-          v-if="userFullData"
-          class="header-nav__actions-login"
-          text="Выйти"
-          size="small"
-          type="secondary"
-          @click="logout"
-      />
-    </div>
   </div>
 </template>
 
@@ -95,32 +93,80 @@ onMounted( () => {
 
 .header-nav {
   width: 100%;
-  align-items: center;
-  flex-direction: row;
-  display: flex;
-  justify-content: space-between;
 
+  @media (max-width: $sm) {
+    overflow: hidden;
+  }
+  &__wrapper {
+    align-items: center;
+    flex-direction: row;
+    display: flex;
+    gap: 15px;
+    @media (max-width: $sm) {
+      padding-bottom: 70vh;
+
+      flex-direction: column;
+
+    }
+  }
   &__links {
     padding: 12px;
+    margin-right: auto;
 
     display: flex;
     gap: 30px;
+    @media (max-width: $sm) {
+      flex-direction: column;
+    }
   }
   &__item {
     cursor: pointer;
-    border-radius: 8px;
+    //border-radius: 8px;
     color: $dark-text;
-    transition: background 0.2s;
+    transition: all 0.2s;
     font-weight: 400;
     font-size: 16px;
     line-height: 125%;
     text-wrap: nowrap;
+    position: relative;
+    padding: 3px;
+    @include subtitle-small(500);
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -5px;
+      background-color: $second-yellow;
+      width: 0%;
+      height: 2px;
+      transition: all 0.2s;
+    }
+    &.--active {
+      color: $violet;
+      &:after {
+        width: 100%;
+        background-color: $second-yellow;
+      }
+    }
+    &:hover {
+      color: $violet;
+      &:after {
+        width: 100%;
+      }
+
+    }
   }
   &__actions {
     display: flex;
     align-items: center;
     gap: 5px;
     flex-shrink: 0;
+    @media (max-width: $sm) {
+      //flex-direction: column;
+      //align-items: flex-start;
+      gap: 20px;
+
+    }
     &-favorites {
       position: relative;
       cursor: pointer;
@@ -138,5 +184,6 @@ onMounted( () => {
       text-wrap: nowrap;
     }
   }
+
 }
 </style>

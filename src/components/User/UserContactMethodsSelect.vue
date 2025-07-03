@@ -149,6 +149,7 @@ onMounted(() => {
             :value="methods.email.value"
             :valid-inpit="methods.email.validInput"
             name="email"
+            type="change"
             @click="toggleActivity('email')"
             @edit-change="editValueMethod('email')"
             @close-edit-change="closeEditValueMethod('email')"
@@ -169,6 +170,7 @@ onMounted(() => {
             :is-edit="methods.phone.isEdit"
             :value="methods.phone.value"
             name="phone"
+            type="change"
             @click="toggleActivity('phone')"
             @edit-change="editValueMethod('phone')"
             @close-edit-change="closeEditValueMethod('phone')"
@@ -178,7 +180,7 @@ onMounted(() => {
               v-model="methods.phone.valueInput"
               title="Номер телефона"
               type="tel"
-              total-number
+              total-number-mask
               form-name="phone"
               :rules="[ruleValidNumberPhone]"
               mask="+7 (***) *** **-**"
@@ -191,6 +193,7 @@ onMounted(() => {
             :is-edit="methods.tg.isEdit"
             :value="methods.tg.value"
             name="tg"
+            type="change"
             @click="toggleActivity('tg')"
             @edit-change="editValueMethod('tg')"
             @close-edit-change="closeEditValueMethod('tg')"
@@ -212,6 +215,7 @@ onMounted(() => {
             :is-edit="methods.whatsapp.isEdit"
             :value="methods.whatsapp.value"
             name="whatsapp"
+            type="change"
             @click="toggleActivity('whatsapp')"
             @edit-change="editValueMethod('whatsapp')"
             @close-edit-change="closeEditValueMethod('whatsapp')"
@@ -225,7 +229,7 @@ onMounted(() => {
               :max-length="254"
               errorBackground
               type="tel"
-              total-number
+              total-number-mask
               mask="+7 (***) *** **-**"
               @onError="(val: boolean) => (methods.whatsapp.validInput = val)"
           />
@@ -235,6 +239,7 @@ onMounted(() => {
             :is-edit="methods.vk.isEdit"
             :value="methods.vk.value"
             name="vk"
+            type="change"
             @click="toggleActivity('vk')"
             @edit-change="editValueMethod('vk')"
             @close-edit-change="closeEditValueMethod('vk')"
@@ -264,6 +269,11 @@ onMounted(() => {
     align-items: flex-start;
     flex-wrap: nowrap;
     gap: 10px;
+    @media (max-width: $xs) {
+      display: grid;
+
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
 }
 </style>

@@ -3,7 +3,7 @@
 import {useAuthStore} from "~/stores/auth.store";
 import {usePersonalStore} from "~/stores/personal.store";
 import {computed} from "vue";
-import CartAdItem from "~/components/Cart/CartAdItem.vue";
+import CardAdItem from "~/components/Card/CardAdItem.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -18,7 +18,7 @@ const favoritesList = computed(() => personalStore.FavoritesList)
   <div class="personal-ad">
     <div class="personal-ad__row">
       <AdWrapperList>
-        <CartAdItem
+        <CardAdItem
             v-for="item in favoritesList"
             :key="item.id"
             :item="item" />

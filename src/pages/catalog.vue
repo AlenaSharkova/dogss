@@ -3,7 +3,7 @@
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {useAdStore} from "~/stores/ad.store";
 import {computed} from "vue";
-import CartAdItem from "~/components/Cart/CartAdItem.vue";
+import CardAdItem from "~/components/Card/CardAdItem.vue";
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
 import BaseMiniBlock from "~/components/Base/BaseMiniBlock.vue";
 import type {ISelectComponent} from "~/struct/Common/ISelectComponent";
@@ -102,7 +102,7 @@ useHead({
         <div class="page-catalog__main-block">
           <div v-if="adList?.length" class="page-catalog__main-listing">
             <AdWrapperList has-filter>
-              <CartAdItem
+              <CardAdItem
                   v-for="(item, index) in adList"
                   :key="index"
                   :item="item" />

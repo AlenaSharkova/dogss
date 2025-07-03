@@ -3,7 +3,7 @@ import {ref, computed} from 'vue';
 import {useAdStore} from "~/stores/ad.store";
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import dayjs from "dayjs";
-import CartAdItem from "~/components/Cart/CartAdItem.vue";
+import CardAdItem from "~/components/Card/CardAdItem.vue";
 
 definePageMeta({
   requirementUser : null
@@ -60,14 +60,14 @@ const selectRegion = ref([])
 <template>
   <div class="dev-new">
     <div class="dev-wrapper">
-      <div class="dev-cart-item">
-        <p class="dev-cart-item_text">
+      <div class="dev-card-item">
+        <p class="dev-card-item_text">
           Карточка
         </p>
-        <div class="dev-cart-item__list dev-list">
+        <div class="dev-card-item__list dev-list">
           <div class="--dev-row">
             <!--
-            <CartItem />
+            <CardItem />
             -->
             {{ users }}
             {{ ad }}
@@ -77,7 +77,7 @@ const selectRegion = ref([])
             <BaseButton type="primary" @click="updateList()"  text="Обновить"/>
 <br>
             <AdWrapperList>
-              <CartAdItem
+              <CardAdItem
                   v-for="(item, index) in adList"
                   :key="index"
                   :item="item" />

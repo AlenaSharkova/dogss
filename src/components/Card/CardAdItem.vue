@@ -4,7 +4,7 @@ import { Pagination } from 'swiper/modules';
 import type Swiper from "swiper";
 import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
 import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
-import CartAdItemContent from "~/components/Cart/CartAdItemContent.vue";
+import CardAdItemContent from "~/components/Card/CardAdItemContent.vue";
 import items from "ajv/lib/vocabularies/applicator/items";
 
 const personalStore = usePersonalStore()
@@ -87,13 +87,13 @@ watch(() => props.item.isFavorite,
 </script>
 
 <template>
-  <div class="cart-item" :class="{disabled: isLoadDelete}">
+  <div class="card-item" :class="{disabled: isLoadDelete}">
 
-    <div class="cart-item__wrapper">
+    <div class="card-item__wrapper">
 
-      <div class="cart-item__top">
-        <div class="cart-item__info">
-          <div class="cart-item__info-circle --left"
+      <div class="card-item__top">
+        <div class="card-item__info">
+          <div class="card-item__info-circle --left"
                :class="[
                    {litter: countDogs > 1},
                    {male: item.number_male},
@@ -104,7 +104,7 @@ watch(() => props.item.isFavorite,
                   '--female-percentage': `${malePercentage + 20}%`
                }"
           >
-            <div class="cart-item__info-circle__image">
+            <div class="card-item__info-circle__image">
               <img v-if="countDogs > 1" src="@/assets/image/svg/paws-white.svg" alt="">
               <img v-else-if="item.number_male" src="@/assets/image/svg/dog-boy-white.svg" alt="">
               <img v-else-if="item.number_female" src="@/assets/image/svg/dog-girl-white2.svg" alt="">
@@ -113,69 +113,71 @@ watch(() => props.item.isFavorite,
           <BaseWithMiniPopup
               v-if="item.exportRegions.isExport"
               :text="textRegionsExport"
-              class="cart-item__info-circle --right --export">
-            <div class="cart-item__info-circle__image">
+              class="card-item__info-circle --right --export">
+            <div class="card-item__info-circle__image">
               <img src="@/assets/image/svg/shipping-white.svg" alt="">
             </div>
           </BaseWithMiniPopup>
 
           <div v-if="isActive"
-               class="cart-item__info-circle --top-right"
+               class="card-item__info-circle --top-right"
                :class="{'--hidden': isLoadFavorite}"
                @click.stop="actionFavorites"
                @mouseenter="onFocusHeart"
                @mouseleave="onBlurHeart"
           >
-            <div class="cart-item__info-circle__content" >
+            <div class="card-item__info-circle__content" >
               <BaseIconHeart
-                  class="cart-item__info-circle__content-icon"
+                  class="card-item__info-circle__content-icon"
                   :active="isFavorite"
                   :hover="isFocusHeart"/>
             </div>
           </div>
           <div v-else
-               class="cart-item__info-circle --top-right"
+               class="card-item__info-circle --top-right"
                @click.stop="removeFromDraft"
           >
-            <div class="cart-item__info-circle__content">
-              <div class="cart-item__info-circle__content-icon">
+            <div class="card-item__info-circle__content">
+              <div class="card-item__info-circle__content-icon">
                 <BaseIconClose color="error" />
               </div>
             </div>
           </div>
         </div>
         <swiper :space-between="0"
-                class="cart-item__swiper"
+                class="card-item__swiper"
                 :pagination="{
                 clickable: false,
-                el: '.cart-item__swiper-pagination',
+                el: '.card-item__swiper-pagination',
               }"
                 @swiper="onSwiper"
                 :modules="[Pagination]"
         >
           {{`${item.photos}1.jpg`}}
           <swiper-slide
-              class="cart-item__swiper-slide"
+              class="card-item__swiper-slide"
               v-for="(img, indexImg) in item.photos"
               :key="indexImg"
           >
-            <img class="cart-item__swiper-img" :src="img" :alt="`dog-${item.id}-${indexImg}`">
+            <img class="card-item__swiper-img" :src="img" :alt="`dog-${item.id}-${indexImg}`">
           </swiper-slide>
           <div v-if="!item.photos.length"
-               class="cart-item__swiper-slide --empty">
-            <img class="cart-item__swiper-img" src="@/assets/image/default_cart.png" loading="lazy" :alt="`dog-${item.id}-${item.indexImg}`">
+               class="card-item__swiper-slide --empty">
+            <img class="card-item__swiper-img" src="@/assets/image/default_card.png" loading="lazy" :alt="`dog-${item.id}-${item.indexImg}`">
           </div>
 
-          <div class="cart-item__swiper-pagination"></div>
-          <div v-if="swiperInstance" class="cart-item__swiper-announcements">
-            <div class="cart-item__swiper-announcements__item"
+          <div class="card-item__swiper-pagination"></div>
+          <div v-if="swiperInstance" class="card-item__swiper-announcements">
+            <div class="card-item__swiper-announcements__item"
                  v-for="indexSlide in swiperInstance?.slides?.length"
-                 @mouseover="goToSlide(indexSlide)"></div>
+                 @mouseover="goToSlide(indexSlide)"
+                 @touchmove="goToSlide(indexSlide)"
+            ></div>
           </div>
         </swiper>
       </div>
 
-      <CartAdItemContent :item="item"/>
+      <CardAdItemContent :item="item"/>
     </div>
 
   </div>
@@ -186,7 +188,7 @@ watch(() => props.item.isFavorite,
 :root {
   --male-percentage: 50%; /* Пример значения.  Замените на нужное вам значение. */
 }
-.cart-item {
+.card-item {
   //width: 300px;
   //height: 600px;
   border-radius: 0 0 24px 24px;

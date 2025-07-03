@@ -334,7 +334,7 @@ onBeforeUnmount(() => {
                 v-model="form.date_birth"
                 title="Дата рождения (DD.MM.YYYY)"
                 mask="**.**.****"
-                total-number
+                total-number-mask
                 :rules="[ruleValidDate]"
             />
             <BaseSelect

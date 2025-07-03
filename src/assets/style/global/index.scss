@@ -24,8 +24,6 @@ body {
   }
 }
 
-html {
-}
 * {
   box-sizing: border-box;
 }
@@ -100,7 +98,7 @@ nav a.router-link-exact-active {
     transform: rotate(360deg);
   }
 }
-.cart-item__swiper-pagination {
+.card-item__swiper-pagination {
   .swiper-pagination-bullet {
     background: rgba(255, 255, 255, 0.8);
     height: 4px;

@@ -58,7 +58,7 @@ const goToDraftItem = (id: string | number) => {
               v-for="item in personalAdDraftList"
               :key="item.id"
           >
-            <CartAdItem
+            <CardAdItem
 
                 :item="item"
                 @click="goToDraftItem(item.id)"

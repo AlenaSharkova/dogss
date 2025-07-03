@@ -64,21 +64,21 @@ watch(() => selectTabTypeAd.value?.value,
           size="small"
           to="/create-ad" />
       <AdWrapperList>
-        <CartAdItem
+        <CardAdItem
             v-if="selectTabTypeAd?.value === 'active'"
             v-for="item in personalAdActiveList"
             :key="item.id"
             :item="item"
         />
         <!--пустой список common-->
-        <CartAdItem
+        <CardAdItem
             v-if="selectTabTypeAd?.value === 'draft'"
             v-for="item in personalAdDraftList"
             :key="item.id"
             :item="item"
             @click="goToDraftItem(item.id)"
         />
-        <CartAdItem
+        <CardAdItem
             v-if="selectTabTypeAd?.value === 'archive'"
             v-for="item in personalAdArchiveList"
             :key="item.id"
