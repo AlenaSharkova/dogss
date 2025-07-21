@@ -1,7 +1,5 @@
-import jwt from "jsonwebtoken";
-import {promisify} from "node:util";
-import {formattedAd} from "~/server/utils/formattedRequest.js";
 import {getUserAuth} from "~/server/services/auth.service.js";
+import {deleteFiles} from "~/server/services/upload.service.js";
 
 export default defineEventHandler(async (event) => {
     const authHeader = getHeader(event, 'authorization')
@@ -41,29 +39,72 @@ export default defineEventHandler(async (event) => {
             throw createError({ statusCode: 401, message: 'Неактивный пользователь: статус пользователя: ' + user.status}); // Исправлено: Выбрасываем ошибку
         }
         try {
-            if(query.adId && user.id) {
-                const deletedRows = await AdList.destroy({
+            if(query.adId) {
+                let deletedRows
+                const deletedAd = await AdList.findOne({
+                    where: {
+                        id: query.adId,
+                        owner: user.id
+                    }
+                })
+                console.log('deletedAds000112', deletedAd.photos, deletedAd)
+
+                if(!deletedAd){
+                    throw createError({ statusCode: 400, message: 'Объявление не найдено', statusMessage });
+                }
+
+                if(deletedAd?.photos?.length) {
+                    await deleteFiles(deletedAd.photos)
+
+                }
+
+
+                deletedRows = await AdList.destroy({
                     where: {
                         id: query.adId,
                         owner: user.id
                     }
                 });
+
+                console.log('deletedRows000112', deletedAd.photos )
+
                 if (deletedRows === 0) {
                     throw createError({ statusCode: 400, message: 'Объявление не найдено', statusMessage });
                 }
+
             }
             else {
-                const deletedRows = await AdList.destroy({
+                let deletedRows
+                const deletedAdsList = await AdList.findAll({
+                    where: {
+                        owner: user.id
+                    }
+                })
+                if(!deletedAdsList){
+                    throw createError({ statusCode: 400, message: 'Объявление не найдено', statusMessage });
+                }
+
+                for (const item of deletedAdsList) {
+                    console.log('item of deletedRows', item)
+                    if(item?.photos?.length) {
+                        await deleteFiles(item.photos)
+                    }
+                }
+                deletedRows = await AdList.destroy({
                     where: {
                         owner: user.id
                     }
                 });
+
+
+                console.log('deletedAdsList0011', deletedAdsList)
                 if (deletedRows === 0) {
                     throw createError({ statusCode: 400, message: 'Объявление не найдено', statusMessage });
                 }
+
             }
             return {
-                message: 'Объявление успешно удалено из избранного',
+                message: 'Объявление успешно удалено из черновика',
                 success: true
             }
         } catch (error) {
@@ -81,3 +122,19 @@ export default defineEventHandler(async (event) => {
         throw error
     }
 });
+
+const deleteImage = async (item) => {
+    const data = await fetch("/api/upload/delete", {
+        method: "post",
+        body: {
+            fileUrlList: item.photos
+        },
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    console.log('data000', data)
+    if (error) {
+        throw createError({statusCode: 400, message: 'Картинки не удалены '});
+    }
+}

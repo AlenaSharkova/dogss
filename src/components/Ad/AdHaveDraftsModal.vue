@@ -33,7 +33,7 @@ const closeModal = () => {
 }
 const goToDraftItem = (id: string | number) => {
 
-  router.push(`/personal/publications/draft/${id}`)
+  router.push(`/personal/publications/change/${id}?type=draft`)
 }
 const deleteAllDrafts = async () => {
   await personalStore.deletePersonalAd()

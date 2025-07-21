@@ -55,7 +55,7 @@ export const usePersonalStore = defineStore('personalStore', () => {
             });
     }
 
-    async function getPersonalAdCurrentActive(id: number) {
+    async function getPersonalAdCurrentActive(id: number | string) {
         await personalService.getPersonalAdItem(id, 'active')
             .then((res) => {
                 console.log('ressss', res)

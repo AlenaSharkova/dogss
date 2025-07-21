@@ -102,6 +102,30 @@ export interface AdCreateItemStruct {
     is_contractual_price: boolean;
     regionsExport?: number[] | null
 }
+export interface AdChangeItemStruct {
+    photos?: string[];
+    name?: string;
+    owner?: number;
+    price?: number | null;
+    count_image?: number;
+
+    date_birth?: string | null;
+    breed_id?: number;
+    type_ad?: 'purchase' | 'good-hands' | 'mating' | 'lost';
+    description?: string;
+    is_export?: boolean
+    parents_mum?: number | null;
+    parents_dad?: number | null;
+    region_main?: number
+    city_main?: number;
+    gender?: 'female' | 'male' | 'any' | null;
+    quantitative?: 'one' | 'litter';
+    number_male?: number | null;
+    number_female?: number | null;
+    approximate_age?: string | null;
+    is_contractual_price?: boolean;
+    regionsExport?: number[] | null
+}
 
 export interface ISelectTypeAd {
     text?: string,

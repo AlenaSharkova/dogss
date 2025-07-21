@@ -48,4 +48,19 @@ export default class AdService extends BaseApiService {
     if(error.value ) throw {...error.value};
     else return data.value;
   }
+  async patchAdItem(body: AdCreateItemStruct, id: number | string) {
+    const {data, error} = await useFetch(this.RESOURCE, {
+      body: {
+        date: body,
+        id
+      },
+      method: "patch",
+      baseURL: this.baseURL,
+      headers: {
+        ...this.headers,
+      },
+    })
+    if(error.value ) throw {...error.value};
+    else return data.value;
+  }
 }

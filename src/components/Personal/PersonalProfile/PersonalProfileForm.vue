@@ -73,11 +73,12 @@ const likeChange = () => {
   console.log('form.value[id]', form.value, formDefault.value)
   for(let id in form.value) {
     let item = form.value[id as keyof UserFormItemStruct]
+    let itemDefault = formDefault.value[id as keyof UserFormItemStruct]
     if(id === 'contact_methods'){
       fieldChange[id] = form.value[id]
     } else if((item as ICommonFormValid<string> | ISelectNumber).value ) {
       const itemValue = (item as ICommonFormValid<string> | ISelectNumber).value
-      const itemValueDefault = (item as ICommonFormValid<string> | ISelectNumber).value
+      const itemValueDefault = (itemDefault as ICommonFormValid<string> | ISelectNumber).value
       if(itemValue !== itemValueDefault) {
         fieldChange[id] = itemValue
       }

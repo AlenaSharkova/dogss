@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia';
 import AdService from '~/service/ad.service';
 import type {
+    AdChangeItemStruct,
     AdCreateItemStruct, AdFullFilterStruct,
     AdItemStruct, AdListApi,
     AdListApiDetails,
@@ -106,6 +107,36 @@ export const useAdStore = defineStore('adStore', () => {
                 throw e.data
             });
     }
+    async function createAd(body: AdCreateItemStruct) {
+        await adService
+            .postAdItem(body)
+            .then(async (res) => {
+                await personalStore.updatePersonalAdList()
+                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
+                //if (res) adCreatedSuccessItem.value = res.value;
+                console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+    async function changeAd(body: AdChangeItemStruct, id: number | string) {
+        await adService
+            .patchAdItem(body, id)
+            .then(async (res) => {
+                await personalStore.updatePersonalAdList()
+                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
+                //if (res) adCreatedSuccessItem.value = res.value;
+                console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
     async function createDraftAd(body: AdCreateItemStruct) {
         await adService
             .postAdItem(body)
@@ -136,7 +167,7 @@ export const useAdStore = defineStore('adStore', () => {
         createAd,
         adCreatedSuccessItem,
         updateAdListClient,
-
+        changeAd
     }
 })
 

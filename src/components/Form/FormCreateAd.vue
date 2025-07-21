@@ -12,14 +12,20 @@ import type {ICommonUpload} from "~/struct/Common/ICommonUpload";
 import FormWindow from "./FormWindow.vue";
 import BaseInput from "../Base/BaseInput.vue";
 import {useBreedsStore} from "~/stores/breeds.store";
+import type {UserChangeItemStruct, UserFormItemStruct} from "~/struct/User/UserItemStruct";
+import type {ICommonFormValid} from "~/struct/Common/ICommonForm";
 
 
 const route = useRoute();
 
 const props = defineProps({
-  itemDraftAd: {
+  itemChangeDateAd: {
     type: Object as PropType<AdItemStruct | null>,
     default: null
+  },
+  isDraftAd: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -92,7 +98,7 @@ const titleStep = computed(() => {
 })
 const disabledButton = computed(() => {
   if(currentStep.value === 1) return !selectAdType.value.value
-  if(currentStep.value === 2) return !(selectBreed.value.value && (isUnknownDateOfBirth.value? selectApproximateAge.value.value: form?.date_birth) && ( form.number_dogs.female || form.number_dogs.male || selectQuantitative.value.value === 'one') && imageList.value.length)
+  if(currentStep.value === 2) return !(selectBreed.value.value && (isUnknownDateOfBirth.value? selectApproximateAge.value.value: form?.date_birth) && ( form.number_dogs.female || form.number_dogs.male || selectGender.value.value !== 'litter') && imageList.value.length)
   if(currentStep.value === 3) return !(selectRegion.value.value && selectCity.value?.value && (selectRegionsExport.value[0]?.value || !isExport.value))
   if(currentStep.value === 4) return !(form.name && (form.price !== '' || isAgreedPrice.value) )
 })
@@ -119,8 +125,8 @@ const prevStep = () => {
 }
 
 const widthProgress = computed(() => (currentStep.value * 25) + '%')
-const countDogs = computed(() => (props.itemDraftAd?.number_male || 0) + (props.itemDraftAd?.number_female || 0));
-const malePercentage = computed(() => ((props.itemDraftAd?.number_male || 0) / countDogs?.value) * 100)
+const countDogs = computed(() => (props.itemChangeDateAd?.number_male || 0) + (props.itemChangeDateAd?.number_female || 0));
+const malePercentage = computed(() => ((props.itemChangeDateAd?.number_male || 0) / countDogs?.value) * 100)
 
 watch(() => selectRegion.value,
     (newRegion) => {
@@ -157,14 +163,14 @@ const showErrorSelectedRegion = () => {
   isErrorSelectedRegion.value = true
 }
 
-const setDraftData = () => {
+const setDefaultData = () => {
   console.log(2, JSON.stringify(genderList.value))
 
-  console.log('itemDraftAd', props.itemDraftAd)
-  if(!props.itemDraftAd) return
+  console.log('itemChangeDateAd', props.itemChangeDateAd)
+  if(!props.itemChangeDateAd) return
   const {breed, type_ad, exportRegions, photos, geo_main, date_birth,
     name, number_female, number_male, is_contractual_price, description, price, approximate_age}
-  = props.itemDraftAd
+  = props.itemChangeDateAd
   if(breed) selectBreed.value = breed
   if(type_ad) selectAdType.value.value = type_ad
   if(exportRegions.isExport) isExport.value = exportRegions.isExport
@@ -218,7 +224,11 @@ const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | fa
       || !selectCity.value.value
       || !selectAdType.value.value
       || !imageUploadList.length
-      || !userFullData.value)
+      || !userFullData.value
+      || !selectRegion.value.value
+
+
+      )
       && type === 'active'
   ) return false
 
@@ -255,6 +265,19 @@ const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | fa
     regionsExport: isExport.value && selectRegionsExport.value? selectRegionsExport.value.map(item => item.value) : null,
   }
 }
+
+const likeChange = (form: AdCreateItemStruct) => {
+  const fieldChange = {}
+  console.log('form def', form, props.itemChangeDateAd)
+  for(let id in form) {
+    let item = form[id as keyof AdCreateItemStruct]
+    let itemDefault = props.itemChangeDateAd[id as keyof AdCreateItemStruct]
+    if(JSON.stringify(item) !== JSON.stringify(itemDefault) && itemDefault !== undefined) {
+      fieldChange[id] = item
+    }
+  }
+  return fieldChange
+}
 const createAdForm = async (type = 'active' as 'active' | 'draft') => {
 
   const body = getBody(type);
@@ -264,18 +287,32 @@ const createAdForm = async (type = 'active' as 'active' | 'draft') => {
         router.push('/personal/publications')
       })
 }
+const changeAd = async (type = 'active' as 'active' | 'draft') => {
+
+  const body = getBody(type);
+  const changeData = likeChange(body)
+  console.log('changeData', changeData)
+  if(!changeData && Object.keys(changeData).length) return
+  await adStore.changeAd(changeData, props.itemChangeDateAd?.id)
+      .then(res => {
+        //router.push('/personal/publications')
+      })
+}
 
 if(authStore.statusUser === 'active') {
   fillPersonalData()
-  setDraftData()
+  setDefaultData()
 }
 const toDraft = async () => {
-  await createAdForm('draft')
+  if(props.itemChangeDateAd?.id) {
+    changeAd('draft')
+  }
+  else await createAdForm('draft')
   isSaveDraft.value = true
-  await router.push('/personal/publications?type=draft')
+  //await router.push('/personal/publications?type=draft')
 }
 onBeforeUnmount(() => {
-  if(!props.itemDraftAd?.id && selectAdType.value.value && !isSaveDraft.value) {
+  if(!props.itemChangeDateAd?.id && selectAdType.value.value && !props.isDraftAd && !isSaveDraft.value) {
     createAdForm('draft')
   }
 })
@@ -288,6 +325,7 @@ onBeforeUnmount(() => {
         :is-prev="currentStep !== 1"
         @prev="prevStep"
         class="form-create-ad__block">
+
       <template #title>
         Подать объявление
       </template>
@@ -350,6 +388,7 @@ onBeforeUnmount(() => {
               <p class="form-create-ad__list-date__text">Дата рождения неизвестна</p>
             </div>
           </div>
+          {{selectGender}}
           <BaseTabSwitch :items="genderList" v-model="selectGender" name="gender"/>
           <div v-if="selectGender.value === 'litter'" class="form-create-ad__list-together">
               <BaseInput total-number :max-length="2" title="Количество девочек" v-model="form.number_dogs.female" />
@@ -445,7 +484,7 @@ onBeforeUnmount(() => {
 
 
     </FormWindow>
-    <AdHaveDraftsModal v-if="!itemDraftAd" />
+    <AdHaveDraftsModal v-if="!itemChangeDateAd" />
   </div>
 </template>
 

@@ -1,6 +1,7 @@
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
-import s3 from '../../utils/s3'; // Импортируем настроенный S3 клиент
+import s3 from '../../utils/s3';
+import {deleteFiles} from "~/server/services/upload.service.js"; // Импортируем настроенный S3 клиент
 
 const storage = multer.memoryStorage(); // Сохраняем файл в памяти
 const upload = multer({ storage: storage }).single('file');
@@ -21,9 +22,9 @@ export default defineEventHandler(async (event) => {
     }
 
     //TODO: обезопасить, чтоб удалять не могли все подряд
-    const { fileUrl } = await readBody(event);
+    const { fileUrl, fileUrlList } = await readBody(event);
 
-    if (!fileUrl) {
+    if (!fileUrl && !fileUrlList?.length) {
         throw createError({
             statusCode: 400,
             message: 'URL файла не предоставлен',
@@ -32,20 +33,7 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        // Извлекаем имя файла (ключ объекта) из URL
-        const urlParts = new URL(fileUrl);
-        const key = urlParts.pathname.slice(1); // Убираем первый слэш
-
-        const params = {
-            Bucket: process.env.BUCKET_NAME,
-            Key: key,
-        };
-
-        await s3.deleteObject(params).promise();
-        return {
-            success: true,
-            message: 'Файл успешно удален'
-        };
+        await deleteFiles()
     } catch (error) {
         throw createError({
             statusCode: 500,
