@@ -14,6 +14,7 @@ const commonStore = useCommonStore()
 
 const isPersonalMenu = computed(() => route.path.startsWith('/personal') || route.query.type === 'personal')
 
+await breedsStore.updateBreedsList()
 </script>
 
 <template>

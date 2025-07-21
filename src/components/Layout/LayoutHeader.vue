@@ -13,6 +13,7 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore()
 const personalStore = usePersonalStore()
+const commonStore = useCommonStore()
 const { isMobile } = useScreen();
 
 const goToPage = (page: string) => {
@@ -62,17 +63,28 @@ watch(() => route.path,
       isShowPersonalMenu.value = false
     }
 )
-
+const isPointedMenu = ref(commonStore?.isScrolled)
+const showPointedMenu = () => {
+  isPointedMenu.value = true
+}
+const hiddenPointedMenu = () => {
+  isPointedMenu.value = false
+}
+const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMenu.value) && isMobile.value)
 </script>
 
 <template>
-  <header class="header" :class="{'header--hidden': commonStore?.isScrolled, '--violet-gradient': isShowPersonalMenu && isMobile}">
+  <header
+      @mouseover="showPointedMenu"
+      @mouseout="hiddenPointedMenu"
+      class="header"
+      :class="{'header--hidden': commonStore?.isScrolled && !isPointedMenu && !isShowMobile, '--violet-gradient': isShowPersonalMenu && isMobile}">
     <div class="header-wrapper">
       <nuxt-link to="/" class="header-logo">
         <img src="@/assets/image/svg/paw.svg">
       </nuxt-link>
       <Transition name="slide-dropdown">
-        <div v-if="((isShowMobileMenu || isShowPersonalMenu) && isMobile) || !isMobile" class="header-menu">
+        <div v-if="isShowMobile || !isMobile" class="header-menu">
           <Transition name="fade" mode="out-in">
 
             <LayoutHeaderNav v-if="isShowMobileMenu || !isMobile" @close="isShowMenu=false" />
@@ -107,7 +119,7 @@ watch(() => route.path,
   right: 0;
   left: 0;
   top: 0;
-  height: 92px;
+  height: 96px;
   //background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.8) 70%, rgba(255,255,255, 0) 100%);
   background: linear-gradient(180deg, rgb(178, 225, 218), 0%, rgba(178, 225, 218, 1) 30%, rgba(178, 225, 218, 0.95) 60%,rgba(178, 225, 218, 0.85) 70%, rgba(178, 225, 218, 0.6) 82%, rgba(178, 225, 218, 0) 100%);
   z-index: 11;
@@ -137,7 +149,7 @@ watch(() => route.path,
 
 
   &--hidden {
-    top: -67px;
+    top: -77px;
   }
 
   &-wrapper {
@@ -196,7 +208,7 @@ watch(() => route.path,
     }
     &__button {
       cursor: pointer;
-      padding: 5px;
+      padding: 0 5px 5px;
       border-radius: 20px;
       display: flex;
       gap: 8px;

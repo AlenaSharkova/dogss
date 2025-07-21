@@ -51,7 +51,7 @@ export default class PersonalService extends BaseApiService {
       console.log('getPersonalAdList. errr', err);
     }
   }
-  async deletePersonalAd(adId: number | string | null) {
+  async deletePersonalAd(adId = null as number | string | null) {
     try {
       const {data, error}
           = await useFetch<ICommonApiSuccess>(this.RESOURCE + '/ad', {

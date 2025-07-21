@@ -31,7 +31,7 @@ onMounted( () => {
     <LayoutWrapperPage>
       <PersonalProfile />
       userFullData: {{authStore.userFullData}}
-      <BaseButton text="Мои объявления" to="/personal/ads" />
+      <BaseButton text="Мои объявления" to="/personal/publications" />
       <a href="https://wa.me/79538143425?text=Здравствуйте!%20Пишу%20насчёт%20Вашего%20объявления%20с%20сайта%20dogsik!" target="_blank" rel="noreferrer">Напишите мне в WhatsApp!</a>
     </LayoutWrapperPage>
   </div>

@@ -53,7 +53,14 @@ export default defineEventHandler(async (event) => {
                 }
             }
             else {
-                throw createError({ statusCode: 40, message: 'Не выбрано объявление', statusMessage });
+                const deletedRows = await AdList.destroy({
+                    where: {
+                        owner: user.id
+                    }
+                });
+                if (deletedRows === 0) {
+                    throw createError({ statusCode: 400, message: 'Объявление не найдено', statusMessage });
+                }
             }
             return {
                 message: 'Объявление успешно удалено из избранного',

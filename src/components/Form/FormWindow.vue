@@ -71,34 +71,70 @@ const prev = () => {
 .form-window {
   border-radius: 24px;
   box-shadow: 0px 4px 24px 0px rgba(30, 30, 30, 0.1);
-  max-width: 1000px;
+  max-width: 1024px;
+  overflow: visible;
+
+
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
   &.--modal {
+    overflow: hidden;
+
+
     @media (max-width: $sm) {
       width: 100vw;
       border-radius: 24px 24px 0 0;
     }
+    .form-window__list {
+      overflow-y: auto;
+
+    }
   }
   &.--type-default {
     background-color: white;
-
   }
   &.--type-original {
-    backdrop-filter: blur(10px);
-
-    //background-color: #bba496D0;
-    //background-color: #c2afa1;
-    //background: url("@/assets/image/balls_back.jpg") no-repeat center center;
-
+    position: relative;
+    &:before {
+      position: absolute;
+      border-radius: 24px;
+      content: '';
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(10px);
+      background-color: #ffffff11;
+    }
   }
   &__content {
     padding: 40px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    position: relative;
     @media (max-width: $sm) {
       padding: 30px 20px;
+
     }
     &.--without-padding {
-      padding: 40px 0;
+      padding: 40px 0 0;
       @media (max-width: $sm) {
-        padding: 30px 0;
+        padding: 30px 0 0;
+      }
+      .form-window__header {
+        padding: 0 40px;
+        @media (max-width: $sm) {
+          padding: 0 20px;
+        }
+      }
+      .form-window__action {
+        padding: 0 40px;
+        @media (max-width: $sm) {
+          padding: 0 20px;
+        }
       }
     }
   }
@@ -109,7 +145,9 @@ const prev = () => {
     align-items: center;
     width: 100%;
     margin-bottom: 20px;
+    text-align: center;
     position: relative;
+    flex-grow: 0;
     &-prev {
       width: 20px;
       height: 22px;
@@ -137,16 +175,35 @@ const prev = () => {
     }
 
   }
+  &__content {
+    height: 100%;
+  }
   &__list {
     display: flex;
     flex-direction: column;
     gap: 20px;
     width: 100%;
+    overflow-y: visible;
+    padding-bottom: 20px;
+
+    flex-grow: 1;
+
+    @include scrollbar(transparent);
+
+    @media (max-width: $sm) {
+
+    }
   }
   &__action {
     margin-top: 28px;
     display: flex;
     gap: 10px;
+    padding-bottom: 20px;
+    @include scrollbar(transparent);
+
+    @media (max-width: $sm) {
+
+    }
   }
 }
 </style>

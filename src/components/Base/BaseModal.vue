@@ -28,13 +28,18 @@ const props = defineProps({
   left: 0;
   bottom: 0;
   right: 0;
-  overflow-y: auto;
   flex-shrink: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow-y: hidden;
+
   &::-webkit-scrollbar {
     display: none;
+  }
+  @media (max-width: $sm) {
+    align-items: flex-end;
+    justify-content: flex-end;
   }
 
 
@@ -59,18 +64,19 @@ const props = defineProps({
   &__window {
     display: flex;
     position: relative;
-    align-items: center;
-    justify-content: center;
-    padding: 40px 0;
     z-index: 10;
-    width: max-content;
+
+    //display: block;
+    max-height: 85%;
+    min-height: 10%;
+    margin: auto;
+    overflow: hidden;
+    //height: 100%;
 
 
     @media (max-width: $sm) {
-      align-items: flex-end;
-      z-index: 101;
       width: 100%;
-      padding: 50px 0 0;
+      margin: auto 0 0;
     }
   }
 

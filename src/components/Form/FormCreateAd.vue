@@ -261,7 +261,7 @@ const createAdForm = async (type = 'active' as 'active' | 'draft') => {
   if(!body) return
   await adStore.createAd(body)
       .then(res => {
-        router.push('/personal/ads')
+        router.push('/personal/publications')
       })
 }
 
@@ -272,7 +272,7 @@ if(authStore.statusUser === 'active') {
 const toDraft = async () => {
   await createAdForm('draft')
   isSaveDraft.value = true
-  await router.push('/personal/ads?type=draft')
+  await router.push('/personal/publications?type=draft')
 }
 onBeforeUnmount(() => {
   if(!props.itemDraftAd?.id && selectAdType.value.value && !isSaveDraft.value) {

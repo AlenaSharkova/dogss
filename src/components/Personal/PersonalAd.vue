@@ -39,7 +39,7 @@ const selectTabTypeAd = ref(activeTab.value)
 
 const goToDraftItem = (id: string | number) => {
 
-  router.push(`/personal/ads/draft/${id}`)
+  router.push(`/personal/publications/draft/${id}`)
 }
 
 watch(() => selectTabTypeAd.value?.value,

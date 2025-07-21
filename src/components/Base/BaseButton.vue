@@ -58,6 +58,7 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
 <style scoped lang="scss">
 
 .base-button {
+  z-index: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;

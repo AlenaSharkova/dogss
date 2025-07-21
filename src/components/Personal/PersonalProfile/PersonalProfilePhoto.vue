@@ -62,8 +62,8 @@ const deleteImageStorage = async (photo: string | null) => {
       />
       <p class="personal-profile__photo-head__name">{{userFullName}}</p>
     </div>
-    <BaseModal :is-show-modal="isShowChangePhoto" @close="hiddenChangePhoto">
-      <FormWindow>
+    <BaseModal :is-show-modal="isShowChangePhoto" @close="hiddenChangePhoto" >
+      <FormWindow modal>
         <CommonUploadImage :isShow="isShowChangePhoto" v-model="imageList" />
         <BaseButton v-if="imageList.length" text="Обновить" @click="updatePhoto"></BaseButton>
       </FormWindow>

@@ -27,7 +27,6 @@ onMounted( () => {
 <template>
   <div class="page-personal-ads">
     <LayoutWrapperPage >
-
       <div v-if="userFullData" class="page-personal-ads__header">
         <div class="page-personal-ads__header-title">
           <span>Мои объявления</span>

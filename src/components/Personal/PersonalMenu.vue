@@ -15,7 +15,7 @@ const sections = computed(() => [
       count: 0
     },
     {
-      link: '/personal/ads',
+      link: '/personal/publications',
       icon: 'Ad',
       title: 'Объявления',
       count: 0

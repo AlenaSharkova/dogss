@@ -291,6 +291,7 @@ if(!regionsStore.regionsList) {
     </FormWindow>
     <BaseModal :isShowModal="isUnconfirmedUser" @close="closeModal">
       <FormWindow
+          modal
           :is-prev="agreeConfirmUser"
           @prev="backRequestConfirm"
       >

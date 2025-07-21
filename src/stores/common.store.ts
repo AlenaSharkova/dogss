@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
 import { defineStore } from 'pinia';
 import type {IUsersAlert} from "~/struct/Common/IUsersAlert";
 
@@ -8,7 +8,6 @@ export const useCommonStore = defineStore('commonStore', () => {
   const isShowMenu = ref(false)
 
   const isShowMobileMenu = ref(false)
-  const isScrolled = ref(false)
   const isLoadingPage = ref(false)
   const showMobileMenu = () => {
     isShowMobileMenu.value = true
@@ -52,9 +51,11 @@ export const useCommonStore = defineStore('commonStore', () => {
     })
   }
   const handleScroll = () => {
-    scrollTop.value = window.scrollY
-    isScrolled.value = window.scrollY > 200
+    console.log('handleScroll', process.client ? window.scrollY:  0)
+    scrollTop.value = process.client ? window.scrollY:  0
   };
+
+  const isScrolled = computed(() => scrollTop.value > 200)
 
   watch(() => scrollTop.value,
       (newValue, oldValue) => {
@@ -63,14 +64,15 @@ export const useCommonStore = defineStore('commonStore', () => {
       }
   )
   if(process.client) {
-      handleScroll();
-      window.addEventListener('scroll', () => handleScroll());
-      isInit.value = true;
+    handleScroll();
+    window.addEventListener('scroll', () => handleScroll());
+    isInit.value = true;
   }
-
-  onUnmounted(() => {
+  onBeforeUnmount(() => {
     window.removeEventListener('scroll', () => handleScroll());
   });
+
+
   return {
     isHiddenHeader,
     isHiddenHeaderSite,

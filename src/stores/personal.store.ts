@@ -69,7 +69,7 @@ export const usePersonalStore = defineStore('personalStore', () => {
                 throw e.data
             });
     }
-    async function deletePersonalAd(adId: number) {
+    async function deletePersonalAd(adId = null as number | string | null) {
         await personalService.deletePersonalAd(adId)
             .then((res) => {
                 console.log('ressss ad delete', res)

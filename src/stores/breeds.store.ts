@@ -14,20 +14,21 @@ export const useBreedsStore = defineStore('breedsStore', () => {
 
   let breedsList = ref<ISelectComponent[] | null>(null)
 
-    async function updateBreedsList() {
-        await breedsService
-        .getBreedsList()
-        .then((res) => {
-            if (res) breedsList.value = res;
-          console.log('breedsList in store', breedsList.value, res)
+  async function updateBreedsList() {
+    await breedsService
+    .getBreedsList()
+    .then((res) => {
+        if (res) breedsList.value = res;
+        console.log('breedsList in store', breedsList.value, res)
 
-        })
-          .catch(e => {
-              commonStore.addUserErrorAlert(e.data?.statusMessage)
-              commonStore.addUserErrorAlert(e.data?.message, true)
-              throw e.data
-          });
+    })
+      .catch(e => {
+          commonStore.addUserErrorAlert(e.data?.statusMessage)
+          commonStore.addUserErrorAlert(e.data?.message, true)
+          throw e.data
+      });
   }
+
 
   return {
       breedsList,

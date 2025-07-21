@@ -11,7 +11,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         commonStore.changeIsLoadingPage(true)
         if (process.client && !authStore.isUseCookie) {
             console.log('client', '!isUseCookie', commonStore.isLoadingPage)
-            commonStore.isLoadingPage = true
+            commonStore.changeIsLoadingPage(true)
             console.log('client 2', '!isUseCookie', commonStore.isLoadingPage)
 
             try {

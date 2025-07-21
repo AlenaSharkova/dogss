@@ -1,7 +1,7 @@
 <template>
   <div class="base-select" :class="{size, disable}">
     <div v-if="props.showSearch"
-         @click="open = true"
+         @click="open = open"
          class="base-select__search" >
       <input
           class="base-select__search-input"
@@ -798,7 +798,7 @@ defineExpose({
       left: 0;
       background-color: #000;
       opacity: 40%;
-      z-index: 12;
+      z-index: 13;
     }
   }
   &__dropdown  {
@@ -814,26 +814,36 @@ defineExpose({
     box-shadow: 0 4px 12px 0 #A2AFBB40;
     padding: 4px;
     //border-radius: 8px;
-    border-radius: 8px 8px 0 0;
+    flex-direction: column;
+    border-radius: 8px;
 
     @media (max-width: $lg) {
       //padding: 8px;
     }
     @media (max-width: $sm) {
+      border-radius: 8px 8px 0 0;
+
       padding: 0;
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
       z-index: 14;
-      max-height: 80%;
-
-      height: 70vh;
+      min-height: 10vh;
+      height: auto;
+      max-height: 70vh;
+      display: flex;
+      margin-top: auto;
+      overflow: hidden;
 
     }
     &-wrapper {
       height: fit-content;
       overflow: hidden;
+      display: flex;
+      flex-grow: 1;
+      flex-direction: column;
+
       @media (max-width: $sm) {
 
       }
@@ -844,9 +854,11 @@ defineExpose({
       padding-right: 10px;
       display: flex;
       flex-direction: column;
+      flex-grow: 1;
       gap: 4px;
       overflow-y: auto;
       @media (max-width: $sm) {
+        max-height: none;
         height: 100%;
         overflow-y: auto;
         //max-height: none;
