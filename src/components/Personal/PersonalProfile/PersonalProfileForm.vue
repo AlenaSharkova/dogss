@@ -10,6 +10,7 @@ import type {
 import type {ICommonFormValid} from "~/struct/Common/ICommonForm";
 import {ruleNotEmpty, ruleRegions, ruleValidEmail} from "~/utils/commonRules";
 import type {ISelectNumber} from "~/struct/Common/ISelectComponent";
+import {usePersonalAdStore} from "~/stores/personal-ad.store";
 
 const props = defineProps({
   user: {
@@ -20,6 +21,8 @@ const props = defineProps({
 
 const regionsStore = useRegionsStore()
 const personalStore = usePersonalStore()
+const personalAdStore = usePersonalAdStore()
+
 
 const form = ref<UserFormItemStruct>({
   email: {
@@ -88,7 +91,7 @@ const likeChange = () => {
 }
 const saveChange = () => {
   const field = likeChange()
-  personalStore.changeUserData(field)
+  personalAdStore.changeUserData(field)
 }
 watch(() => props.user,
     (value) => {

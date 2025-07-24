@@ -11,6 +11,7 @@ import type {
 } from "~/struct/Ad/AdItemStruct";
 import {q} from "~~/.output/server/chunks/runtime.mjs";
 import {useCommonStore} from "~/stores/common.store";
+import type {IStatusAd} from "~/struct/Common/IValueType";
 
 
 export const useAdStore = defineStore('adStore', () => {
@@ -22,7 +23,7 @@ export const useAdStore = defineStore('adStore', () => {
     console.log('adService', {...adService})
 
     const commonStore = useCommonStore()
-    const personalStore = usePersonalStore()
+    const personalAdStore = usePersonalAdStore()
 
     const adCatalogList = ref<AdItemStruct[] | null>(null)
     const adCatalogListDetails = ref<AdListApiDetails | null>(null)
@@ -92,65 +93,8 @@ export const useAdStore = defineStore('adStore', () => {
         adCatalogFilter.value.breeds = res.queryDetails.breeds
         adCatalogFilter.value.maxFullPrice = res.queryDetails.maxFullPrice
     }
-    async function createAd(body: AdCreateItemStruct) {
-        await adService
-            .postAdItem(body)
-            .then(async (res) => {
-                await personalStore.updatePersonalAdList()
-                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
-                //if (res) adCreatedSuccessItem.value = res.value;
-                console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
-    async function createAd(body: AdCreateItemStruct) {
-        await adService
-            .postAdItem(body)
-            .then(async (res) => {
-                await personalStore.updatePersonalAdList()
-                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
-                //if (res) adCreatedSuccessItem.value = res.value;
-                console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
-    async function changeAd(body: AdChangeItemStruct, id: number | string) {
-        await adService
-            .patchAdItem(body, id)
-            .then(async (res) => {
-                await personalStore.updatePersonalAdList()
-                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
-                //if (res) adCreatedSuccessItem.value = res.value;
-                console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
-    async function createDraftAd(body: AdCreateItemStruct) {
-        await adService
-            .postAdItem(body)
-            .then((res) => {
-                //TODO: мб не нужен вывод adCreatedSuccessItem, успех и сессию запрашиваем
-                //if (res) adCreatedSuccessItem.value = res.value;
-                console.log('adCreatedSuccessItem in store', adCreatedSuccessItem.value)
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
+
+
 
     watch(() => authStore.statusUser,
         async (newStatus) => {
@@ -164,10 +108,8 @@ export const useAdStore = defineStore('adStore', () => {
         adCatalogListDetails,
         adCatalogFilter,
         updateAdList,
-        createAd,
         adCreatedSuccessItem,
         updateAdListClient,
-        changeAd
     }
 })
 

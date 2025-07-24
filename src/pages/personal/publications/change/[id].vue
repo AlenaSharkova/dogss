@@ -8,15 +8,17 @@ const adId = ref(route.params.id as string)
 const typeAd = ref(route.query.type as string)
 
 const personalStore = usePersonalStore()
+const personalAdStore = usePersonalAdStore()
+
 const adCurrentChange = ref()
 
 onMounted(async () => {
   if (adId.value && typeAd.value === 'draft') {
-    await personalStore.getPersonalAdCurrentDraft(adId.value)
-    adCurrentChange.value = personalStore.AdPersonalCurrentItemDraft
+    await personalAdStore.getPersonalAdCurrentDraft(adId.value)
+    adCurrentChange.value = personalAdStore.AdPersonalCurrentItemDraft
   } else if (adId.value && typeAd.value === 'active') {
-    await personalStore.getPersonalAdCurrentActive(adId.value)
-    adCurrentChange.value = personalStore.AdPersonalCurrentItemActive
+    await personalAdStore.getPersonalAdCurrentActive(adId.value)
+    adCurrentChange.value = personalAdStore.AdPersonalCurrentItemActive
   }
 })
 

@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <Transition name="fade">
+  <Transition name="fade-modal">
     <div v-if="isShowModal" class="base-modal" >
       <div @click="$emit('close')"  class="base-modal__mask"></div>
       <div class="base-modal__window">
@@ -51,10 +51,9 @@ const props = defineProps({
     height: 100vh;
     top: 0;
     left: 0;
-    background-color: $violet-opacity-max;
-    //bottom: 0;
-    //backdrop-filter: blur(10px);
-
+    //$violet-..
+    background-color: rgba(71, 69, 109, 0.6);
+    backdrop-filter: blur(10px);
     z-index: 10;
 
 
@@ -71,6 +70,7 @@ const props = defineProps({
     min-height: 10%;
     margin: auto;
     overflow: hidden;
+    opacity: 1;
     //height: 100%;
 
 
@@ -99,24 +99,50 @@ const props = defineProps({
     }
   }
 }
-.fade-enter-from,
-.fade-leave-to {
-  .base-modal__mask {
-    opacity: 0;
-  }
+.fade-modal-enter-from, .fade-modal-leave-to {
   .base-modal__window {
-    filter: blur(15px);
     opacity: 0;
   }
 }
-.fade-enter-active,
-.fade-leave-active {
+
+.fade-modal-leave-active {
   .base-modal__mask {
-    transition: all 0.4s;
+    animation: blur-out 0.3s ease-in-out forwards;
   }
   .base-modal__window {
-    transition: all 0.2s;
+    transition: all 0.3s;
   }
-  transition: all 0.4s;
+  transition: all .3s;
+}
+
+
+.fade-modal-enter-active {
+  .base-modal__mask {
+    animation: blur-in .3s ease-in-out forwards;
+  }
+  .base-modal__window {
+    transition: all .3s;
+  }
+  transition: all .3s;
+}
+@keyframes blur-in {
+  from {
+    backdrop-filter: blur(0px);
+    background-color: rgba(71, 69, 109, 0);
+  }
+  to {
+    backdrop-filter: blur(10px);
+    background-color: rgba(71, 69, 109, 0.6);
+  }
+}
+@keyframes blur-out {
+  from {
+    backdrop-filter: blur(10px);
+    background-color: rgba(71, 69, 109, 0.6);
+  }
+  to {
+    backdrop-filter: blur(0px);
+    background-color: rgba(71, 69, 109, 0);
+  }
 }
 </style>

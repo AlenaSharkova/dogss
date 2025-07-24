@@ -46,8 +46,9 @@ const getHref = (id: IContactValue, item: string) => {
 <style scoped lang="scss">
 .contact-methods-view {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(5, 200px);
   gap: 15px;
+
   @media (max-width: $xs) {
     grid-template-columns: repeat(2, 1fr);
   }

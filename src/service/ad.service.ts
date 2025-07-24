@@ -1,6 +1,7 @@
 import BaseApiService from "~/service/baseApi.service";
 import type {AdCreateItemStruct, AdItemStruct, AdListApi, AdQueryFilterStruct} from "~/struct/Ad/AdItemStruct";
 import axios from "axios";
+import type {IStatusAd} from "~/struct/Common/IValueType";
 
 export default class AdService extends BaseApiService {
   private readonly RESOURCE = '/api/ad';
@@ -36,31 +37,5 @@ export default class AdService extends BaseApiService {
     else return data.value;
   }
 
-  async postAdItem(body: AdCreateItemStruct) {
-    const {data, error} = await useFetch(this.RESOURCE, {
-      body: body,
-      method: "post",
-      baseURL: this.baseURL,
-      headers: {
-        ...this.headers,
-      },
-    })
-    if(error.value ) throw {...error.value};
-    else return data.value;
-  }
-  async patchAdItem(body: AdCreateItemStruct, id: number | string) {
-    const {data, error} = await useFetch(this.RESOURCE, {
-      body: {
-        date: body,
-        id
-      },
-      method: "patch",
-      baseURL: this.baseURL,
-      headers: {
-        ...this.headers,
-      },
-    })
-    if(error.value ) throw {...error.value};
-    else return data.value;
-  }
+
 }

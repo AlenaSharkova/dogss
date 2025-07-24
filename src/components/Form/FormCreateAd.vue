@@ -14,6 +14,7 @@ import BaseInput from "../Base/BaseInput.vue";
 import {useBreedsStore} from "~/stores/breeds.store";
 import type {UserChangeItemStruct, UserFormItemStruct} from "~/struct/User/UserItemStruct";
 import type {ICommonFormValid} from "~/struct/Common/ICommonForm";
+import type {IStatusAd} from "~/struct/Common/IValueType";
 
 
 const route = useRoute();
@@ -36,6 +37,7 @@ useHead({
 const defaultSelect = ref({})
 const breedsStore = useBreedsStore()
 const adStore = useAdStore()
+const personalAdStore = usePersonalAdStore()
 const authStore = useAuthStore()
 const filterStore = useFilterStore()
 const regionsStore = useRegionsStore()
@@ -213,7 +215,7 @@ const fillPersonalData = async () => {
   await regionsStore.getCityList(selectRegion.value?.value)
   selectCity.value = userFullData.value.personal_data.geo_main.city
 }
-const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | false => {
+const getBody = (typeSaved = 'active' as 'active' | 'draft'): AdCreateItemStruct | false => {
   console.log('dayjs(form.name)', dayjs(form.name))
   console.log('dayjs(form.date_birth, \'DD.MM.YYYY\')', dayjs(form.date_birth, 'DD.MM.YYYY').format())
   const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => item.imageUrl) as string[]
@@ -229,12 +231,12 @@ const getBody = (type = 'active' as 'active' | 'draft'): AdCreateItemStruct | fa
 
 
       )
-      && type === 'active'
+      && typeSaved === 'active'
   ) return false
 
 
   return {
-    status: type,
+    status: typeSaved,
     photos: imageUploadList,
     name: form.name,
     owner: userFullData.value.id,
@@ -278,25 +280,38 @@ const likeChange = (form: AdCreateItemStruct) => {
   }
   return fieldChange
 }
-const createAdForm = async (type = 'active' as 'active' | 'draft') => {
-
-  const body = getBody(type);
+const createAdForm = async (typeSaved = 'active' as 'active' | 'draft') => {
+  if(props.itemChangeDateAd?.id && props.itemChangeDateAd.status == 'draft' ) {
+    await changeDataAd('active', 'active')
+    return
+  }
+  if(props.itemChangeDateAd?.id && props.itemChangeDateAd.status == 'active' ) {
+    await changeDataAd('active')
+    return
+  }
+  const body = getBody(typeSaved);
   if(!body) return
-  await adStore.createAd(body)
+
+  await personalAdStore.createAd(body)
       .then(res => {
         router.push('/personal/publications')
       })
-}
-const changeAd = async (type = 'active' as 'active' | 'draft') => {
 
-  const body = getBody(type);
+}
+const changeDataAd = async (typeSaved = 'active' as 'active' | 'draft', newStatus = null as null | IStatusAd) => {
+
+  const body = getBody(typeSaved);
   const changeData = likeChange(body)
-  console.log('changeData', changeData)
-  if(!changeData && Object.keys(changeData).length) return
-  await adStore.changeAd(changeData, props.itemChangeDateAd?.id)
-      .then(res => {
-        //router.push('/personal/publications')
-      })
+  console.log('changeData', changeData, Object.keys(changeData).length)
+  if(changeData && Object.keys(changeData).length) {
+    await personalAdStore.changeAd(changeData, props.itemChangeDateAd?.id, newStatus)
+        .then(res => {
+      console.log('changeData res', res)
+          router.push('/personal/publications?type=active')
+        }).catch(err => {
+          console.log('eerrr', err)
+    })
+  }
 }
 
 if(authStore.statusUser === 'active') {
@@ -305,11 +320,10 @@ if(authStore.statusUser === 'active') {
 }
 const toDraft = async () => {
   if(props.itemChangeDateAd?.id) {
-    changeAd('draft')
-  }
-  else await createAdForm('draft')
+    await changeDataAd('draft')
+  } else await createAdForm('draft')
   isSaveDraft.value = true
-  //await router.push('/personal/publications?type=draft')
+  await router.push('/personal/publications?type=draft')
 }
 onBeforeUnmount(() => {
   if(!props.itemChangeDateAd?.id && selectAdType.value.value && !props.isDraftAd && !isSaveDraft.value) {

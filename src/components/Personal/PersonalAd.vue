@@ -3,15 +3,17 @@
 import {useAuthStore} from "~/stores/auth.store";
 import {usePersonalStore} from "~/stores/personal.store";
 import {computed} from "vue";
+import {usePersonalAdStore} from "~/stores/personal-ad.store";
 
 const router = useRouter();
 const route = useRoute();
 const personalStore = usePersonalStore()
+const personalAdStore = usePersonalAdStore()
 const authStore = useAuthStore()
 
-const personalAdActiveList = computed(() => personalStore.AdPersonalList?.ad_active);
-const personalAdDraftList = computed(() => personalStore.AdPersonalList?.ad_draft);
-const personalAdArchiveList = computed(() => personalStore.AdPersonalList?.ad_archive);
+const personalAdActiveList = computed(() => personalAdStore.AdPersonalList?.ad_active);
+const personalAdDraftList = computed(() => personalAdStore.AdPersonalList?.ad_draft);
+const personalAdArchiveList = computed(() => personalAdStore.AdPersonalList?.ad_archive);
 const tabTypeAdList = computed( () => [
   {
     text: `Активные ( ${personalAdActiveList.value?.length || 0} )`,
@@ -67,6 +69,7 @@ watch(() => selectTabTypeAd.value?.value,
         <CardAdItem
             v-if="selectTabTypeAd?.value === 'active'"
             v-for="item in personalAdActiveList"
+            type="personal"
             :key="item.id"
             :item="item"
         />

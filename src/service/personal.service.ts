@@ -4,6 +4,7 @@ import token from "~/pages/auth/token.vue";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {ICommonApiSuccess} from "~/struct/Common/ICommonApi";
 import type {UserChangeItemStruct, UserItemFullStruct} from "~/struct/User/UserItemStruct";
+import type {IStatusAd} from "~/struct/Common/IValueType";
 
 export default class PersonalService extends BaseApiService {
   private readonly RESOURCE = '/api/personal';
@@ -51,12 +52,12 @@ export default class PersonalService extends BaseApiService {
       console.log('getPersonalAdList. errr', err);
     }
   }
-  async deletePersonalAd(adId = null as number | string | null) {
+  async deletePersonalAd(status: IStatusAd, adId = null as number | string | null) {
     try {
       const {data, error}
           = await useFetch<ICommonApiSuccess>(this.RESOURCE + '/ad', {
         method: "delete",
-        query: { adId },
+        query: { adId, status },
         baseURL: this.baseURL,
         headers: {
           ...this.headers,

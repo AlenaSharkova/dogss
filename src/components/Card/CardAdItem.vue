@@ -2,29 +2,38 @@
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import { Pagination } from 'swiper/modules';
 import type Swiper from "swiper";
+import type {PropType} from "vue";
 import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
 import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
 import CardAdItemContent from "~/components/Card/CardAdItemContent.vue";
 import items from "ajv/lib/vocabularies/applicator/items";
-
-const personalStore = usePersonalStore()
+import {usePersonalAdStore} from "~/stores/personal-ad.store";
 
 const props = defineProps({
   item: {
     type: Object as PropType<AdItemStruct>,
     default: []
   },
+  type: {
+    type: String as PropType<'personal' | 'default'>,
+    default: false
+  },
   disabled: {
     type: Boolean,
     default: false
   }
 })
+
+const personalStore = usePersonalStore()
+const personalAdStore = usePersonalAdStore()
+const router = useRouter()
+
 const swiperInstance = ref()
 const isFavorite = ref(props.item.isFavorite || false)
 const isFocusHeart = ref(false)
 const isLoadFavorite = ref(false)
 const isLoadDelete = ref(false)
-
+const isShowMore = ref(false)
 
 const onSwiper = (swiper: Swiper) => {
   swiperInstance.value = swiper
@@ -67,9 +76,16 @@ const removeFromFavorites = async () => {
 const removeFromDraft = async () => {
   console.log('actionFavorites', props.item.id)
   isLoadDelete.value = true
-  await personalStore.deletePersonalAd(props.item.id)
+  await personalAdStore.deletePersonalAd('draft', props.item.id)
   isLoadDelete.value = false
 }
+const toEditAdAPage = () => {
+  router.push(`/personal/publications/change/${props.item.id}?type=active`)
+}
+const toggleMorePersonal = () => {
+  isShowMore.value = !isShowMore.value
+}
+
 const textRegionsExport = computed(() => {
   if(!props.item.exportRegions.isExport) return ''
   return `<p style="font-size: 12px">Возможна доставка в такие регионы, как:</p>
@@ -87,7 +103,7 @@ watch(() => props.item.isFavorite,
 </script>
 
 <template>
-  <div class="card-item" :class="{disabled: isLoadDelete}">
+  <div class="card-item" :class="{disabled: isLoadDelete }">
 
     <div class="card-item__wrapper">
 
@@ -119,21 +135,41 @@ watch(() => props.item.isFavorite,
             </div>
           </BaseWithMiniPopup>
 
-          <div v-if="isActive"
+          <div v-if="type == 'personal' && isActive"
+               @click="toggleMorePersonal"
+               class="card-item__info-circle --top-right">
+            <div class="card-item__info-circle__content" >
+              <div class="card-item__info-circle__content-more">
+                <div v-for="i in 3" class="card-item__info-circle__content-more__point"></div>
+              </div>
+            </div>
+            <Transition name="fade">
+              <CardAdItemMore
+                  :id="item.id"
+                  v-show="isShowMore"
+                  @toEditAdPage="toEditAdAPage()"
+                  @toArchiveAd="toArchiveAd" />
+            </Transition>
+          </div>
+          <div v-else-if="isActive"
                class="card-item__info-circle --top-right"
                :class="{'--hidden': isLoadFavorite}"
                @click.stop="actionFavorites"
                @mouseenter="onFocusHeart"
                @mouseleave="onBlurHeart"
           >
-            <div class="card-item__info-circle__content" >
-              <BaseIconHeart
-                  class="card-item__info-circle__content-icon"
-                  :active="isFavorite"
-                  :hover="isFocusHeart"/>
+            <div class="card-item__info-circle --top-right">
+                 <div class="card-item__info-circle__content" >
+                  <BaseIconHeart
+                      v-if="type == 'default'"
+                      class="card-item__info-circle__content-icon"
+                      :active="isFavorite"
+                      :hover="isFocusHeart"/>
+                 </div>
             </div>
           </div>
-          <div v-else
+
+          <div v-else-if="item.status === 'draft'"
                class="card-item__info-circle --top-right"
                @click.stop="removeFromDraft"
           >
@@ -299,6 +335,17 @@ watch(() => props.item.isFavorite,
         &-icon {
           width: 20px;
           height: 20px;
+        }
+        &-more {
+          display: flex;
+          gap: 2px;
+          &__point {
+            width: 5px;
+            height: 5px;
+            background-color: $violet;
+            border-radius: 50%;
+          }
+
         }
       }
     }

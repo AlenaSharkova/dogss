@@ -2,14 +2,16 @@
 
 import {computed} from "vue";
 import {usePersonalStore} from "~/stores/personal.store";
+import {usePersonalAdStore} from "~/stores/personal-ad.store";
 
 const router = useRouter();
 const route = useRoute();
 
 const maxCount = ref(10)
 const personalStore = usePersonalStore()
+const personalAdStore = usePersonalAdStore()
 
-const personalAdDraftList = computed(() => personalStore.AdPersonalList?.ad_draft);
+const personalAdDraftList = computed(() => personalAdStore.AdPersonalList?.ad_draft);
 const countDrafts = computed(() => personalAdDraftList.value?.length || 0);
 const isShowModal = ref(!!countDrafts)
 
@@ -36,7 +38,7 @@ const goToDraftItem = (id: string | number) => {
   router.push(`/personal/publications/change/${id}?type=draft`)
 }
 const deleteAllDrafts = async () => {
-  await personalStore.deletePersonalAd()
+  await personalAdStore.deletePersonalAd("draft")
 }
 </script>
 

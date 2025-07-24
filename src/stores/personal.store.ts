@@ -7,6 +7,7 @@ import type {
 import {useCommonStore} from "~/stores/common.store";
 import type {PersonalAdListStruct} from "~/struct/Personal/PersonalAdListStruct";
 import type {UserChangeItemStruct} from "~/struct/User/UserItemStruct";
+import type {IStatusAd} from "~/struct/Common/IValueType";
 
 
 export const usePersonalStore = defineStore('personalStore', () => {
@@ -26,63 +27,7 @@ export const usePersonalStore = defineStore('personalStore', () => {
     const AdPersonalCurrentItemDraft = ref<AdItemStruct | null>(null)
     const FavoritesList = ref<AdItemStruct[] | null>(null)
 
-    async function updatePersonalAdList() {
-        await personalService.getPersonalAdList()
-            .then((res) => {
-                console.log('ressss', res)
-                if (res) {
-                    AdPersonalList.value = res.result;
-                }
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
-    async function getPersonalAdCurrentDraft(id: number | string) {
-        await personalService.getPersonalAdItem(id, 'draft')
-            .then((res) => {
-                console.log('ressss', res)
-                if (res) {
-                    AdPersonalCurrentItemDraft.value = res;
-                }
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
 
-    async function getPersonalAdCurrentActive(id: number | string) {
-        await personalService.getPersonalAdItem(id, 'active')
-            .then((res) => {
-                console.log('ressss', res)
-                if (res) {
-                    AdPersonalCurrentItemActive.value = res;
-                }
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
-    async function deletePersonalAd(adId = null as number | string | null) {
-        await personalService.deletePersonalAd(adId)
-            .then((res) => {
-                console.log('ressss ad delete', res)
-                if (res?.success) {
-                    updatePersonalAdList()
-                }
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
     async function addPersonalFavorite(adId: number) {
         await personalService.postPersonalFavorite(adId)
             .then((res) => {
@@ -143,7 +88,6 @@ export const usePersonalStore = defineStore('personalStore', () => {
 
     onMounted(() => {
         if(authStore.statusUser === 'active') {
-            updatePersonalAdList()
             updateFavorites()
         }
     })
@@ -151,27 +95,16 @@ export const usePersonalStore = defineStore('personalStore', () => {
         async (newStatus) => {
             personalService.setAuthToken(authStore.sessionToken)
             if(newStatus === 'active') {
-                updatePersonalAdList()
                 updateFavorites()
             } else {
-                AdPersonalList.value = null
-                AdPersonalCurrentItemActive.value = null
-                AdPersonalCurrentItemDraft.value = null
                 FavoritesList.value = null
             }
         })
 
     return {
-        AdPersonalList,
-        updatePersonalAdList,
-        getPersonalAdCurrentDraft,
-        getPersonalAdCurrentActive,
-        AdPersonalCurrentItemDraft,
-        AdPersonalCurrentItemActive,
         addPersonalFavorite,
         updateFavorites,
         FavoritesList,
-        deletePersonalAd,
         deletePersonalFavorite,
         changeUserData
     }

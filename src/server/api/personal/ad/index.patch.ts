@@ -50,16 +50,27 @@ export default defineEventHandler(async (event)=>
             });
         }
 
-        if (body.is_export && body.regionsExport && body.regionsExport.length ) {
+        if (body.date.is_export && body.date.regionsExport && body.date.regionsExport.length ) {
             for (const regionId of body.regionsExport) {
                 await AdExportRegions.create({
                     ad_id: adItemChangeResult.id,
                     region_id: regionId
                 });
             }
+
         }
+        //TODO:  при изменении body.date.is_export, удалять
         for(let idBody in body.date) {
             adItemChangeResult[idBody] = body.date[idBody]
+        }
+        if(body.new_status) {
+            if (body.new_status === 'active' && adItemChangeResult.status === 'draft' ) {
+                adItemChangeResult.status = body.new_status
+                adItemChangeResult.CreatedAt = new Date();
+            }
+            if (body.new_status === 'archive' && adItemChangeResult.status === 'active' ) {
+                adItemChangeResult.status = body.new_status
+            }
         }
 
         await adItemChangeResult.save();

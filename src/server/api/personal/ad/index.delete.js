@@ -44,6 +44,7 @@ export default defineEventHandler(async (event) => {
                 const deletedAd = await AdList.findOne({
                     where: {
                         id: query.adId,
+                        status: query.status,
                         owner: user.id
                     }
                 })
@@ -62,7 +63,8 @@ export default defineEventHandler(async (event) => {
                 deletedRows = await AdList.destroy({
                     where: {
                         id: query.adId,
-                        owner: user.id
+                        owner: user.id,
+                        status: query.status,
                     }
                 });
 
@@ -77,7 +79,8 @@ export default defineEventHandler(async (event) => {
                 let deletedRows
                 const deletedAdsList = await AdList.findAll({
                     where: {
-                        owner: user.id
+                        owner: user.id,
+                        status: query.status,
                     }
                 })
                 if(!deletedAdsList){
@@ -92,7 +95,8 @@ export default defineEventHandler(async (event) => {
                 }
                 deletedRows = await AdList.destroy({
                     where: {
-                        owner: user.id
+                        owner: user.id,
+                        status: query.status,
                     }
                 });
 

@@ -7,6 +7,7 @@ import type {
     UserItemFullStruct,
 } from "~/struct/User/UserItemStruct";
 import init from "@parcel/watcher-wasm";
+import type {IStatusAd, IStatusUser} from "~/struct/Common/IValueType";
 
 
 export const useAuthStore = defineStore('authStore', () => {
@@ -27,7 +28,7 @@ export const useAuthStore = defineStore('authStore', () => {
     const isUseCookie = ref(false);
     const lastPageRedirect = ref('');
     const userFullData = ref<UserItemFullStruct | null>(null);
-    const statusUser = ref<"active" | 'unauthorized' | "unconfirmed" | "archive" | 'unknown'>('unknown')
+    const statusUser = ref<IStatusUser>('unknown')
     const tokenLocalStore = skipHydrate(useLocalStorage<string>('sessionToken', ''))
 
 

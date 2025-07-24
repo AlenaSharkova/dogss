@@ -8,6 +8,7 @@ import CardAdItem from "~/components/Card/CardAdItem.vue";
 const router = useRouter();
 const route = useRoute();
 const personalStore = usePersonalStore()
+
 const authStore = useAuthStore()
 
 const favoritesList = computed(() => personalStore.FavoritesList)
