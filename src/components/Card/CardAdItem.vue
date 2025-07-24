@@ -146,7 +146,7 @@ watch(() => props.item.isFavorite,
             <Transition name="fade">
               <CardAdItemMore
                   :id="item.id"
-                  v-show="isShowMore"
+                  v-if="isShowMore"
                   @toEditAdPage="toEditAdAPage()"
                   @toArchiveAd="toArchiveAd" />
             </Transition>
@@ -158,14 +158,11 @@ watch(() => props.item.isFavorite,
                @mouseenter="onFocusHeart"
                @mouseleave="onBlurHeart"
           >
-            <div class="card-item__info-circle --top-right">
-                 <div class="card-item__info-circle__content" >
-                  <BaseIconHeart
-                      v-if="type == 'default'"
-                      class="card-item__info-circle__content-icon"
-                      :active="isFavorite"
-                      :hover="isFocusHeart"/>
-                 </div>
+            <div class="card-item__info-circle__content" >
+              <BaseIconHeart
+                  class="card-item__info-circle__content-icon"
+                  :active="isFavorite"
+                  :hover="isFocusHeart"/>
             </div>
           </div>
 

@@ -42,37 +42,37 @@ const toArchiveAd = async () => {
         <span>Завершить</span>
       </div>
     </div>
-
+    <Teleport to="body">
+      <BaseModal :isShowModal="isShowModalComplete" @close="closeModalComplete">
+        <FormWindow modal>
+          <template #title>Завершение объявления</template>
+          <template #subtitle>Пожалуйста, укажите статус сделки</template>
+          <template #default>
+            <p>- Сделка совершена - Вам будет предоставлена ссылка для написания отзыва пользователем;</p>
+            <p>- Сделка не состоялась - объявление будет перемещено в архив, без возможности оставить отзыв. Позже объявление может быть возобновлено.</p>
+          </template>
+          <template #action-buttons>
+            <BaseButton text="Сделка совершена" type="violet" />
+            <BaseButton text="Сделка не состоялась" type="red" />
+          </template>
+        </FormWindow>
+      </BaseModal>
+    </Teleport>
+    <Teleport to="body">
+      <BaseModal :isShowModal="isShowModalComplete0" @close="closeModalComplete">
+        <FormWindow modal>
+          <template #title>Объявление завершено, находится в архиве</template>
+          <template #default>
+            <p>Вы можете отправить ссылку пользователю для написания отзыва</p>
+            <p :href="`http://localhost:3000/publications/comment?id=${id}`">http://localhost:3000/publications/comment?id={{id}}</p>
+          </template>
+          <template #action-buttons>
+          </template>
+        </FormWindow>
+      </BaseModal>
+    </Teleport>
   </div>
-  <Teleport to="body">
-    <BaseModal :isShowModal="isShowModalComplete" @close="closeModalComplete">
-      <FormWindow modal>
-        <template #title>Завершение объявления</template>
-        <template #subtitle>Пожалуйста, укажите статус сделки</template>
-        <template #default>
-          <p>- Сделка совершена - Вам будет предоставлена ссылка для написания отзыва пользователем;</p>
-          <p>- Сделка не состоялась - объявление будет перемещено в архив, без возможности оставить отзыв. Позже объявление может быть возобновлено.</p>
-        </template>
-        <template #action-buttons>
-          <BaseButton text="Сделка совершена" type="violet" />
-          <BaseButton text="Сделка не состоялась" type="red" />
-        </template>
-      </FormWindow>
-    </BaseModal>
-  </Teleport>
-  <Teleport to="body">
-    <BaseModal :isShowModal="isShowModalComplete0" @close="closeModalComplete">
-      <FormWindow modal>
-        <template #title>Объявление завершено, находится в архиве</template>
-        <template #default>
-          <p>Вы можете отправить ссылку пользователю для написания отзыва</p>
-          <p :href="`http://localhost:3000/publications/comment?id=${id}`">http://localhost:3000/publications/comment?id={{id}}</p>
-        </template>
-        <template #action-buttons>
-        </template>
-      </FormWindow>
-    </BaseModal>
-  </Teleport>
+
 </template>
 
 <style scoped lang="scss">

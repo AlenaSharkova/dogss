@@ -108,11 +108,14 @@ nav a.router-link-exact-active {
     margin: 0!important;
   }
 }
+.fade-enter-to, .fade-leave-from {
+  opacity: 1;
+}
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
 }
 .fade-enter-active, .fade-leave-active {
-  transition: all 0.2s;
+  transition: all .2s;
 }
 .blur-enter-from, .blur-leave-to {
   backdrop-filter: blur(10px);
