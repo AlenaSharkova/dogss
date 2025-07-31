@@ -140,7 +140,7 @@ const onInputNumber = (e: InputEvent & { target: HTMLInputElement }) => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 body{
   display: flex;

@@ -397,7 +397,6 @@ onMounted(() => {
 .base-field {
   width: 100%;
   position: relative;
-  font-family: system-ui, sans-serif;
 
   &__item {
     display: flex;
@@ -427,7 +426,6 @@ onMounted(() => {
       }
       input {
         color: var(--secondary, #958F9C);
-        font-family: system-ui, sans-serif;
 
       }
     }
@@ -446,7 +444,6 @@ onMounted(() => {
     }
 
     input {
-      font-family: system-ui, sans-serif;
 
       margin: 0;
       padding: 0;

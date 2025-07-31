@@ -103,7 +103,11 @@ watch(() => props.item.isFavorite,
 </script>
 
 <template>
-  <div class="card-item" :class="{disabled: isLoadDelete }">
+  <div
+      class="card-item"
+      :class="{disabled: isLoadDelete }"
+      @click="router.push(`/catalog/${item.id}`)"
+  >
 
     <div class="card-item__wrapper">
 

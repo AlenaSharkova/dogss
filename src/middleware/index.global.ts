@@ -53,7 +53,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         }
         if (authStore.statusUser === "active"
             && to.meta.requirementUser == 'unauthorized')
-            return navigateTo('/personal', {redirectCode: 301})
+            return navigateTo('/personal/profile', {redirectCode: 301})
     }
 
     //commonStore.isLoadingPage = false

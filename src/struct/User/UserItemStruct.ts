@@ -51,7 +51,6 @@ export interface UserItemPublicPreviewStruct {
     created_at: string;
     personal_data: {
         photo: string;
-        email: string;
         first_name: string;
         last_name: string;
         contact_methods: UserContactMethodsOptimalStruct<string>;
@@ -63,7 +62,6 @@ export interface UserItemPublicPreviewStruct {
         },
     }
 }
-
 export interface UserCreateItemStruct {
     email: string;
     first_name: string;

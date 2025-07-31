@@ -4,6 +4,7 @@ import type {ISelectComponent, ISelectNumber} from "~/struct/Common/ISelectCompo
 import {ruleRegions} from "~/utils/commonRules";
 import dayjs from "dayjs";
 import type {
+  AdChangeItemStruct,
   AdCreateItemStruct, AdItemStruct, IFilterQuantitative,
   ISelectGender,
   ISelectTypeAd
@@ -24,10 +25,6 @@ const props = defineProps({
     type: Object as PropType<AdItemStruct | null>,
     default: null
   },
-  isDraftAd: {
-    type: Boolean,
-    default: false
-  }
 })
 
 useHead({
@@ -87,8 +84,11 @@ const isExport = ref(false)
 const isUnknownDateOfBirth = ref(false)
 const isAgreedPrice  = ref(false)
 const isFreePrice  = ref(false)
-const isSaveDraft  = ref(false)
+const isNavigationWithoutConfirmation  = ref(false)
 const currentStep = ref(1)
+const formDefault = ref<AdChangeItemStruct>({})
+const isShowLeaveConfirmationModal = ref(false)
+const leavingRoute = ref('')
 
 const isErrorSelectedRegion = ref(false)
 console.log(1, JSON.stringify(genderList.value))
@@ -205,6 +205,8 @@ const setDefaultData = () => {
   if(price !== null) form.price = String(price)
   if(price === 0) isFreePrice.value = true
   if(date_birth) form.date_birth = date_birth
+
+  formDefault.value = getBody('draft')
 }
 
 const fillPersonalData = async () => {
@@ -215,7 +217,7 @@ const fillPersonalData = async () => {
   await regionsStore.getCityList(selectRegion.value?.value)
   selectCity.value = userFullData.value.personal_data.geo_main.city
 }
-const getBody = (typeSaved = 'active' as 'active' | 'draft'): AdCreateItemStruct | false => {
+const getBody = (typeSaved: 'active' | 'moderation' | 'draft'): AdCreateItemStruct | false => {
   console.log('dayjs(form.name)', dayjs(form.name))
   console.log('dayjs(form.date_birth, \'DD.MM.YYYY\')', dayjs(form.date_birth, 'DD.MM.YYYY').format())
   const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => item.imageUrl) as string[]
@@ -231,28 +233,27 @@ const getBody = (typeSaved = 'active' as 'active' | 'draft'): AdCreateItemStruct
 
 
       )
-      && typeSaved === 'active'
+      && (typeSaved === 'moderation' || typeSaved === 'active')
   ) return false
 
 
   return {
-    status: typeSaved,
-    photos: imageUploadList,
+    breed_id: selectBreed.value.value as number,
     name: form.name,
-    owner: userFullData.value.id,
+    photos: imageUploadList,
     price: form.price !== ''? Number(form.price.replace(/[^0-9]/g, "")): null,
-    count_image: 4,
+    status: typeSaved,
+
+    owner: userFullData.value.id,
 
     date_birth: dayjs(form.date_birth).isValid() && !isUnknownDateOfBirth.value?
         dayjs(form.date_birth, 'DD.MM.YYYY').format('YYYY-MM-DD'): null,
-    breed_id: selectBreed.value.value as number,
-    type_ad: selectAdType.value.value,
+    type_ad: selectAdType.value?.value,
     description: form.description,
-    is_export: isExport.value,
     parents_mum: null,
     parents_dad: null,
-    region_main: selectRegion.value.value,
-    city_main: selectCity.value.value,
+    region_main: selectRegion.value?.value,
+    city_main: selectCity.value?.value,
     //gender: selectQuantitative.value?.value == 'one'? selectGender.value.value || null: null,
     //quantitative: selectQuantitative.value?.value,
     number_male: selectGender.value.value === 'litter'
@@ -262,27 +263,29 @@ const getBody = (typeSaved = 'active' as 'active' | 'draft'): AdCreateItemStruct
         ? Number(form.number_dogs.female)
         : (selectGender.value.value === 'female'? 1: 0),
     approximate_age: isUnknownDateOfBirth.value
-        ? selectApproximateAge.value.value: null,
+        ? selectApproximateAge.value?.value: null,
     is_contractual_price: isAgreedPrice.value,
+    is_export: isExport.value,
     regionsExport: isExport.value && selectRegionsExport.value? selectRegionsExport.value.map(item => item.value) : null,
   }
 }
 
 const likeChange = (form: AdCreateItemStruct) => {
-  const fieldChange = {}
+  const fieldChange = {} as AdChangeItemStruct
   console.log('form def', form, props.itemChangeDateAd)
+  if(!props.itemChangeDateAd) return
   for(let id in form) {
     let item = form[id as keyof AdCreateItemStruct]
-    let itemDefault = props.itemChangeDateAd[id as keyof AdCreateItemStruct]
+    let itemDefault = formDefault.value[id as keyof AdCreateItemStruct]
     if(JSON.stringify(item) !== JSON.stringify(itemDefault) && itemDefault !== undefined) {
-      fieldChange[id] = item
+      fieldChange[id as keyof AdCreateItemStruct] = item
     }
   }
   return fieldChange
 }
-const createAdForm = async (typeSaved = 'active' as 'active' | 'draft') => {
+const createAdForm = async (typeSaved = 'moderation' as 'moderation' | 'draft') => {
   if(props.itemChangeDateAd?.id && props.itemChangeDateAd.status == 'draft' ) {
-    await changeDataAd('active', 'active')
+    await changeDataAd('moderation', 'moderation')
     return
   }
   if(props.itemChangeDateAd?.id && props.itemChangeDateAd.status == 'active' ) {
@@ -291,45 +294,64 @@ const createAdForm = async (typeSaved = 'active' as 'active' | 'draft') => {
   }
   const body = getBody(typeSaved);
   if(!body) return
-
   await personalAdStore.createAd(body)
       .then(res => {
+        isNavigationWithoutConfirmation.value = true
         router.push('/personal/publications')
       })
 
 }
-const changeDataAd = async (typeSaved = 'active' as 'active' | 'draft', newStatus = null as null | IStatusAd) => {
+const changeDataAd = async (typeSaved = 'moderation' as 'active' | 'moderation' | 'draft', newStatus = null as null | IStatusAd) => {
 
   const body = getBody(typeSaved);
-  const changeData = likeChange(body)
+  const changeData = body? likeChange(body): {}
   console.log('changeData', changeData, Object.keys(changeData).length)
-  if(changeData && Object.keys(changeData).length) {
-    await personalAdStore.changeAd(changeData, props.itemChangeDateAd?.id, newStatus)
+  if(changeData && Object.keys(changeData).length && props.itemChangeDateAd) {
+    await personalAdStore.changeAd(changeData, props.itemChangeDateAd.id, newStatus)
         .then(res => {
-      console.log('changeData res', res)
-          router.push('/personal/publications?type=active')
+          isNavigationWithoutConfirmation.value = true
+          router.push(`/personal/publications?type=${typeSaved}`)
         }).catch(err => {
-          console.log('eerrr', err)
+          console.error('error change Data Ad', err)
     })
+  } else {
+    console.error('отсутствует номер объявления или данные изменения пустые')
   }
-}
-
-if(authStore.statusUser === 'active') {
-  fillPersonalData()
-  setDefaultData()
 }
 const toDraft = async () => {
   if(props.itemChangeDateAd?.id) {
     await changeDataAd('draft')
   } else await createAdForm('draft')
-  isSaveDraft.value = true
+  isNavigationWithoutConfirmation.value = true
   await router.push('/personal/publications?type=draft')
 }
-onBeforeUnmount(() => {
-  if(!props.itemChangeDateAd?.id && selectAdType.value.value && !props.isDraftAd && !isSaveDraft.value) {
-    createAdForm('draft')
+const closeLeaveConfirmationModal = () => {
+  leavingRoute.value = ''
+  isShowLeaveConfirmationModal.value = false;
+}
+const nextLeave = () => {
+  console.log('leavingRoute.value',leavingRoute.value)
+  isShowLeaveConfirmationModal.value = false;
+  isNavigationWithoutConfirmation.value = true
+  router.push(leavingRoute.value)
+}
+
+onBeforeRouteLeave((to, from, next) => { // Хук навигации Vue Router
+  if(!props.itemChangeDateAd?.id && selectAdType.value.value && !isNavigationWithoutConfirmation.value) {
+    isShowLeaveConfirmationModal.value = true;
+    leavingRoute.value = to.fullPath; // Сохраняем целевой URL
+    next(false); // Отменяем текущий переход
+  } else {
+    next(); // Разрешаем переход
   }
 })
+
+// start
+if(authStore.statusUser === 'active') {
+  fillPersonalData()
+  setDefaultData()
+}
+
 </script>
 
 <template>
@@ -499,6 +521,22 @@ onBeforeUnmount(() => {
 
     </FormWindow>
     <AdHaveDraftsModal v-if="!itemChangeDateAd" />
+
+    <BaseModal
+        :is-show-modal="isShowLeaveConfirmationModal"
+        class="ad-leave-confirmation-modal"
+        @close="closeLeaveConfirmationModal"
+    >
+      <FormWindow modal>
+        <template #title>Почти готово!</template>
+        <template #subtitle>Ваше объявление почти готово к публикации!<br>Хотите закончить его сейчас или сохранить черновик на потом?</template>
+        <template #action-buttons>
+          <BaseButton size="small" class="ad-leave-confirmation-modal-btn" type="violet" text="Остаться и продолжить" @click="closeLeaveConfirmationModal" />
+          <BaseButton size="small" class="ad-leave-confirmation-modal-btn" type="violet" text="Сохранить черновик" @click="toDraft"  />
+          <BaseButton size="small" class="ad-leave-confirmation-modal-btn" type="secondary" text="Покинуть без сохранения" @click="nextLeave"  />
+        </template>
+      </FormWindow>
+    </BaseModal>
   </div>
 </template>
 

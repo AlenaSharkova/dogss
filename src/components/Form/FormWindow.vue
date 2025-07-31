@@ -198,11 +198,11 @@ const prev = () => {
     margin-top: 28px;
     display: flex;
     gap: 10px;
-    padding-bottom: 20px;
+    //padding-bottom: 20px;
     @include scrollbar(transparent);
 
-    @media (max-width: $sm) {
-
+    @media (max-width: $xss) {
+      flex-wrap: wrap;
     }
   }
 }

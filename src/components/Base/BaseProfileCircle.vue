@@ -44,7 +44,7 @@ const classes = computed(() => {
 <style scoped lang="scss">
 
 .base-profile__circle {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Exo 2", sans-serif;
   width: 48px;
   height: 48px;
   border-radius: 50%;

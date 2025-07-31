@@ -23,22 +23,36 @@ export const useAdStore = defineStore('adStore', () => {
     console.log('adService', {...adService})
 
     const commonStore = useCommonStore()
-    const personalAdStore = usePersonalAdStore()
 
     const adCatalogList = ref<AdItemStruct[] | null>(null)
+    const adListAdminModeration = ref<AdItemStruct[] | null>(null)
+    const adView = ref<AdItemStruct | null>(null)
     const adCatalogListDetails = ref<AdListApiDetails | null>(null)
     const adCatalogFilter = ref<AdFullFilterStruct>({})
     const adCreatedSuccessItem = ref<AdCreateItemStruct | null>(null)
     const filterStore = useFilterStore()
 
     async function updateAdList(query = null as AdQueryFilterStruct | null) {
+        console.log('updateAdList',query )
         if(query) {
             getQueryAd(query)
             query = setQueryAd(query)
         }
         await adService.getAdList(query)
             .then((res) => {
-                if (res) setFilterAd(res)
+                console.log('dService.getAdLis', res)
+                if (res) setFilterAd(res as AdListApi)
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+    async function getViewAd(query = null as AdQueryFilterStruct | null) {
+        await adService.getAdList(query)
+            .then((res) => {
+                if (res) adView.value = res as AdItemStruct;
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
@@ -48,6 +62,7 @@ export const useAdStore = defineStore('adStore', () => {
     }
 
     async function updateAdListClient(query = null as AdQueryFilterStruct | null, hashAuthLocal = false) {
+        await nextTick()
         if(query) {
             getQueryAd(query)
             query = setQueryAd(query)
@@ -55,6 +70,18 @@ export const useAdStore = defineStore('adStore', () => {
         await adService.getAdListClient(query)
             .then((res) => {
                 if (res) setFilterAd(res)
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+    async function updateAdListAdminModeration() {
+        await nextTick()
+        await adService.getAdListClient({status: 'moderation'})
+            .then((res) => {
+                adListAdminModeration.value = res
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
@@ -73,6 +100,9 @@ export const useAdStore = defineStore('adStore', () => {
         }
         if(query.ageCategory) {
             adCatalogFilter.value.ageCategory = filterStore.ageList?.find(item => item.value === query.ageCategory ) || null
+        }
+        if(query.status === 'moderation') {
+            adCatalogFilter.value.status = query.status
         }
     }
     function setQueryAd(query: AdQueryFilterStruct) {
@@ -94,14 +124,9 @@ export const useAdStore = defineStore('adStore', () => {
         adCatalogFilter.value.maxFullPrice = res.queryDetails.maxFullPrice
     }
 
-
-
     watch(() => authStore.statusUser,
         async (newStatus) => {
             adService.setAuthToken(authStore.sessionToken)
-            if(newStatus === 'active') {
-                updateAdList()
-            }
         })
     return {
         adCatalogList,
@@ -110,6 +135,10 @@ export const useAdStore = defineStore('adStore', () => {
         updateAdList,
         adCreatedSuccessItem,
         updateAdListClient,
+        getViewAd,
+        adView,
+        updateAdListAdminModeration,
+        adListAdminModeration
     }
 })
 

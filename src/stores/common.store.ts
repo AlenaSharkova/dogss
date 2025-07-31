@@ -51,7 +51,7 @@ export const useCommonStore = defineStore('commonStore', () => {
     })
   }
   const handleScroll = () => {
-    console.log('handleScroll', process.client ? window.scrollY:  0)
+    //console.log('handleScroll', process.client ? window.scrollY:  0)
     scrollTop.value = process.client ? window.scrollY:  0
   };
 

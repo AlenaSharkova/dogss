@@ -12,7 +12,7 @@ export default class AdService extends BaseApiService {
   }
 
   async getAdList(query: AdQueryFilterStruct | null, hashAuthLocal = false) {
-    const {data, error} = await useFetch<AdListApi>(this.RESOURCE, {
+    const {data, error} = await useFetch<AdListApi | AdItemStruct>(this.RESOURCE, {
       method: "get",
       query: query || {},
       baseURL: this.baseURL,
@@ -23,8 +23,8 @@ export default class AdService extends BaseApiService {
     if(error.value ) throw {...error.value};
     else return data.value;
   }
+
   async getAdListClient(query: AdQueryFilterStruct | null) {
-    await nextTick()
     const {data, error} = await useFetch<AdListApi>(this.RESOURCE, {
       method: "get",
       query: query || {},

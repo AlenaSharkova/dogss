@@ -3,6 +3,7 @@
 import {computed} from "vue";
 import {usePersonalStore} from "~/stores/personal.store";
 import {usePersonalAdStore} from "~/stores/personal-ad.store";
+import {useCommonStore} from "~/stores/common.store";
 
 const router = useRouter();
 const route = useRoute();
@@ -10,14 +11,12 @@ const route = useRoute();
 const maxCount = ref(10)
 const personalStore = usePersonalStore()
 const personalAdStore = usePersonalAdStore()
+const commonStore = useCommonStore()
 
 const personalAdDraftList = computed(() => personalAdStore.AdPersonalList?.ad_draft);
-const countDrafts = computed(() => personalAdDraftList.value?.length || 0);
-const isShowModal = ref(!!countDrafts)
+const countDrafts = computed<number>(() => personalAdDraftList.value?.length || 0);
+const isShowModal = ref(!!countDrafts.value)
 
-watch(countDrafts, (newCount) => {
-  isShowModal.value = !!newCount
-})
 const title = computed(() => countDrafts.value < maxCount.value
     ? 'У Вас имеются незаконченный объявления'
     :`У Вас 10 черновиков`
@@ -34,12 +33,21 @@ const closeModal = () => {
   }
 }
 const goToDraftItem = (id: string | number) => {
-
   router.push(`/personal/publications/change/${id}?type=draft`)
 }
+
 const deleteAllDrafts = async () => {
-  await personalAdStore.deletePersonalAd("draft")
+  await personalAdStore.deletePersonalAd("draft").then(() => {
+    commonStore.addUserSuccessAlert('Черновики успешно удалены')
+  }).catch(() => {
+    commonStore.addUserErrorAlert('Ошибка удаления черновиков')
+  })
 }
+watch(() => countDrafts.value,
+    (newCount) => {
+      isShowModal.value = !!newCount
+    }
+)
 </script>
 
 <template>
@@ -49,7 +57,7 @@ const deleteAllDrafts = async () => {
       @close="closeModal"
   >
     <FormWindow without-padding modal>
-      <template #title>{{title}}</template>
+      <template #title>{{title}} //{{countDrafts}}</template>
       <template #subtitle>{{subtitle}}</template>
       <template #default>
         <div v-if="personalAdDraftList?.length" class="ad-have-drafts-modal__block">

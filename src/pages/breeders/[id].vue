@@ -31,6 +31,9 @@ idBreeder.value = route.params.id as string
 
 usersStore.getUserViewData(idBreeder.value)
 
+onUnmounted(() => {
+  usersStore.userViewData = null
+})
 
 onMounted(() => {
 

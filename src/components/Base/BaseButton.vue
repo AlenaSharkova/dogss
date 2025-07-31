@@ -60,11 +60,10 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-family: system-ui, sans-serif;
-  //font-family: "Unbounded", sans-serif;
   border-radius: 8px;
   font-size: 16px;
   font-style: normal;
+  font-family: "Montserrat", sans-serif;
 
   font-weight: 500;
   //@include text-upper();

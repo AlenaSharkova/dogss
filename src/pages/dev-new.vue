@@ -9,36 +9,6 @@ definePageMeta({
   requirementUser : null
 })
 
-const ad = ref(null)
-const users = ref(null)
-await $fetch<any>(`/api/ad`, {
-  method: 'get',
-  headers: {
-    'Content-Type': 'application/json',
-    accept: 'application/json',
-  },
-  baseURL: 'http://localhost:3000/',
-}).then((res) => {
-  ad.value = res
-  console.log('res', res)
-})
-    .catch((err: Error) => console.log('err', err));
-
-await $fetch<any>(`/api/users`, {
-  method: 'get',
-  headers: {
-    'Content-Type': 'application/json',
-    accept: 'application/json',
-  },
-  baseURL: 'http://localhost:3000/',
-}).then((res) => {
-  users.value = res
-  console.log('res', res)
-})
-    .catch((err: Error) => console.log('err', err));
-
-const adStore = useAdStore()
-adStore.updateAdList()
 
 
 const adList = computed(() => adStore.adCatalogList )

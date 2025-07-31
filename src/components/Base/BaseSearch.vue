@@ -165,7 +165,6 @@ const fullnessInput = computed(() => {
       font-size: 15px;
       font-style: normal;
       font-weight: 400;
-      font-family: system-ui, sans-serif;
       color: var(--primary, #2D2D2D);
       @media (max-width: $lg) {
         font-size: 14px;
@@ -174,7 +173,6 @@ const fullnessInput = computed(() => {
         line-height: 143%;
       }
       &::placeholder {
-        font-family: system-ui, sans-serif;
         line-height: 20px;
       }
       &:focus-visible {

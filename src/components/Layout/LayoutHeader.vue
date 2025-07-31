@@ -81,7 +81,7 @@ const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMen
       :class="{'header--hidden': commonStore?.isScrolled && !isPointedMenu && !isShowMobile, '--violet-gradient': isShowPersonalMenu && isMobile}">
     <div class="header-wrapper">
       <nuxt-link to="/" class="header-logo">
-        <BaseIconLogo />
+        <BaseIconLogo :isLightTeal="isShowPersonalMenu && isMobile" />
 
       </nuxt-link>
       <Transition name="slide-dropdown">
@@ -98,6 +98,7 @@ const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMen
         <div @click="togglePersonalMenu" class="header-personal__button">
           <BaseProfileCircle
               unfull
+              :name="userFullName"
               :img="userFullData?.personal_data.photo" />
           <div class="header-personal__button-arrow">
             <BaseIconArrow color="white" :nav="isShowPersonalMenu? 'up': 'drop'" />

@@ -20,13 +20,7 @@ export const usePersonalStore = defineStore('personalStore', () => {
     const personalService = new PersonalService(config.public.apiBaseUrl, token.value);
     //console.log('token pers', token)
     const commonStore = useCommonStore()
-
-
-    const AdPersonalList = ref<PersonalAdListStruct | null>(null)
-    const AdPersonalCurrentItemActive = ref<AdItemStruct | null>(null)
-    const AdPersonalCurrentItemDraft = ref<AdItemStruct | null>(null)
     const FavoritesList = ref<AdItemStruct[] | null>(null)
-
 
     async function addPersonalFavorite(adId: number) {
         await personalService.postPersonalFavorite(adId)

@@ -116,7 +116,7 @@ export const formattedAd = (item) => {
             regionsList: item.ExportRegions
             //regionsList: item.GeoRegions
         },
-        ownerDetails: item.Owner,
+        ownerDetails: formattedUserGlobalShort(item.Owner),
         isFavorite: !!item.UsersListFavoriteAd?.length,
         UsersListFavoriteAd: item.UsersListFavoriteAd,
     }

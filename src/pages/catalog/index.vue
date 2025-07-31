@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {useAdStore} from "~/stores/ad.store";
 import {computed} from "vue";
@@ -8,6 +7,7 @@ import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
 import BaseMiniBlock from "~/components/Base/BaseMiniBlock.vue";
 import type {ISelectComponent} from "~/struct/Common/ISelectComponent";
 import type {AdQueryFilterStruct} from "~/struct/Ad/AdItemStruct";
+
 definePageMeta({
   requirementUser : null
 })
@@ -36,48 +36,49 @@ const queryTypeObj = ref< ISelectComponent | null>(null)
 const queryRegionObj = ref< ISelectComponent[] | null>(null)
 const lastQuery = ref< AdQueryFilterStruct | null>(null)
 
+const isMounted = ref(false);
 
-onBeforeUpdate(async () => {
-  await getCreateReq()
-  //document.title = title.value
-
-  useHead({
-    title: `Dogs - ${title.value || '' }`,
-  });
-})
-
-const getCreateReq = async ( offset = 0 as number ) => {
+const getCreateReq = async ( offset = 0 as number, isClient = false  ) => {
   const queryRoute = route.query as AdQueryFilterStruct
   const query = {
     ...queryRoute,
     offset
   }
   lastQuery.value = query
-  await adStore.updateAdList(query)
-
+  console.log('getCreateReq', authStore.isUseCookie, process.client + '00', process.browser, process.server + '', window )
+  if(!isClient) await adStore.updateAdList(query)
+  else await adStore.updateAdListClient(query)
   console.log('adCatalogFilter', adStore.adCatalogFilter)
 
   queryBreedsObj.value = adStore?.adCatalogFilter.breeds || null
   queryRegionObj.value = adStore?.adCatalogFilter.regions || null
 
-
   title.value =  (queryBreedsObj.value?.length == 1 ? queryBreedsObj.value[0].text : 'Собаки') + " " +
       (queryTypeObj.value?.text || '').toLowerCase()
       + " в " + (queryRegionObj.value?.length? queryRegionObj.value[0].text: "России")
-
-
 }
+if(authStore.isUseCookie || process.server) await getCreateReq()
+const statusUser = computed(() => authStore.statusUser)
 
-await getCreateReq()
+onMounted( () => {
+  if(statusUser.value === 'active' && !authStore.isUseCookie) {
+    console.log('onMounted')
+    isMounted.value = true
+    getCreateReq(0, true)
+  }
+})
+
+watch(() => route.fullPath,
+    async () => {
+      await getCreateReq()
+      useHead({
+        title: `Dogs - ${title.value || '' }`,
+      });
+    })
+
 const changePage = (offset: number) => {
   getCreateReq(offset)
 }
-const statusUser = computed(() => authStore.statusUser)
-onMounted(async () => {
-  if(statusUser.value === 'active' && !authStore.isUseCookie && process.client) {
-    await adStore.updateAdListClient(lastQuery, true)
-  }
-})
 
 useHead({
   title: `Dogs - ${title.value || '' }`,
@@ -88,12 +89,12 @@ useHead({
   <div class="page-catalog">
     <LayoutWrapperPage>
       <h1 class="page-catalog__title" >{{title}}</h1>
-        <div v-if="(queryBreedsObj?.length || 0 ) > 1" class="page-catalog__breeds">
-          <BaseMiniBlock
-              v-for="(breed, index) in queryBreedsObj"
-              :key="index"
-              :text="breed.text" />
-        </div>
+      <div v-if="(queryBreedsObj?.length || 0 ) > 1" class="page-catalog__breeds">
+        <BaseMiniBlock
+            v-for="(breed, index) in queryBreedsObj"
+            :key="index"
+            :text="breed.text" />
+      </div>
 
       <div class="page-catalog__main">
         <div class="page-catalog__main-sorting">
@@ -127,7 +128,7 @@ useHead({
 <style scoped lang="scss">
 .page-catalog {
   &__title {
-    @include h3;
+    @include h2;
     margin: 25px 0 20px;
   }
   &__breeds {

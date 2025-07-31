@@ -114,7 +114,6 @@ const open = defineModel<boolean>();
     align-items: center;
     cursor: pointer;
     &-button {
-      font-family: "Nunito", "Helvetica", "Arial", sans-serif;
       display: flex;
       width: 100%;
       justify-content: space-between;

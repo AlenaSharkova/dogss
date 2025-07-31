@@ -34,6 +34,43 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
+        //запрос на одно объявление
+        //TODO: проверка на админа, без user.id - status=='active'?, 'moderation'- не показывать чужим
+
+        if(query?.id) {
+            const adItemDB = await AdList.findOne({
+                where: {
+                    id: query.id
+                },
+                include: [
+                    {
+                        model: GeoRegions,
+                        as: 'LocationRegion',
+                    },
+                    {
+                        model: GeoRegions,
+                        as: 'ExportRegions',
+                        through: { attributes: [] }
+                    },
+                    {
+                        model: Breeds,
+                        as: 'Breed',
+                    },
+                    {
+                        model: GeoCity,
+                        as: 'LocationCity',
+                    },
+                    {
+                        model: Users,
+                        as: 'Owner',
+                    }
+                ],
+                required: true
+            });
+
+            return formattedAd(adItemDB)
+
+        }
         const queryBd = {}
         let sorting = []
         let user
@@ -42,6 +79,44 @@ export default defineEventHandler(async (event) => {
             .catch(err => {
                 return ''
             })
+
+        if(query.status === 'moderation') {
+            //TODO: проверка на админа
+            const adListDB = await AdList.findAll({
+                where: {
+                    status: 'moderation'
+                },
+                include: [
+                    {
+                        model: GeoRegions,
+                        as: 'LocationRegion',
+                    },
+                    {
+                        model: GeoRegions,
+                        as: 'ExportRegions',
+                        through: { attributes: [] }
+                    },
+                    {
+                        model: Breeds,
+                        as: 'Breed',
+                    },
+                    {
+                        model: GeoCity,
+                        as: 'LocationCity',
+                    },
+                    {
+                        model: Users,
+                        as: 'Owner',
+                    }
+                ],
+                required: true
+            });
+            return await Promise.all(adListDB.map((item) => {
+                return formattedAd(item);
+            }))
+        }
+
+
 
         if (user?.id) userId = user.id;
         if (query.type) queryBd.type_ad = query.type;
@@ -62,6 +137,7 @@ export default defineEventHandler(async (event) => {
         }
         if (query.gender) queryBd.gender = query.gender;
         queryBd.status = 'active';
+
         if (query.regions) {
             queryBd.region_main = query.regions.split(',');
             queryFull.regions = await GeoRegions.findAll({

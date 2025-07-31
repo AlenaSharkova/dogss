@@ -1,5 +1,6 @@
 import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
 import type {IStatusAd} from "~/struct/Common/IValueType";
+import type {UserItemPublicPreviewStruct} from "~/struct/User/UserItemStruct";
 
 
 export interface AdListApiDetails {
@@ -27,7 +28,7 @@ export interface AdItemStruct {
     price: number | null;
     status: IStatusAd;
     count_image: number;
-    ownerDetails: any;
+    ownerDetails: UserItemPublicPreviewStruct;
     isFavorite: boolean;
 
     date_birth: string;

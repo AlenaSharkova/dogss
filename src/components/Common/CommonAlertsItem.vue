@@ -26,7 +26,7 @@ onMounted(() => {
   const t = setTimeout(() => {
     emits('close')
     clearTimeout(t)
-  }, 10000)
+  }, 8000)
 })
 </script>
 

@@ -163,7 +163,7 @@ const fullnessInput = computed(() => {
       font-size: 15px;
       font-style: normal;
       font-weight: 400;
-      font-family: system-ui, sans-serif;
+      font-family: "Montserrat", sans-serif;
       line-height: 22px;
       height: 22px;
       resize: none;

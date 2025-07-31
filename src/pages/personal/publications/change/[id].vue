@@ -28,7 +28,7 @@ onMounted(async () => {
   <div class="page-ads-draft">
     <LayoutWrapperPage >
       <BaseWrapperWithDogs image="dolmatian">
-        <FormCreateAd v-if="adCurrentChange" :itemChangeDateAd="adCurrentChange" :isDraftAd="typeAd === 'draft'"/>
+        <FormCreateAd v-if="adCurrentChange" :itemChangeDateAd="adCurrentChange" />
       </BaseWrapperWithDogs>
     </LayoutWrapperPage>
   </div>

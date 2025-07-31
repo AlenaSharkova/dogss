@@ -656,9 +656,9 @@ defineExpose({
     }
     &-input {
       //cursor: pointer;
-      font-family: system-ui, 'Helvetica', 'Arial', sans-serif;
       display: flex;
       width: 100%;
+      font-family: "Montserrat", sans-serif;
       justify-content: space-between;
       align-items: center;
       color: var(--primary, #2D2D2D);
@@ -666,7 +666,7 @@ defineExpose({
       overflow: hidden;
       text-overflow: ellipsis;
       border: 0;
-
+      @include text-normal();
 
       &.active {
         border: 1px solid var(--primary, #2D2D2D);
@@ -676,7 +676,7 @@ defineExpose({
       }
       &__placeholder {
         transition: color 0.2s;
-        color: var(--secondary, #958F9C);
+        color: var(--secondary, #b1afb3);
         @media (max-width: $sm){
           width: 100%;
           font-size: 14px;
@@ -723,7 +723,7 @@ defineExpose({
     }
     &-button {
       cursor: pointer;
-      font-family: system-ui, 'Helvetica', 'Arial', sans-serif;
+      font-family: "Montserrat", sans-serif;
       display: flex;
       width: 100%;
       justify-content: space-between;
@@ -731,9 +731,10 @@ defineExpose({
       align-items: center;
       border: 1px solid var(--border, #D3D8E6);
       border-radius: 8px;
-      background: var(--white, #fff);
+      background: white;
       transition: border .3s;
       gap: 15px;
+      @include text-normal();
       &:hover {
         border: 1px solid var(--primary, #2D2D2D)
       }
