@@ -48,11 +48,8 @@ onMounted(() => {
 })
 
 const adStore = useAdStore()
-adStore.updateAdList()
 
-const updateList = () => {
-  adStore.updateAdList()
-}
+
 
 const adList = computed(() => adStore.adCatalogList )
 

@@ -13,9 +13,6 @@ definePageMeta({
 
 const adList = computed(() => adStore.adCatalogList )
 
-const updateList = () => {
-  adStore.updateAdList()
-}
 
 const regionsStore = useRegionsStore()
 

@@ -4,7 +4,6 @@ import BaseIconArrow from "~/components/Base/BaseIcon/BaseIconArrow.vue";
 const props = defineProps({
   modal: {
     type: Boolean,
-    required: false,
     default: false,
   },
   withoutPadding: {

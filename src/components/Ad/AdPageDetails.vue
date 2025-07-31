@@ -22,14 +22,15 @@ const approximateAgeText = computed(() => {
   return filterStore.approximateAgeList?.find(age => age.value == props.item.approximate_age)?.text || ''
 })
 const textMainRegions = computed(() => `Регион: ${props.item.geo_main.region?.text}`)
+const countDogs = computed(() => (props.item.number_male || 0) + (props.item.number_female || 0));
 </script>
 
 <template>
   <div class="publication-details">
-    <div class="publication-details-type" :class="item.type_ad">
-      <span>{{typeAdText || 'Тип не указан'}}</span>
-    </div>
     <div class="publication-details__characteristic">
+      <div class="publication-details__characteristic-title">
+        <span>Характеристика</span>
+      </div>
       <div class="publication-details__characteristic-row">
         <div class="publication-details__characteristic-row__name">
           <span>Порода</span>
@@ -43,65 +44,50 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
           <span>Возраст</span>
         </div>
         <div class="publication-details__characteristic-row__value">
-          <p v-if="item.approximate_age"> {{approximateAgeText}}</p>
+          <p v-if="item.approximate_age"> ~ {{approximateAgeText}}</p>
           <p v-else> {{getYearsOld(item.date_birth)}}</p>
         </div>
       </div>
-      <div class="publication-details__characteristic-row">
+      <div v-if="countDogs === 1" class="publication-details__characteristic-row">
         <div class="publication-details__characteristic-row__name">
-          <span>Расположение</span>
+          <span>Пол</span>
         </div>
         <div class="publication-details__characteristic-row__value">
-          <BaseWithMiniPopup :text="textMainRegions" position="left">
-            <div class="publication-details-info__city">
-              <BaseIconGeo class="publication-details-info__city-icon" color="dark"/>
-              <span class="publication-details-info__city-text" >{{item.geo_main.city?.text}}</span>
-            </div>
-          </BaseWithMiniPopup>
-        </div>
-      </div>
-      <div class="publication-details__characteristic-row">
-        <div class="publication-details__characteristic-row__name">
-          <span></span>
-        </div>
-        <div class="publication-details__characteristic-row__value">
-          <span></span>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="publication-details-info">
-        <p></p>
-        <BaseWithMiniPopup :text="textMainRegions" position="left">
-          <div class="publication-details-info__city">
-            <BaseIconGeo class="publication-details-info__city-icon" color="dark"/>
-            <span class="publication-details-info__city-text" >{{item.geo_main.city?.text}}</span>
+          <div v-if="item.number_male">
+            <span>Мальчик</span>
           </div>
-        </BaseWithMiniPopup>
-        <div class="publication-details-address">
-          <p v-if="item.approximate_age"> {{approximateAgeText}}</p>
-          <p v-if="!item.approximate_age"> Рождение: {{formatDate(item.date_birth, 'DD MMMM YYYY')}}</p>
-          <p v-if="!item.approximate_age"> {{getYearsOld(item.date_birth)}}</p>
-          <p v-if="!item.approximate_age"> {{calculateAge(item.date_birth)}}</p>
+          <div v-if="item.number_female">
+            <span>Девочка</span>
+          </div>
         </div>
       </div>
-      <div class="publication-details-price">
-        <span v-if="item.is_contractual_price">
-          Договорная цена
-        </span>
-        <span v-else-if="item.price === 0">
-          Бесплатно
-        </span>
-        <span v-else-if="item.price === null">
-          Цена не указана
-        </span>
-        <span v-else>{{formatAmountInput(item.price)}} ₽</span>
+      <div v-if="countDogs > 1" class="publication-details__characteristic-row">
+        <div class="publication-details__characteristic-row__name">
+          <span>Количество мальчиков</span>
+        </div>
+        <div class="publication-details__characteristic-row__value">
+          <div>
+            <span>{{item.number_male}}</span>
+          </div>
+        </div>
       </div>
-      <div class="publication-details-date">
-        <span>Date: {{formatDate(item.created_at, 'DD.MM.YY HH:mm:ss')}}</span>
+      <div v-if="countDogs > 1" class="publication-details__characteristic-row">
+        <div class="publication-details__characteristic-row__name">
+          <span>Количество девочек</span>
+        </div>
+        <div class="publication-details__characteristic-row__value">
+          <div>
+            <span>{{item.number_female}}</span>
+          </div>
+        </div>
       </div>
-      <div class="publication-details-owner">
-        <span>Мать: {{item.ownerDetails?.first_name}} {{item.ownerDetails?.last_name}}</span>
+      <div class="publication-details__characteristic-row">
+        <div class="publication-details__characteristic-row__name">
+          <span></span>
+        </div>
+        <div class="publication-details__characteristic-row__value">
+          <span></span>
+        </div>
       </div>
     </div>
   </div>
@@ -112,7 +98,6 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
 
 .publication-details {
   padding: 12px 0;
-  height: 220px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -121,9 +106,11 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
     display: flex;
     flex-direction: column;
     gap: 8px;
+    &-title {
+      @include h6;
+    }
     &-row {
       height: 100%;
-      padding: 0 12px;
       display: grid;
       gap: 20px;
       grid-template-columns: 1fr 1fr;
@@ -176,14 +163,6 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
         width: 15px;
       }
     }
-  }
-  &-price {
-    padding-top: 7px;
-    @include h6;
-  }
-  &-owner {
-    padding-top: 4px;
-    @include text-normal;
   }
 }
 

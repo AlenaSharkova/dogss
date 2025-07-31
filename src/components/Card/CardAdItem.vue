@@ -8,6 +8,7 @@ import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
 import CardAdItemContent from "~/components/Card/CardAdItemContent.vue";
 import items from "ajv/lib/vocabularies/applicator/items";
 import {usePersonalAdStore} from "~/stores/personal-ad.store";
+import AdFavoriteHeart from "~/components/Ad/AdFavoriteHeart.vue";
 
 const props = defineProps({
   item: {
@@ -29,9 +30,6 @@ const personalAdStore = usePersonalAdStore()
 const router = useRouter()
 
 const swiperInstance = ref()
-const isFavorite = ref(props.item.isFavorite || false)
-const isFocusHeart = ref(false)
-const isLoadFavorite = ref(false)
 const isLoadDelete = ref(false)
 const isShowMore = ref(false)
 
@@ -42,39 +40,7 @@ const onSwiper = (swiper: Swiper) => {
 const goToSlide = (index: number) => {
   swiperInstance.value.slideTo(index-1, 200)
 }
-const onBlurHeart = () => {
-  isFocusHeart.value = false
-}
-const onFocusHeart = () => {
-  isFocusHeart.value = true
-}
-const actionFavorites = async () => {
-  console.log('actionFavorites', props.item.id)
-  if(!isFavorite.value) await addToFavorites()
-  else await removeFromFavorites()
-}
-const addToFavorites = async () => {
-  isLoadFavorite.value = true
-  await personalStore.addPersonalFavorite(props.item.id).then(() => {
-    isFavorite.value = !isFavorite.value
-  }).catch((err) => {
-    return err
-  }).finally(() => {
-    isLoadFavorite.value = false
-  })
-}
-const removeFromFavorites = async () => {
-  isLoadFavorite.value = true
-  await personalStore.deletePersonalFavorite(props.item.id).then(() => {
-    isFavorite.value = !isFavorite.value
-  }).catch((err) => {
-    return err
-  }).finally(() => {
-    isLoadFavorite.value = false
-  })
-}
 const removeFromDraft = async () => {
-  console.log('actionFavorites', props.item.id)
   isLoadDelete.value = true
   await personalAdStore.deletePersonalAd('draft', props.item.id)
   isLoadDelete.value = false
@@ -95,11 +61,6 @@ const isActive = computed(() => props.item.status === 'active')
 const countDogs = computed(() => (props.item.number_male || 0) + (props.item.number_female || 0));
 const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs.value) * 100)
 
-watch(() => props.item.isFavorite,
-    (newValue) => {
-      isFavorite.value = newValue
-    })
-
 </script>
 
 <template>
@@ -108,9 +69,7 @@ watch(() => props.item.isFavorite,
       :class="{disabled: isLoadDelete }"
       @click="router.push(`/catalog/${item.id}`)"
   >
-
     <div class="card-item__wrapper">
-
       <div class="card-item__top">
         <div class="card-item__info">
           <div class="card-item__info-circle --left"
@@ -138,7 +97,6 @@ watch(() => props.item.isFavorite,
               <img src="@/assets/image/svg/shipping-white.svg" alt="">
             </div>
           </BaseWithMiniPopup>
-
           <div v-if="type == 'personal' && isActive"
                @click="toggleMorePersonal"
                class="card-item__info-circle --top-right">
@@ -152,24 +110,15 @@ watch(() => props.item.isFavorite,
                   :id="item.id"
                   v-if="isShowMore"
                   @toEditAdPage="toEditAdAPage()"
-                  @toArchiveAd="toArchiveAd" />
+                  @toArchiveAd="" />
             </Transition>
           </div>
-          <div v-else-if="isActive"
-               class="card-item__info-circle --top-right"
-               :class="{'--hidden': isLoadFavorite}"
-               @click.stop="actionFavorites"
-               @mouseenter="onFocusHeart"
-               @mouseleave="onBlurHeart"
-          >
-            <div class="card-item__info-circle__content" >
-              <BaseIconHeart
-                  class="card-item__info-circle__content-icon"
-                  :active="isFavorite"
-                  :hover="isFocusHeart"/>
-            </div>
-          </div>
-
+          <AdFavoriteHeart
+              v-else-if="isActive"
+              class="card-item__info-circle --top-right"
+              :id="item.id"
+              :is-favorite="item.isFavorite"
+          />
           <div v-else-if="item.status === 'draft'"
                class="card-item__info-circle --top-right"
                @click.stop="removeFromDraft"

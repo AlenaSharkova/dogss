@@ -26,17 +26,21 @@ const router = useRouter();
 const adList = computed(() => adStore.adCatalogList )
 const adListDetails = computed(() => adStore.adCatalogListDetails )
 
-const title = ref('')
-
 const queryBreeds = ref<string[]>([])
 const queryType = ref<string>('')
 const queryRegion = ref<string>('')
-const queryBreedsObj = ref<ISelectComponent[]| null>(null)
 const queryTypeObj = ref< ISelectComponent | null>(null)
-const queryRegionObj = ref< ISelectComponent[] | null>(null)
 const lastQuery = ref< AdQueryFilterStruct | null>(null)
 
-const isMounted = ref(false);
+const statusUser = computed(() => authStore.statusUser)
+const queryBreedsObj = computed<ISelectComponent[]| null>(() => adStore?.adCatalogFilter.breeds || null)
+const queryRegionObj = computed(() => adStore?.adCatalogFilter.breeds || null)
+const title = computed<ISelectComponent[] | null>(() => {
+  return (queryBreedsObj.value?.length == 1 ? queryBreedsObj.value[0].text : 'Собаки') + " " +
+  (queryTypeObj.value?.text || '').toLowerCase()
+  + " в " + (queryRegionObj.value?.length ? queryRegionObj.value[0].text : "России")
+})
+
 
 const getCreateReq = async ( offset = 0 as number, isClient = false  ) => {
   const queryRoute = route.query as AdQueryFilterStruct
@@ -45,28 +49,15 @@ const getCreateReq = async ( offset = 0 as number, isClient = false  ) => {
     offset
   }
   lastQuery.value = query
-  console.log('getCreateReq', authStore.isUseCookie, process.client + '00', process.browser, process.server + '', window )
-  if(!isClient) await adStore.updateAdList(query)
-  else await adStore.updateAdListClient(query)
+  await adStore.updateAdFilter(query)
   console.log('adCatalogFilter', adStore.adCatalogFilter)
-
-  queryBreedsObj.value = adStore?.adCatalogFilter.breeds || null
-  queryRegionObj.value = adStore?.adCatalogFilter.regions || null
-
-  title.value =  (queryBreedsObj.value?.length == 1 ? queryBreedsObj.value[0].text : 'Собаки') + " " +
-      (queryTypeObj.value?.text || '').toLowerCase()
-      + " в " + (queryRegionObj.value?.length? queryRegionObj.value[0].text: "России")
 }
-if(authStore.isUseCookie || process.server) await getCreateReq()
-const statusUser = computed(() => authStore.statusUser)
 
-onMounted( () => {
-  if(statusUser.value === 'active' && !authStore.isUseCookie) {
-    console.log('onMounted')
-    isMounted.value = true
-    getCreateReq(0, true)
-  }
-})
+const changePage = (offset: number) => {
+  getCreateReq(offset)
+}
+
+await getCreateReq()
 
 watch(() => route.fullPath,
     async () => {
@@ -75,10 +66,6 @@ watch(() => route.fullPath,
         title: `Dogs - ${title.value || '' }`,
       });
     })
-
-const changePage = (offset: number) => {
-  getCreateReq(offset)
-}
 
 useHead({
   title: `Dogs - ${title.value || '' }`,

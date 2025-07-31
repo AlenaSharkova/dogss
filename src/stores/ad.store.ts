@@ -31,26 +31,17 @@ export const useAdStore = defineStore('adStore', () => {
     const adCatalogFilter = ref<AdFullFilterStruct>({})
     const adCreatedSuccessItem = ref<AdCreateItemStruct | null>(null)
     const filterStore = useFilterStore()
+    const queryRequest = ref<AdQueryFilterStruct>({})
+    const idRequestAdView = ref<AdQueryFilterStruct>({})
 
-    async function updateAdList(query = null as AdQueryFilterStruct | null) {
-        console.log('updateAdList',query )
-        if(query) {
-            getQueryAd(query)
-            query = setQueryAd(query)
-        }
-        await adService.getAdList(query)
-            .then((res) => {
-                console.log('dService.getAdLis', res)
-                if (res) setFilterAd(res as AdListApi)
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
+    async function requestViewAd(id: number) {
+        idRequestAdView.value = id
     }
-    async function getViewAd(query = null as AdQueryFilterStruct | null) {
-        await adService.getAdList(query)
+    async function clearViewAd() {
+        idRequestAdView.value = null
+    }
+    async function getViewAd() {
+        await adService.getAdList({id: idRequestAdView.value})
             .then((res) => {
                 if (res) adView.value = res as AdItemStruct;
             })
@@ -61,13 +52,8 @@ export const useAdStore = defineStore('adStore', () => {
             });
     }
 
-    async function updateAdListClient(query = null as AdQueryFilterStruct | null, hashAuthLocal = false) {
-        await nextTick()
-        if(query) {
-            getQueryAd(query)
-            query = setQueryAd(query)
-        }
-        await adService.getAdListClient(query)
+    async function updateAdList() {
+        await adService.getAdList(queryRequest.value)
             .then((res) => {
                 if (res) setFilterAd(res)
             })
@@ -76,6 +62,13 @@ export const useAdStore = defineStore('adStore', () => {
                 commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
             });
+    }
+    async function updateAdFilter(query = null as AdQueryFilterStruct | null, hashAuthLocal = false) {
+        console.log('updateAdFilter query', query)
+        if(query) {
+            getQueryAd(query)
+            queryRequest.value = setQueryAd(query)
+        }
     }
     async function updateAdListAdminModeration() {
         await nextTick()
@@ -124,9 +117,29 @@ export const useAdStore = defineStore('adStore', () => {
         adCatalogFilter.value.maxFullPrice = res.queryDetails.maxFullPrice
     }
 
+    watch(() => idRequestAdView.value,
+        async (newIdRequestAdView) => {
+            if(newIdRequestAdView) {
+                await getViewAd()
+            } else {
+                adView.value = null
+            }
+        })
     watch(() => authStore.statusUser,
         async (newStatus) => {
+            console.log('newStatus', newStatus)
             adService.setAuthToken(authStore.sessionToken)
+            if(newStatus === 'active' && !authStore.isUseCookie ) {
+                await updateAdList()
+                if(idRequestAdView.value) {
+                    await getViewAd()
+                }
+            }
+        })
+    watch(() => queryRequest.value,
+        async (newQueryRequest) => {
+            console.log('newQueryRequest', newQueryRequest)
+            await updateAdList()
         })
     return {
         adCatalogList,
@@ -134,11 +147,13 @@ export const useAdStore = defineStore('adStore', () => {
         adCatalogFilter,
         updateAdList,
         adCreatedSuccessItem,
-        updateAdListClient,
         getViewAd,
         adView,
         updateAdListAdminModeration,
-        adListAdminModeration
+        adListAdminModeration,
+        updateAdFilter,
+        requestViewAd,
+        clearViewAd
     }
 })
 

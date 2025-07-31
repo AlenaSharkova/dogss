@@ -5,7 +5,7 @@ import {usePersonalAdStore} from "~/stores/personal-ad.store";
 
 const props = defineProps({
   id: {
-    type: String,
+    type: Number,
   }
 })
 const emit = ['toEditAdAPage', 'toArchiveAd']
