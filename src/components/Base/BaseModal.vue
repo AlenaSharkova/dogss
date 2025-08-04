@@ -51,14 +51,9 @@ const props = defineProps({
     height: 100vh;
     top: 0;
     left: 0;
-    //$violet-..
     background-color: rgba(71, 69, 109, 0.6);
     backdrop-filter: blur(10px);
     z-index: 10;
-
-
-
-
   }
   &__window {
     display: flex;

@@ -19,6 +19,7 @@ const props = defineProps({
   }
 })
 const filterStore = useFilterStore()
+const router = useRouter()
 
 const typeAdText = computed(() => {
   return filterStore.typeAdList?.find(type => type.value == props.item.type_ad)?.text || ''
@@ -29,6 +30,16 @@ const approximateAgeText = computed(() => {
 const textMainRegions = computed(() => `Регион: ${props.item.geo_main.region?.text}`)
 const userFullName = computed(() => props.item.ownerDetails? `${props.item.ownerDetails.personal_data.first_name} ${props.item.ownerDetails.personal_data.last_name}`: '')
 
+const goToOwner = () => {
+  router.push(`/user/${props.item?.ownerDetails.id}`)
+}
+const isShowModalShare = ref(false)
+const showModalShare = () => {
+  isShowModalShare.value = true
+}
+const closeModalShare = () => {
+  isShowModalShare.value = false
+}
 </script>
 
 <template>
@@ -75,7 +86,7 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
               </div>
             </div>
           </div>
-          <div class="publication-right__info-share">
+          <div @click="showModalShare" class="publication-right__info-share">
             <span>Поделиться</span>
             <BaseIconShare class="publication-right__info-share__icon" />
           </div>
@@ -84,23 +95,37 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
       <div class="publication-right__block --owner">
         <div class="publication-right__owner">
           <BaseProfileCircle
+              @click="goToOwner"
+              class="publication-right__owner-profile"
               unfull
               size="medium"
               :name="userFullName"
               :img="item.ownerDetails.personal_data.photo" />
-          <div class="publication-right__owner-content">
-            <p class="publication-right__owner-fullname">{{userFullName}}</p>
-            <p class="publication-right__owner-ads">
-              {{item.ownerDetails.ad_list_count.active}} активных объявления
-             + {{item.ownerDetails.ad_list_count.archive}} завершенных объявления
-            </p>
-            <p class="publication-right__owner-comments">2 отзыва</p>
+          <p @click="goToOwner" class="publication-right__owner-fullname">{{userFullName}}</p>
+          <div class="publication-right__owner-additions">
+            <div class="publication-right__owner-additions__ads">
+              <BaseIconCheck class="publication-right__owner-additions__ads-icon" />
+              <div class="publication-right__owner-additions__ads-text">
+                <span>{{item.ownerDetails.ad_list_count.archive}} состоявшиеся сделки</span>
+                <span class="publication-right__owner-additions__ads-text__active">+ {{item.ownerDetails.ad_list_count.active}} активных объявления</span>
+              </div>
+            </div>
+            <div class="publication-right__owner-additions__comments">
+              <BaseIconCheck class="publication-right__owner-additions__comments-icon" />
+              <div class="publication-right__owner-additions__comments-text">
+                <span>2 отзыва</span>
+              </div>
+            </div>
           </div>
-          <BaseButton text="Связаться" />
+
+          <BaseButton @click.stop="" text="Связаться" />
         </div>
       </div>
-
     </div>
+    <Teleport to="body">
+      <AdShareInContactModal :is-show-modal="isShowModalShare" @close="closeModalShare" />
+    </Teleport>
+
   </div>
 </template>
 
@@ -132,7 +157,7 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
   }
   &__block {
     border-radius: 25px;
-    box-shadow: $box-shadow-middle;
+    box-shadow: $box-shadow-lite;
     padding: 24px;
     &.--info {
       background-color: $light-teal;
@@ -140,6 +165,10 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
     &.--owner {
       background-color: $violet;
       color: $white-text;
+      transition: all .4s;
+      &:hover {
+        box-shadow: $box-shadow-dark;
+      }
     }
   }
   &__info {
@@ -150,6 +179,13 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
       position: relative;
       padding-right: 55px;
       flex-wrap: wrap;
+      @media (max-width: $xs) {
+        padding-right: 45px;
+      }
+      @media (max-width: $xss) {
+        flex-direction: column;
+        padding-right: 0;
+      }
       &__favorite {
         top: 0px;
         right: 20px;
@@ -157,10 +193,15 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
         height: 30px;
         position: absolute;
         cursor: pointer;
-
+        @media (max-width: $xs) {
+          right: 10px;
+        }
       }
       &__price {
         @include h3;
+        @media (max-width: $xss) {
+          padding-right: 45px;
+        }
       }
       &__type {
         padding: 6px 8px;
@@ -201,6 +242,13 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
             display: flex;
             gap: 5px;
             align-items: center;
+            transition: all 0.2s;
+            &:hover {
+              color: lighten($violet, 10%);
+              .publication-right__info-geo__place-value__city-icon {
+                color: lighten($violet, 10%);
+              }
+            }
           }
         }
       }
@@ -245,10 +293,13 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
       gap: 8px;
       justify-content: flex-end;
       align-items: center;
+      transition: all .2s;
+      width: min-content;
+      margin-left: auto;
       &:hover {
-        color: $violet;
+        color: lighten($violet, 10%);
         .publication-right__info-share__icon {
-          color: $violet;
+          color: lighten($violet, 10%);
         }
       }
       &__icon {
@@ -262,21 +313,64 @@ const userFullName = computed(() => props.item.ownerDetails? `${props.item.owner
     flex-direction: column;
     align-items: center;
     padding-top: 14px;
+    justify-content: center;
+    &-profile {
+      cursor: pointer;
+    }
     &-fullname {
       @include h4;
+      transition: all 0.2s;
+      cursor: pointer;
+      &:hover {
+        color: lighten($light-teal, 10%);
+      }
     }
-    &-comments {
-      color: $violet;
-      @include text-normal();
+    &-additions {
+      display: flex;
+      width: 100%;
+      align-items: flex-start;
+      justify-content: start;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 20px;
+      margin-bottom: 15px;
+      &__ads, &__comments {
+        color: $light-teal;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        @include text-normal();
+        @media (max-width: $xs) {
+          justify-content: start;
+          align-items: start;
+        }
+      }
+      &__ads {
+        &-icon {
+          flex-shrink: 0;
+        }
+        &-text {
+          line-height: 140%;
+          color: white;
+          display: flex;
+          gap: 8px;
+          @media (max-width: $xs) {
+            flex-direction: column;
+            gap: 3px;
+          }
+          &__active {
+            color: $light-teal;
+          }
+        }
+      }
+      &__comments {
+        flex-shrink: 0;
+        &-text {
+          line-height: 140%;
+          color: white;
+        }
+      }
     }
-  }
-
-  &__actions {
-    margin-top: 100px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
   }
 }
 

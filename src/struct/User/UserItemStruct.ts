@@ -92,6 +92,13 @@ export interface UserContactMethodsStruct<T> {
     tg: T,
     whatsapp: T,
     vk: T,
+    copy: T
+}
+export interface AdShareContactMethods {
+    tg: string,
+    whatsapp: string,
+    vk: string,
+    copy: string
 }
 export interface UserContactMethodsOptimalStruct<T> {
     email?: T,

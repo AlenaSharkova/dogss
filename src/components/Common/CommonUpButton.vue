@@ -41,7 +41,7 @@ const scrollToTop = () => {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 13;
+  z-index: 12;
   border: none;
   outline: none;
   //background-color: $light-teal;

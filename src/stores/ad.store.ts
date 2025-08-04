@@ -139,6 +139,7 @@ export const useAdStore = defineStore('adStore', () => {
     watch(() => queryRequest.value,
         async (newQueryRequest) => {
             console.log('newQueryRequest', newQueryRequest)
+            adCatalogList.value = null
             await updateAdList()
         })
     return {

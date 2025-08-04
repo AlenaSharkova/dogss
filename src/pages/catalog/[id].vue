@@ -6,6 +6,7 @@ import { FreeMode, Navigation, Thumbs, Mousewheel} from 'swiper/modules';
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
 import useScreen from "~/utils/useScreen";
 import UserContactMethodsView from "~/components/User/UserContactMethodsView.vue";
+import type Swiper from "swiper";
 
 definePageMeta({
   requirementUser : null
@@ -20,13 +21,13 @@ const authStore = useAuthStore()
 const idPublication = ref<string | null>(null)
 idPublication.value = route.params.id as string
 const modules = ref([FreeMode, Navigation, Thumbs])
-const thumbsSwiper = ref(null);
+const thumbsSwiper = ref<Swiper | null>(null);
 
 const statusUser = computed(() => authStore.statusUser)
 const adView = computed(() => adStore.adView )
 const contacts = computed(() => adView.value?.ownerDetails.personal_data.contact_methods)
 
-const setThumbsSwiper = (swiper) => {
+const setThumbsSwiper = (swiper: Swiper) => {
   thumbsSwiper.value = swiper;
 };
 
@@ -101,9 +102,14 @@ onUnmounted(() => {
               <Teleport :disabled="!isMobile" to="#page-publication__main">
                 <div class="page-publication__details">
                   <AdPageDetails :item="adView" />
-                  <UserContactMethodsView
-                      :contacts="contacts"
-                  />
+                  <div class="page-publication__details-contacts">
+                    <div class="page-publication__details-contacts__title">
+                      <span>Связаться с автором объявления</span>
+                    </div>
+                    <UserContactMethodsView
+                        :contacts="contacts"
+                    />
+                  </div>
                 </div>
               </Teleport>
             </ClientOnly>
@@ -157,17 +163,15 @@ onUnmounted(() => {
       order: 1;
     }
   }
-
-
   &__gallery {
     display: flex;
     flex-direction: row-reverse;
     justify-content: flex-end;
     gap: 20px;
-    margin-bottom: 70px;
+    margin-bottom: 50px;
     @media (max-width: $sm) {
       justify-content: center;
-      margin-bottom: 50px;
+      margin-bottom: 20px;
     }
 
     &-item {
@@ -256,7 +260,17 @@ onUnmounted(() => {
     }
   }
   &__details {
-    order: 2;
+    @media (max-width: $sm) {
+      width: 100%;
+      order: 2;
+    }
+    &-contacts {
+      margin-top: 40px;
+      &__title {
+        margin-bottom: 20px;
+        @include h5;
+      }
+    }
   }
   &__content {
     padding: 0 50px;

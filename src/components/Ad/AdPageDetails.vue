@@ -105,15 +105,19 @@ const countDogs = computed(() => (props.item.number_male || 0) + (props.item.num
   &__characteristic {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     &-title {
-      @include h6;
+      @include h5;
+      margin-bottom: 10px;
     }
     &-row {
       height: 100%;
       display: grid;
       gap: 20px;
       grid-template-columns: 1fr 1fr;
+      &__name {
+        font-weight: 500;
+      }
     }
   }
 

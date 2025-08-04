@@ -66,7 +66,7 @@ const getFieldsForm = () => {
 }
 const regionsList = computed(() => regionsStore.regionsList)
 const cityList = computed(() => regionsStore.cityList || [])
-const isEmptyContacts = computed(() => !Object.getOwnPropertyNames(formDefault.value.contact_methods).length && !Object.getOwnPropertyNames(form.value.contact_methods).length)
+const isEmptyContacts = computed(() => !Object?.getOwnPropertyNames(formDefault.value.contact_methods || {}).length && !Object.getOwnPropertyNames(form.value.contact_methods || {}).length)
 
 const showErrorSelectedRegion = () => {
   isErrorSelectedRegion.value = true
@@ -91,7 +91,7 @@ const likeChange = () => {
 }
 const saveChange = () => {
   const field = likeChange()
-  personalAdStore.changeUserData(field)
+  personalStore.changeUserData(field)
 }
 watch(() => props.user,
     (value) => {
@@ -166,7 +166,6 @@ if(!regionsStore.regionsList) {
           @click="showErrorSelectedRegion"
       />
       <UserContactMethodsSelect
-          v-if="!isEmptyContacts"
           v-model="form.contact_methods"
           :contacts-session="formDefault.contact_methods"
           :email-session="form.email.value"

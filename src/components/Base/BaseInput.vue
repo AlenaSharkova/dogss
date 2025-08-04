@@ -206,7 +206,7 @@ const formMask = (value: string, isFocus = false, e?: InputEvent & { target: HTM
   }
   let val = props.totalNumberMask?
       value.replace(/[\D]/g, ''):
-      value.replace(/[^a-zA-Z0-9_/:.]/g, '')
+      value.replace(/[^a-zA-Z0-9_/:.@]/g, '')
 
   console.log('eeeee', e, value)
 
@@ -226,7 +226,7 @@ const formMask = (value: string, isFocus = false, e?: InputEvent & { target: HTM
 
     let def = props.totalNumberMask?
         matrix.replace(/[\D]/g, ''):
-        matrix.replace(/[^a-zA-Z0-9_/:.]/g, '')
+        matrix.replace(/[^a-zA-Z0-9_/:.@]/g, '')
 
     if (def.length >= val.length) {
       val = def;
@@ -251,15 +251,13 @@ const formMask = (value: string, isFocus = false, e?: InputEvent & { target: HTM
       console.log(i, value, val.length, val, a, /[*]/.test(a), beforeSymbolMask.length)
       const forTest = props.totalNumberMask?
           /[0-9_]/g.test(a):
-          /[a-zA-Z0-9_/:.]/g.test(a)
+          /[a-zA-Z0-9_/:.@]/g.test(a)
 
       if (i >= val.length ) return '';
       else if (/[*]/.test(a)) {
         return val.charAt(i++);
       } else if (forTest) {
-
         i++
-
         return a;
       } else {
         //i++

@@ -5,7 +5,7 @@
 <template>
 
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 12L10 16L18 8" stroke="#E0A96F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M6 12L10 16L18 8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 
 </template>
@@ -13,7 +13,7 @@
 <style scoped lang="scss">
 svg {
   g {
-    fill: $second-yellow;
+    color: $second-yellow;
   }
 }
 </style>

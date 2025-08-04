@@ -11,8 +11,8 @@ export default function useScreen() {
     };
 
     const isMobileS = computed(() => width.value < 361);
-    const isMobileM = computed(() => width.value < 450);
-    const isMobile = computed(() => width.value < 1024);
+    const isMobileM = computed(() => width.value < 451);
+    const isMobile = computed(() => width.value < 1025);
     const isMaxTablet = computed(() => width.value < 1221);
     const isMaxLaptop = computed(() => width.value < 1441);
 

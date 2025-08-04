@@ -251,11 +251,9 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
       &.male {
         background-color: rgba(74, 178, 234, 0.6);
        // background-color: rgba(74, 178, 234, 0.6);
-
       }
       &.female {
         background-color: rgba(239, 95, 205, 0.6);
-
       }
       &.litter {
         background: linear-gradient(

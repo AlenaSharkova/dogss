@@ -269,10 +269,10 @@ onMounted(() => {
     align-items: flex-start;
     flex-wrap: nowrap;
     gap: 10px;
+
     @media (max-width: $xs) {
       display: grid;
-
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(auto-fill, minmax(205px, 1fr));
     }
   }
 }

@@ -5,6 +5,7 @@ import {ruleNotEmpty, ruleValidEmail} from "~/utils/commonRules";
 import type {PropType} from "vue";
 import type {UserItemFullStruct} from "~/struct/User/UserItemStruct";
 import {formatPhone, formatPhoneApi} from "~/utils/formatData";
+import BaseIconCopy from "~/components/Base/BaseIcon/BaseIconCopy.vue";
 
 const props = defineProps({
   isEdit: {
@@ -24,11 +25,11 @@ const props = defineProps({
     default: false,
   },
   name: {
-    type: String as PropType<IContactValue>,
+    type: String as PropType<IContactValue | 'copy'>,
     default: '',
   },
   type: {
-    type: String as PropType<'view' | 'change'>,
+    type: String as PropType<'view' | 'change' | 'share'>,
     default: 'view',
   },
 })
@@ -46,7 +47,7 @@ const formatedValue = (value: string) => {
     return value.replace("https://vk.com/", "@")
   } else if(props.name === 'phone' || props.name === 'whatsapp') {
     return formatPhone(value)
-  } else if( props.name === 'tg' ) {
+  } else if( props.name === 'tg' && value ) {
     return "@" + value
   } else return value
 }
@@ -58,12 +59,21 @@ const formatedValue = (value: string) => {
         :class="[
           {'--selected': isSelect,
           '--edit': isEdit,
-          '--view': type === 'view',
           },
-          `--${name}`
+          `--${name}`,
+          `--${type}`
          ]"
     >
       <div class="contact-methods-select__item-wrapper">
+        <div v-if="type === 'view'" class="contact-methods-select__item-action">
+          <div class="contact-methods-select__item-action__transition">
+            <BaseIconTransition />
+          </div>
+          <CommonCopy
+              v-if="type === 'view'"
+              :text="formatedValue(value)"
+          />
+        </div>
         <div
             class="contact-methods-select__item-img"
             :class="[
@@ -72,7 +82,10 @@ const formatedValue = (value: string) => {
               `--${name}`
              ]"
         >
-          <BaseIconContacts class="icon" :name="name" />
+          <BaseIconCopy
+              class="icon"
+              v-if="name === 'copy'"/>
+          <BaseIconContacts v-else class="icon" :name="name" />
         </div>
         <Transition mode="out-in" name="fade">
           <div v-if="isEdit" class="contact-methods-select__item-change">
@@ -86,11 +99,12 @@ const formatedValue = (value: string) => {
             />
           </div>
           <div v-else class="contact-methods-select__item-value">
-            <p>{{ formatedValue(value) }}</p>
+            <p v-if="type == 'share'">{{ value }}</p>
+            <p v-else>{{ formatedValue(value) }}</p>
           </div>
         </Transition>
       </div>
-        <div v-if="(isEdit || value) && type !== 'view'" @click.stop="toggleEditValueMethod('email')" class="contact-methods-select__item-edit">
+        <div v-if="(isEdit || value) && type == 'change'" @click.stop="toggleEditValueMethod('email')" class="contact-methods-select__item-edit">
           <Transition name="fade" mode="out-in">
             <BaseIconChange v-if="!isEdit" class="icon" />
             <BaseIconClose v-else color="dark" class="icon" />
@@ -102,6 +116,7 @@ const formatedValue = (value: string) => {
 <style scoped lang="scss">
 $color-email: #E0A96F;
 $color-phone: #1b0e43;
+$color-copy: #afa6d3;
 $color-tg: #27a7e7;
 $color-whatsapp: #2cb742;
 $color-vk: #4d7198;
@@ -127,6 +142,17 @@ $color-vk: #4d7198;
       padding-top: 10px;
     }
   }
+  &.--share {
+    padding: 12px;
+    height: 125px;
+    flex: 1;
+    .contact-methods-select__item-img {
+      padding-top: 5px;
+    }
+    .contact-methods-select__item-value {
+      @include text-normal();
+    }
+  }
   &.--edit {
     flex: 23%;
   }
@@ -149,6 +175,9 @@ $color-vk: #4d7198;
     &.--phone {
       background-color: $color-phone;
     }
+    &.--copy {
+      background-color: $color-copy;
+    }
   }
   &-wrapper {
     overflow: hidden;
@@ -156,6 +185,30 @@ $color-vk: #4d7198;
     flex-direction: column;
     gap: 10px;
   }
+  &-action {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    &__transition {
+      width: 35px;
+      height: 35px;
+      box-shadow: $box-shadow-lite;
+      background-color: $violet-opacity-max;
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      svg {
+        width: 22px;
+        color: white;
+      }
+    }
+  }
+
   &-img {
     display: flex;
     align-items: center;
@@ -199,7 +252,6 @@ $color-vk: #4d7198;
     }
 
     .icon {
-
       width: 44px;
       color: #4CAF50;
     }
