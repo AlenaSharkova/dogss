@@ -114,6 +114,7 @@ useHead({
 
 <style scoped lang="scss">
 .page-catalog {
+  width: 100%;
   &__title {
     @include h2;
     margin: 25px 0 20px;
@@ -136,6 +137,9 @@ useHead({
       @media (max-width: $sm) {
         flex-direction: column-reverse;
       }
+    }
+    &-listing {
+      width: 100%;
     }
     &-filter {
       position: sticky;

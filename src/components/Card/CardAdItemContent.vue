@@ -67,7 +67,7 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
         <span>Date: {{formatDate(item.created_at, 'DD.MM.YY HH:mm:ss')}}</span>
       </div>
       <div class="card-item__content-owner">
-        <span>Мать: {{item.ownerDetails?.first_name}} {{item.ownerDetails?.last_name}}</span>
+        <span>Мать: {{item.ownerDetails?.personal_data.first_name}} {{item.ownerDetails?.personal_data.last_name}}</span>
       </div>
     </div>
   </div>

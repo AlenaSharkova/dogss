@@ -177,12 +177,9 @@ const onKeyDown = (e: KeyboardEvent & { target: HTMLInputElement }) => {
   }
 }
 const formMask = (value: string, isFocus = false, e?: InputEvent & { target: HTMLInputElement } ) => {
-
   let matrix_def = generateMask()
   let matrix = matrix_def;
   let i = 0;
-
-
 
   const beforeCustomer = matrix.split('*')[0]
   const beforeSpace = matrix.split(' ')[0]

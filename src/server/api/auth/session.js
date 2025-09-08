@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import {promisify} from "node:util";
-import {formattedUserAuth} from "~/server/utils/formattedRequest.js";
+import {formattedUserAuth} from "~/server/utils/formattedRequest.ts";
 
 export default defineEventHandler(async (event) => {
     const authHeader = getHeader(event, 'authorization')

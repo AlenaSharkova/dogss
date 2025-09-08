@@ -2,7 +2,7 @@
 
 import { Op} from "sequelize";
 import dayjs from "dayjs";
-import {formattedAd, formattedAdShort} from "~/server/utils/formattedRequest.js";
+import {formattedAd, formattedAdShort} from "~/server/utils/formattedRequest.ts";
 import {getUserAuth} from "~/server/services/auth.service.js";
 import { ref } from 'vue';
 
@@ -53,21 +53,9 @@ export default defineEventHandler(async (event) => {
         
         if (user?.id) userId = user.id;
 
-
-        //запрос на одно объявление
-        //TODO: проверка на админа, без user.id - status=='active'?, 'moderation'- не показывать чужим
         if(query?.id) {
             const adItemDB = await requestDBAdById()
             return formattedAd(adItemDB)
-        }
-
-        //запрос для админа 'moderation' листинг объявлений
-        if(query.status === 'moderation') {
-            //TODO: проверка на админа
-            const adListDB = await requestDBAdModeration()
-            return await Promise.all(adListDB.map((item) => {
-                return formattedAdShort(item);
-            }))
         }
 
         const queryData = await getQueryData()
@@ -153,39 +141,6 @@ export default defineEventHandler(async (event) => {
             required: true
         });
     }
-
-    async function requestDBAdModeration() {
-        return await AdList.findAll({
-            where: {
-                status: 'moderation'
-            },
-            include: [
-                {
-                    model: GeoRegions,
-                    as: 'LocationRegion',
-                },
-                {
-                    model: GeoRegions,
-                    as: 'ExportRegions',
-                    through: { attributes: [] }
-                },
-                {
-                    model: Breeds,
-                    as: 'Breed',
-                },
-                {
-                    model: GeoCity,
-                    as: 'LocationCity',
-                },
-                {
-                    model: Users,
-                    as: 'Owner',
-                }
-            ],
-            required: true
-        });
-    }
-
     async function requestDBAdListCount() {
         console.log('Внутри requestDBAdListCount, queryDB:', queryDB);  // <-- ВАЖНО!
         return await AdList.findAndCountAll({

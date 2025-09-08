@@ -9,6 +9,7 @@ import CardAdItemContent from "~/components/Card/CardAdItemContent.vue";
 import items from "ajv/lib/vocabularies/applicator/items";
 import {usePersonalAdStore} from "~/stores/personal-ad.store";
 import AdFavoriteHeart from "~/components/Ad/AdFavoriteHeart.vue";
+import CommonZoomPhotoGallery from "~/components/Common/CommonZoomPhotosGallery.vue";
 
 const props = defineProps({
   item: {
@@ -97,8 +98,8 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
               <img src="@/assets/image/svg/shipping-white.svg" alt="">
             </div>
           </BaseWithMiniPopup>
-          <div v-if="type == 'personal' && isActive"
-               @click="toggleMorePersonal"
+          <div v-if="type == 'personal' && ['active', 'moderation'].includes(item.status)"
+               @click.stop="toggleMorePersonal"
                class="card-item__info-circle --top-right">
             <div class="card-item__info-circle__content" >
               <div class="card-item__info-circle__content-more">

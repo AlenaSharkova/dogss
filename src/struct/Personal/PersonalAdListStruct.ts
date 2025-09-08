@@ -8,4 +8,5 @@ export interface PersonalAdListStruct {
     ad_draft: AdItemStruct[],
     ad_active: AdItemStruct[],
     ad_archive: AdItemStruct[],
+    ad_moderation: AdItemStruct[],
 }

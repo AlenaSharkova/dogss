@@ -117,6 +117,21 @@ export const usePersonalAdStore = defineStore('personalAdStore', () => {
                 throw e.data
             });
     }
+    async function changeAdAdmin(body: AdChangeItemStruct, id: number | string, newStatus = null as null | IStatusAd) {
+        await personalAdService
+            .patchAdItem(body, id, newStatus)
+            .then(res => {
+                //if (res) adCreatedSuccessItem.value = res.value;
+                console.log('adCreatedSuccessItem in store', res)
+
+            })
+            .catch(e => {
+                console.log('eerrr in store ' , e)
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
 
 
     onMounted(() => {
@@ -143,6 +158,7 @@ export const usePersonalAdStore = defineStore('personalAdStore', () => {
         getPersonalAdCurrentActive,
         AdPersonalCurrentItemDraft,
         AdPersonalCurrentItemActive,
+        changeAdAdmin,
         deletePersonalAd,
         createAd,
         changeAd

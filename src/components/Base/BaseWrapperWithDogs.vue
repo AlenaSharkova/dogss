@@ -70,7 +70,6 @@ defineProps({
       text-align: center;
       color: $violet;
     }
-
   }
 }
 </style>

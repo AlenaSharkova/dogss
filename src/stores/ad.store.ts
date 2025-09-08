@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia';
 import AdService from '~/service/ad.service';
 import type {
+    AdAdminItemStruct,
     AdChangeItemStruct,
     AdCreateItemStruct, AdFullFilterStruct,
     AdItemStruct, AdListApi,
@@ -25,23 +26,22 @@ export const useAdStore = defineStore('adStore', () => {
     const commonStore = useCommonStore()
 
     const adCatalogList = ref<AdItemStruct[] | null>(null)
-    const adListAdminModeration = ref<AdItemStruct[] | null>(null)
     const adView = ref<AdItemStruct | null>(null)
     const adCatalogListDetails = ref<AdListApiDetails | null>(null)
     const adCatalogFilter = ref<AdFullFilterStruct>({})
     const adCreatedSuccessItem = ref<AdCreateItemStruct | null>(null)
     const filterStore = useFilterStore()
     const queryRequest = ref<AdQueryFilterStruct>({})
-    const idRequestAdView = ref<AdQueryFilterStruct>({})
+    const idRequestAdView = ref<string | null>(null)
 
-    async function requestViewAd(id: number) {
+    async function requestViewAd(id: string) {
         idRequestAdView.value = id
     }
     async function clearViewAd() {
         idRequestAdView.value = null
     }
     async function getViewAd() {
-        await adService.getAdList({id: idRequestAdView.value})
+        await adService.getAdList({id: String(idRequestAdView.value)})
             .then((res) => {
                 if (res) adView.value = res as AdItemStruct;
             })
@@ -55,7 +55,7 @@ export const useAdStore = defineStore('adStore', () => {
     async function updateAdList() {
         await adService.getAdList(queryRequest.value)
             .then((res) => {
-                if (res) setFilterAd(res)
+                if (res) setFilterAd(res as AdListApi)
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
@@ -70,18 +70,7 @@ export const useAdStore = defineStore('adStore', () => {
             queryRequest.value = setQueryAd(query)
         }
     }
-    async function updateAdListAdminModeration() {
-        await nextTick()
-        await adService.getAdListClient({status: 'moderation'})
-            .then((res) => {
-                adListAdminModeration.value = res
-            })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
-            });
-    }
+
     function getQueryAd(query: AdQueryFilterStruct) {
         if(query.type) {
             adCatalogFilter.value.type = filterStore.typeAdList?.find(item => String(item.value) === query.type ) || null
@@ -150,8 +139,6 @@ export const useAdStore = defineStore('adStore', () => {
         adCreatedSuccessItem,
         getViewAd,
         adView,
-        updateAdListAdminModeration,
-        adListAdminModeration,
         updateAdFilter,
         requestViewAd,
         clearViewAd

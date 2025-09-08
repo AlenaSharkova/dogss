@@ -62,6 +62,7 @@ export interface AdItemStruct {
 export interface AdFullFilterStruct {
     'max-price'?: number;
     'min-price'?: number;
+    status?: IStatusAd;
     type?: ISelectComponent | null;
     gender?: ISelectComponent | null;
     breeds?: ISelectNumber[] | null;
@@ -71,6 +72,8 @@ export interface AdFullFilterStruct {
 }
 export interface AdQueryFilterStruct {
     breeds?: string;
+    id?: string;
+    status?: string;
     'max-price'?: string;
     'min-price'?: string;
     regions?: string;
@@ -153,4 +156,9 @@ export interface IFilterAge {
         minAgeMonth: number,
         maxAgeMonth: number | 'infinite'
     }
+}
+export interface AdAdminItemStruct<T> {
+    moderation: T,
+    draft: T,
+    blocked: T
 }

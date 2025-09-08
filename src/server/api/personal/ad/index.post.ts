@@ -78,7 +78,7 @@ export default defineEventHandler(async (event)=>
         console.log('Ошибка при создании объявления ', error )
         throw createError({
             statusCode: 400,
-            message: error,
+            message: JSON.stringify(error),
             statusMessage: 'Ошибка при создании объявления',
         })
 

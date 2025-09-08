@@ -7,6 +7,7 @@ import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
 import useScreen from "~/utils/useScreen";
 import UserContactMethodsView from "~/components/User/UserContactMethodsView.vue";
 import type Swiper from "swiper";
+import type {UserContactMethodsOptimalStruct} from "~/struct/User/UserItemStruct";
 
 definePageMeta({
   requirementUser : null
@@ -25,13 +26,13 @@ const thumbsSwiper = ref<Swiper | null>(null);
 
 const statusUser = computed(() => authStore.statusUser)
 const adView = computed(() => adStore.adView )
-const contacts = computed(() => adView.value?.ownerDetails.personal_data.contact_methods)
+const contacts = computed(() => adView.value?.ownerDetails.personal_data.contact_methods as UserContactMethodsOptimalStruct<string>)
 
 const setThumbsSwiper = (swiper: Swiper) => {
   thumbsSwiper.value = swiper;
 };
 
-await adStore.requestViewAd( idPublication.value)
+await adStore.requestViewAd(idPublication.value)
 
 onUnmounted(() => {
   adStore.clearViewAd()
@@ -59,11 +60,6 @@ onUnmounted(() => {
                     :thumbs="{ swiper: thumbsSwiper }"
                     :modules="modules"
                     :slidesPerView="1"
-                    :breakpoints='{
-                    768: {
-                      slidesPerView: "auto"
-                    }
-                  }'
                 >
                   <swiper-slide
                       class="page-publication__gallery-swiper__slide"
@@ -79,13 +75,22 @@ onUnmounted(() => {
                 <swiper
                     class="page-publication__gallery-swiper --addition"
                     @swiper="setThumbsSwiper"
-                    :spaceBetween="10"
-                    :slidesPerView="3.9"
+                    slidesPerView="auto"
+                    :spaceBetween="4"
                     :freeMode="true"
                     direction="vertical"
                     :mousewheel="true"
                     :watchSlidesProgress="true"
                     :modules="[...modules, Mousewheel]"
+                    :breakpoints="{
+                      1025: {
+                        slidesPerView: 3.9,
+                      },
+                      770: {
+                        spaceBetween: 9,
+                        slidesPerView: 3.9,
+                      },
+                    }"
                 >
                   <swiper-slide
                       class="page-publication__gallery-swiper__slide"
@@ -152,10 +157,12 @@ onUnmounted(() => {
     flex: 1;
     @media (max-width: $sm) {
       flex-direction: column;
+      align-items: center;
     }
     &-left {
       flex: 1;
       @media (max-width: $sm) {
+        max-width: 600px;
         width: 100%;
       }
     }
@@ -164,14 +171,20 @@ onUnmounted(() => {
     }
   }
   &__gallery {
+    flex-shrink: 0;
     display: flex;
     flex-direction: row-reverse;
     justify-content: flex-end;
     gap: 20px;
     margin-bottom: 50px;
     @media (max-width: $sm) {
-      justify-content: center;
+     // grid-template-columns: 1fr 1fr;
+      //display: grid;
+      align-items: stretch;
       margin-bottom: 20px;
+    }
+    @media (max-width: $xs) {
+      gap: 7px;
     }
 
     &-item {
@@ -183,14 +196,14 @@ onUnmounted(() => {
           width: 450px;
         }
         @media (max-width: $sm) {
-          max-width: 450px;
           width: auto;
         }
-
         .page-publication__gallery-swiper {
 
           &__slide {
             img {
+              aspect-ratio: 1;
+
               border-radius: 10px;
               box-shadow: $box-shadow-lite;
             }
@@ -198,33 +211,70 @@ onUnmounted(() => {
         }
       }
       &.--addition {
+
+
+
         width: 100px;
         height: 500px;
         @media (max-width: $md) {
           height: 450px;
         }
         @media (max-width: $sm) {
+          //grid-column: 2;
+          //grid-row: 1;
+
+          //overflow: hidden;
+
+          //flex: 1;
+
           height: auto;
+          aspect-ratio: 1 / 4;
+
+          flex-shrink: 0;
+
+          //height: auto;
+          //flex-shrink: 0;
+          width: calc(20% - 20px)
+          //max-width: 100px;
+          //min-width: 50px;
+          //max-height: 450px;
+          //min-height: 200px;
+
         }
 
         .page-publication__gallery-swiper {
           height: 100%;
+          width: 100%;
+          flex: 0;
+
 
           &__slide {
+
             //width: 500px;
             //height: 400px;
             opacity: 0.6;
             transition: all 0.4s;
             cursor: pointer;
+            @media (max-width: $sm) {
+              height: 25%;
+              margin-bottom: 9px;
+              flex: 0 0 auto;
+              &:last-child {
+                margin-bottom: 0;
+              }
+            }
 
             img {
               border-radius: 10px;
               box-shadow: $box-shadow-lite;
-              aspect-ratio: 1;
               //height: 100%;
+              //width: auto;
               height: 100%;
               object-fit: cover;
               object-position: center;
+              @media (max-width: $sm) {
+                height: 100%;
+              }
             }
           }
         }
@@ -242,11 +292,10 @@ onUnmounted(() => {
       &__slide {
         display: flex;
         align-items: center;
-        @media (max-width: $xs) {
+        @media (max-width: $sm) {
           width: auto;
         }
         img {
-          aspect-ratio: 1;
           //height: 100%;
           width: 100%;
           object-fit: cover;
@@ -291,6 +340,14 @@ onUnmounted(() => {
 }
 </style>
 <style lang="scss">
+.page-publication__gallery-swiper.--addition {
+  .swiper-wrapper {
+    @media (max-width: $sm) {
+      //display: flex;
+      //gap: 9px;
+    }
+  }
+}
 
 .page-publication__gallery-swiper.--addition {
   .page-publication__gallery-swiper__slide.swiper-slide-thumb-active {

@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
-import {calculateAge, formatAmountInput, formatDate, getYearsOld} from "~/utils/formatData";
-import { Pagination } from 'swiper/modules';
-import type Swiper from "swiper";
-import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
+import {formatAmountInput} from "~/utils/formatData";
 import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
 import BaseIconGeo from "~/components/Base/BaseIcon/BaseIconGeo.vue";
 import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";

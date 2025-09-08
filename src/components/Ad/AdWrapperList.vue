@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 
-import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 
 defineProps({
   hasFilter: {
@@ -41,9 +40,8 @@ defineProps({
         grid-auto-columns: auto;
       }
       @media (max-width: $xss) {
-        grid-template-columns: 1fr;
-
-        grid-auto-columns: auto;
+        display: flex;
+        flex-direction: column;
       }
     }
   }

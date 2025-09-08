@@ -1,6 +1,4 @@
 import multer from 'multer';
-import { v4 as uuidv4 } from 'uuid';
-import s3 from '../../utils/s3';
 import {deleteFiles} from "~/server/services/upload.service.js"; // Импортируем настроенный S3 клиент
 
 const storage = multer.memoryStorage(); // Сохраняем файл в памяти

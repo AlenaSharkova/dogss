@@ -1,5 +1,4 @@
 const { Sequelize, DataTypes } = require('sequelize');
-const {formattedAd} = require("~/server/utils/formattedRequest.js");
 
 module.exports = (sequelize) => {
     return sequelize.define('Users', {

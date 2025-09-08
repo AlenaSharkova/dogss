@@ -1,8 +1,4 @@
-import jwt from "jsonwebtoken";
-import {promisify} from "node:util";
-import {formattedAd} from "~/server/utils/formattedRequest.js";
 import {getUserAuth} from "~/server/services/auth.service.js";
-import {Body} from "nuxt/dist/head/runtime/components.js";
 
 export default defineEventHandler(async (event) => {
     const authHeader = getHeader(event, 'authorization')
@@ -82,8 +78,6 @@ export default defineEventHandler(async (event) => {
                 message: error,
             });
         }
-
-
     } catch (error) {
         console.error("Ошибка при верификации токена:", error);
         throw error

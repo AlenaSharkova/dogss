@@ -13,11 +13,9 @@ const props = withDefaults(
 const selectedItem = defineModel<ISelectComponent | null>({ default: null });
 
 // Устанавливаем selectedItem при инициализации, если он не определен
-console.log('Устанавливаем', selectedItem.value , !selectedItem.value, selectedItem.value.hasOwnProperty(), props.items )
-console.log('Устанавливаем 2', (!selectedItem.value || !selectedItem.value.hasOwnProperty()), ((!selectedItem.value || !selectedItem.value.hasOwnProperty()) && props.items.length > 0))
 if ((!selectedItem.value || !selectedItem.value.hasOwnProperty('value')) && props.items.length > 0) {
   selectedItem.value = {...props.items[0]};
-} else if(selectedItem.value.hasOwnProperty('value') && !selectedItem.value.hasOwnProperty('text')) {
+} else if(selectedItem.value?.hasOwnProperty('value') && !selectedItem.value.hasOwnProperty('text')) {
   selectedItem.value = props.items.find((item) => item.value ===  selectedItem.value?.value) as ISelectComponent;
 }
 

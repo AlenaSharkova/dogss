@@ -1,5 +1,8 @@
+import {AdBDItemStruct, AdFormatShortItemStruct} from "~/server/struct/AdStruct.js";
+import {UserBDItemStruct} from "~/server/struct/UserStruct";
+import type {UserItemPublicAdStruct} from "~/server/struct/UserStruct";
 
-export const formattedUserGlobal = (user) => {
+export const formattedUserGlobal = (user: UserBDItemStruct) => {
     return {
         id: user.id,
         status: user.status,
@@ -17,20 +20,17 @@ export const formattedUserGlobal = (user) => {
                 address: user.address,
             }
         },
-        ad_list: {
-            active: user.UserAdList.reduce((list, ad) => {
-                if (ad.status === 'active') list.push(formattedAd(ad))
-
+        ad_list: user.UserAdList.reduce((list: UserItemPublicAdStruct, ad) => {
+                if (ad.status === 'active') list.active.push(formattedAd(ad))
+                if (ad.status === 'archive') list.archive.push(formattedAd(ad))
                 return list
-            }, []),
-            archive: user.UserAdList.reduce((list, ad) => {
-                if (ad.status === 'archive') list.push(formattedAd(ad))
-                return list
-            }, []),
-        }
+            }, {
+                active: [],
+                archive: [],
+            })
     };
 }
-export const formattedUserGlobalForAdItem = (user) => {
+export const formattedUserGlobalForAdItem = (user: UserBDItemStruct) => {
     return {
         id: user.id,
         status: user.status,
@@ -49,7 +49,7 @@ export const formattedUserGlobalForAdItem = (user) => {
         }
     };
 }
-export const formattedUserGlobalShort  = (user) => {
+export const formattedUserGlobalShort = (user: UserBDItemStruct) => {
     return {
         id: user.id,
         status: user.status,
@@ -68,7 +68,7 @@ export const formattedUserGlobalShort  = (user) => {
         }
     };
 }
-export const formattedUserAuth = (user) => {
+export const formattedUserAuth = (user: UserBDItemStruct) => {
     return {
         id: user.id,
         status: user.status,
@@ -89,7 +89,7 @@ export const formattedUserAuth = (user) => {
     };
 }
 
-export const formattedAdShort = (item) => {
+export const formattedAdShort = (item: AdBDItemStruct): AdFormatShortItemStruct => {
     return {
         id: item.id,
         created_at: item.created_at,
@@ -124,8 +124,6 @@ export const formattedAdShort = (item) => {
             parents_mum: item.parents_mum,
         },
         //временнно
-        count_image: item.count_image,
-        img: item.img,
         //
 
         //breed: item.breeds,
@@ -140,7 +138,7 @@ export const formattedAdShort = (item) => {
         UsersListFavoriteAd: item.UsersListFavoriteAd,
     }
 }
-export const formattedAd = (item) => {
+export const formattedAd = (item: AdBDItemStruct): AdFormatShortItemStruct => {
     return {
         id: item.id,
         created_at: item.created_at,
@@ -175,8 +173,7 @@ export const formattedAd = (item) => {
             parents_mum: item.parents_mum,
         },
         //временнно
-        count_image: item.count_image,
-        img: item.img,
+        //img: item.img,
         //
 
         //breed: item.breeds,

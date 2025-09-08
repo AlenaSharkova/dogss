@@ -26,6 +26,12 @@ const sections = computed(() => [
       title: 'Страница пользователя',
       count: 0
     },
+    {
+      link: `/admin/publications`,
+      icon: 'User',
+      title: '/admin/publicationss',
+      count: 0
+    },
 ])
 
 const isHiddenMenu = ref(false)

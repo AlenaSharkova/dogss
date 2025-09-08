@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
-import {promisify} from "node:util";
-import {formattedAd} from "~/server/utils/formattedRequest.js";
+import {formattedAd} from "~/server/utils/formattedRequest.ts";
 import {getUserAuth} from "~/server/services/auth.service.js";
 
 export default defineEventHandler(async (event) => {
@@ -18,6 +16,8 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const statusMessage = 'Ошибка личных данных, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
+    let user
+    let sorting = [ ['created_at', 'DESC'] ]
 
     if (!AdList || !Users || !sequelize) {
         console.error('Model or sequelize is not available in the context');
@@ -29,7 +29,6 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        let user
         await getUserAuth(token, Users)
             .then(res => user = res)
             .catch(err => {
@@ -41,161 +40,34 @@ export default defineEventHandler(async (event) => {
         }
         try {
             if(query.id && query.status) {
-                const adItemDB = await AdList.findOne({
-                    where: {
-                        status: query.status,
-                        id: query.id,
-                        owner: user.id
-                    },
-                    include: [
-                        {
-                            model: Users,
-                            as: 'UsersListFavoriteAd',
-                            required: false,
-                            through: {
-                                attributes: [],
-                            },
-                            where: { id: user.id },
-                        },
-                        {
-                            model: GeoRegions,
-                            as: 'LocationRegion',
-                        },
-                        {
-                            model: GeoRegions,
-                            as: 'ExportRegions',
-                            through: { attributes: [] }
-                        },
-                        {
-                            model: Breeds,
-                            as: 'Breed',
-                        },
-                        {
-                            model: GeoCity,
-                            as: 'LocationCity',
-                        },
-                        {
-                            model: Users,
-                            as: 'Owner',
-                        }
-                    ],
-                });
+                const adItemDB = requestDBAdPersonalById()
                 return formattedAd(adItemDB);
             }
-            let sorting = [ ['created_at', 'DESC'] ]
 
-            const adListDBActive = await AdList.findAll({
-                where: {
-                    status: 'active',
-                    owner: user.id
-                },
-                order: sorting,
-                include: [
-                    {
-                        model: GeoRegions,
-                        as: 'LocationRegion',
-                    },
-                    {
-                        model: GeoRegions,
-                        as: 'ExportRegions',
-                        through: { attributes: [] }
-                    },
-                    {
-                        model: Breeds,
-                        as: 'Breed',
-                    },
-                    {
-                        model: GeoCity,
-                        as: 'LocationCity',
-                    },
-                    {
-                        model: Users,
-                        as: 'Owner',
-                    }
-                ],
-                required: true
-            });
-            let resultActive = await Promise.all(adListDBActive?.map(async (item) => {
-                return formattedAd(item);
-            }))
+            const adListDB = await requestDBAdPersonalList()
 
-            const adListDBDraft = await AdList.findAll({
-                where: {
-                    status: 'draft',
-                    owner: user.id
-                },
-                order: sorting,
-                include: [
-                    {
-                        model: GeoRegions,
-                        as: 'LocationRegion',
-                    },
-                    {
-                        model: GeoRegions,
-                        as: 'ExportRegions',
-                        through: { attributes: [] }
-                    },
-                    {
-                        model: Breeds,
-                        as: 'Breed',
-                    },
-                    {
-                        model: GeoCity,
-                        as: 'LocationCity',
-                    },
-                    {
-                        model: Users,
-                        as: 'Owner',
-                    }
-                ],
-                required: true
-            });
-            let resultDraft = await Promise.all(adListDBDraft?.map(async (item) => {
-                return formattedAd(item);
-            }))
-
-            const adListDBArchive = await AdList.findAll({
-                where: {
-                    status: 'archive',
-                    owner: user.id
-                },
-                order: sorting,
-                include: [
-                    {
-                        model: GeoRegions,
-                        as: 'LocationRegion',
-                    },
-                    {
-                        model: GeoRegions,
-                        as: 'ExportRegions',
-                        through: { attributes: [] }
-                    },
-                    {
-                        model: Breeds,
-                        as: 'Breed',
-                    },
-                    {
-                        model: GeoCity,
-                        as: 'LocationCity',
-                    },
-                    {
-                        model: Users,
-                        as: 'Owner',
-                    }
-                ],
-                required: true
-            });
-            let resultArchive= await Promise.all(adListDBArchive?.map(async (item) => {
-                return formattedAd(item);
-            }))
-
-            return {
-                result: {
-                    ad_draft: resultDraft,
-                    ad_active: resultActive,
-                    ad_archive: resultArchive,
+            const result = adListDB.reduce((acc, ad) => {
+                switch (ad.status) {
+                    case 'draft':
+                        acc.ad_draft.push(formattedAd(ad));
+                        break;
+                    case 'active':
+                        acc.ad_active.push(formattedAd(ad));
+                        break;
+                    case 'archive':
+                        acc.ad_archive.push(formattedAd(ad));
+                        break;
+                    case 'moderation':
+                        acc.ad_moderation.push(formattedAd(ad));
+                        break;
+                    default:
+                        console.warn(`Unknown ad status: ${ad.status} for ad ID: ${ad.id}`);
+                        break;
                 }
-            }
+                return acc;
+            }, { ad_draft: [], ad_active: [], ad_archive: [], ad_moderation: [] });
+
+            return { result }
         } catch (error) {
             console.log('Sequelize error:', error);
             console.error('Sequelize error:', error);
@@ -210,4 +82,81 @@ export default defineEventHandler(async (event) => {
         console.error("Ошибка при верификации токена:", error);
         throw error
     }
+
+    async function requestDBAdPersonalList() {
+        return await AdList.findAll({
+            where: {
+                owner: user.id
+            },
+            order: sorting,
+            include: [
+                {
+                    model: GeoRegions,
+                    as: 'LocationRegion',
+                },
+                {
+                    model: GeoRegions,
+                    as: 'ExportRegions',
+                    through: { attributes: [] }
+                },
+                {
+                    model: Breeds,
+                    as: 'Breed',
+                },
+                {
+                    model: GeoCity,
+                    as: 'LocationCity',
+                },
+                {
+                    model: Users,
+                    as: 'Owner',
+                }
+            ],
+            required: true
+        });
+    }
+
+    async function requestDBAdPersonalById() {
+        return await AdList.findOne({
+            where: {
+                status: query.status,
+                id: query.id,
+                owner: user.id
+            },
+            include: [
+                {
+                    model: Users,
+                    as: 'UsersListFavoriteAd',
+                    required: false,
+                    through: {
+                        attributes: [],
+                    },
+                    where: { id: user.id },
+                },
+                {
+                    model: GeoRegions,
+                    as: 'LocationRegion',
+                },
+                {
+                    model: GeoRegions,
+                    as: 'ExportRegions',
+                    through: { attributes: [] }
+                },
+                {
+                    model: Breeds,
+                    as: 'Breed',
+                },
+                {
+                    model: GeoCity,
+                    as: 'LocationCity',
+                },
+                {
+                    model: Users,
+                    as: 'Owner',
+                }
+            ],
+        });
+    }
+
 });
+

@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
-import {promisify} from "node:util";
-import {formattedAd} from "~/server/utils/formattedRequest.js";
+import {formattedAd} from "~/server/utils/formattedRequest.ts";
 import {getUserAuth} from "~/server/services/auth.service.js";
 
 export default defineEventHandler(async (event) => {

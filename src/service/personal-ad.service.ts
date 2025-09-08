@@ -1,7 +1,7 @@
 import BaseApiService from "~/service/baseApi.service";
 import type { PersonalAdListApiStruct} from "~/struct/Personal/PersonalAdListStruct";
 import token from "~/pages/auth/token.vue";
-import type {AdCreateItemStruct, AdItemStruct} from "~/struct/Ad/AdItemStruct";
+import type {AdChangeItemStruct, AdCreateItemStruct, AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {ICommonApiSuccess} from "~/struct/Common/ICommonApi";
 import type {UserChangeItemStruct, UserItemFullStruct} from "~/struct/User/UserItemStruct";
 import type {IStatusAd} from "~/struct/Common/IValueType";
@@ -82,7 +82,7 @@ export default class PersonalAdService extends BaseApiService {
     if(error.value ) throw {...error.value};
     else return data.value;
   }
-  async patchAdItem(body: AdCreateItemStruct, id: number | string, newStatus = null as null | IStatusAd) {
+  async patchAdItem(body: AdChangeItemStruct, id: number | string, newStatus = null as null | IStatusAd) {
     const {data, error} = await useFetch(this.RESOURCE, {
       body: {
         date: body,

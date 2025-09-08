@@ -1,7 +1,4 @@
-import {promisify} from "node:util";
-import jwt from "jsonwebtoken";
 import {getUserAuth} from "~/server/services/auth.service.js";
-
 
 export default defineEventHandler(async (event) => {
     const { adId } = await readBody(event)

@@ -18,7 +18,6 @@ const copyToClipboard = () => {
   ).catch((err) => {
     console.log('текст не скопирован')
   })
-
 }
 </script>
 

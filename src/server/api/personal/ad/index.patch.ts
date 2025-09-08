@@ -86,7 +86,7 @@ export default defineEventHandler(async (event)=>
         console.log('Ошибка при редактировании объявления ', error )
         throw createError({
             statusCode: 400,
-            message: error,
+            message: error || 'Неизвестная ошибка',
             statusMessage: 'Ошибка при редактировании объявления',
         })
 

@@ -1,6 +1,6 @@
 import breeds from "~/demoData/new_breeds.json";
 import connection from "express";
-import {formattedUserGlobal, formattedUserGlobalShort} from "~/server/utils/formattedRequest.js";
+import {formattedUserGlobal, formattedUserGlobalShort} from "~/server/utils/formattedRequest.ts";
 
 
 export default defineEventHandler(async (event)=>
