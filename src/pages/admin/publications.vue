@@ -51,7 +51,7 @@ onMounted(() => {
       <h3 class="page-admin-publications__title">Управление объявлениями</h3>
       <BaseTabSwitch class="page-admin-publications__tabs" name="admin-ads" :items="tabs" v-model="activeTabs" />
       <div v-if="adListAdminActive?.length" class="page-admin-publications__list">
-        <AdWrapperList>
+        <AdWrapperList :empty="!adListAdminActive?.length">
           <div
               class="page-admin-publications__item"
               v-for="(item, index) in adListAdminActive"

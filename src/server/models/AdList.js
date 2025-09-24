@@ -76,6 +76,21 @@ module.exports = (sequelize) => {
         is_contractual_price: {
             type: DataTypes.BOOLEAN,
         },
+        hash_link_comment: {
+            type: DataTypes.TEXT,
+        },
+        text_comment: {
+            type: DataTypes.TEXT,
+        },
+        rating_commenter: {
+            type: DataTypes.INTEGER,
+        },
+        id_user_commenter: {
+            type: DataTypes.INTEGER,
+        },
+        expires_at_hash_link_comment: {
+            type: DataTypes.DATE,
+        },
     }, {
         tableName: 'ad_list',
         timestamps: true,

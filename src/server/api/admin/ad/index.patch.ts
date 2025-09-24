@@ -1,7 +1,7 @@
 import {getUserAuth} from "~/server/services/auth.service";
 import {ref} from "vue";
 import {UserBDItemStruct} from "~/server/struct/UserStruct";
-import {adminEmail} from "~/server/utils/paramsData";
+import {adminEmail} from "~/server/data/access-data";
 
 export default defineEventHandler(async (event)=>
 {
@@ -49,7 +49,6 @@ export default defineEventHandler(async (event)=>
         adItemChangeResult = await AdList.findOne({
             where: {
                 id: body.id,
-                owner: user.value.id,
             },
         })
         console.log('adItemChangeResult000', adItemChangeResult)

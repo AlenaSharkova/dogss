@@ -67,9 +67,17 @@ export default defineEventHandler(async (event)=>
             if (body.new_status === 'active' && adItemChangeResult.status === 'draft' ) {
                 adItemChangeResult.status = body.new_status
                 adItemChangeResult.CreatedAt = new Date();
-            }
-            if (body.new_status === 'archive' && adItemChangeResult.status === 'active' ) {
+            } else if (body.new_status === 'archive-success' && adItemChangeResult.status === 'active' ) {
                 adItemChangeResult.status = body.new_status
+            } else if (body.new_status === 'archive-close' && adItemChangeResult.status === 'active' ) {
+                adItemChangeResult.status = body.new_status
+            } else {
+                throw createError({
+                    statusCode: 400,
+                    message: error || 'Неизвестная ошибка',
+                    statusMessage: 'Невозможное изменение объявления',
+                })
+
             }
         }
 

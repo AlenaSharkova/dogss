@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
         }
         try {
             if(query.id && query.status) {
-                const adItemDB = requestDBAdPersonalById()
+                const adItemDB = await requestDBAdPersonalById()
                 return formattedAd(adItemDB);
             }
 
@@ -54,6 +54,12 @@ export default defineEventHandler(async (event) => {
                     case 'active':
                         acc.ad_active.push(formattedAd(ad));
                         break;
+                    case 'archive-success':
+                        acc.ad_archive_success.push(formattedAd(ad));
+                        break;
+                    case 'archive-close':
+                        acc.ad_archive_close.push(formattedAd(ad));
+                        break;
                     case 'archive':
                         acc.ad_archive.push(formattedAd(ad));
                         break;
@@ -64,8 +70,9 @@ export default defineEventHandler(async (event) => {
                         console.warn(`Unknown ad status: ${ad.status} for ad ID: ${ad.id}`);
                         break;
                 }
+
                 return acc;
-            }, { ad_draft: [], ad_active: [], ad_archive: [], ad_moderation: [] });
+            }, { ad_draft: [], ad_active: [], ad_archive_success: [], ad_archive_close: [], ad_archive: [], ad_moderation: [] });
 
             return { result }
         } catch (error) {

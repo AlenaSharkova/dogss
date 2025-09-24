@@ -1,6 +1,7 @@
 import {ref, computed, onMounted, onBeforeUnmount} from 'vue'
 import { defineStore } from 'pinia';
 import type {IUsersAlert} from "~/struct/Common/IUsersAlert";
+import type {ICommonInfoResultModal, ICommonZoomPhotosGallery} from "~/struct/Common/ICommonComponents";
 
 
 export const useCommonStore = defineStore('commonStore', () => {
@@ -25,6 +26,22 @@ export const useCommonStore = defineStore('commonStore', () => {
   let scrollTop = ref(0)
   const userAlerts = ref<IUsersAlert[]>([])
   const isServiceMsg = ref(false)
+  const zoomPhotosGallery = ref<ICommonZoomPhotosGallery | null>(null)
+  const infoResultModal = ref<ICommonInfoResultModal | null>(null)
+
+  const showResultModal = (info: ICommonInfoResultModal) => {
+    infoResultModal.value = info
+  }
+  const closeResultModal = () => {
+    infoResultModal.value = null
+  }
+  const addZoomPhotosGallery = (photosList: ICommonZoomPhotosGallery) => {
+    zoomPhotosGallery.value = photosList
+  }
+  const clearZoomPhotosGallery = () => {
+    zoomPhotosGallery.value = null
+  }
+
 
   const addUserSuccessAlert = (msgText: string, onlyDev = false) => {
     userAlerts.value.push({
@@ -83,6 +100,12 @@ export const useCommonStore = defineStore('commonStore', () => {
     addUserSuccessAlert,
     addUserErrorAlert,
     changeIsLoadingPage,
-    isLoadingPage
+    isLoadingPage,
+    addZoomPhotosGallery,
+    clearZoomPhotosGallery,
+    zoomPhotosGallery,
+    showResultModal,
+    closeResultModal,
+    infoResultModal,
   }
 })

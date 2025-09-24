@@ -56,6 +56,7 @@ const typeInput = computed(() => {
   } else return 'text'
 })
 const fullnessInput = computed(() => {
+  console.log('props.showFullnes', props.showFullnes)
   if (props.showFullnes && props.modelValue.length > 10 && props.maxLength) {
     return `${props.modelValue.length} / ${props.maxLength}`;
   } else return ''

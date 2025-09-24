@@ -6,7 +6,7 @@ import {formattedAd, formattedAdShort} from "~/server/utils/formattedRequest.ts"
 import {getUserAuth} from "~/server/services/auth.service.js";
 import { ref } from 'vue';
 import { UserBDItemStruct} from "~/server/struct/UserStruct";
-import {adminEmail} from "~/server/utils/paramsData";
+import {adminEmail} from "~/server/data/access-data";
 import {AdAdminListStruct, AdBDItemStruct, AdQueryAdminStruct} from "~/server/struct/AdStruct";
 
 export default defineEventHandler(async (event) => {

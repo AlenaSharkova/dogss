@@ -104,7 +104,7 @@ const adList = computed(() => adStore.adCatalogList )
       </div>
       <div class="page-breeder__content">
         Мои собаки
-        <AdWrapperList>
+        <AdWrapperList :empty="!adList?.length">
           <CardAdItem
               v-for="(item, index) in adList"
               :key="index"

@@ -3,6 +3,7 @@ import LayoutHeaderNav from '@/components/Layout/LayoutHeaderNav.vue'
 import { ref} from 'vue'
 import CommonAlertsList from "~/components/Common/CommonAlertsList.vue";
 import LayoutHeader from "~/components/Layout/LayoutHeader.vue";
+import AdOfferLeaveComment from "~/components/Ad/AdOfferLeaveComment.vue";
 
 const route = useRoute()
 
@@ -31,6 +32,9 @@ await breedsStore.updateBreedsList()
       <CommonUpButton />
       <CommonAlertsList/>
       <PersonalMenu v-if="isPersonalMenu" />
+      <CommonZoomPhotosGallery />
+      <CommonModalResult isShow/>
+      <AdOfferLeaveComment />
     </main>
   </div>
 </template>

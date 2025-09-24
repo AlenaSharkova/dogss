@@ -36,14 +36,10 @@ const selectRegion = ref([])
             <!--
             <CardItem />
             -->
-            {{ users }}
-            {{ ad }}
             ///adList
             {{adList}}<br>
             <p>{{ dayjs.duration(200).humanize() }}</p>
-            <BaseButton type="primary" @click="updateList()"  text="Обновить"/>
-<br>
-            <AdWrapperList>
+            <AdWrapperList :empty="!adList?.length">
               <CardAdItem
                   v-for="(item, index) in adList"
                   :key="index"

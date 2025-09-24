@@ -18,7 +18,7 @@ const favoritesList = computed(() => personalStore.FavoritesList)
 <template>
   <div class="personal-ad">
     <div class="personal-ad__row">
-      <AdWrapperList>
+      <AdWrapperList :empty="!favoritesList?.length">
         <CardAdItem
             v-for="item in favoritesList"
             :key="item.id"

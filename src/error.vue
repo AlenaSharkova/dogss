@@ -12,7 +12,7 @@ const updatePage = () => {
   <NuxtLayout>
   <div class="page-error">
     <LayoutWrapperPage >
-      <BaseWrapperWithDogs image="dolmatian">
+      <BaseWrapperWithDogs image="puppy_in_pool">
         <div class="page-error__row">
           <div class="page-error__title">
           <span v-if="error.statusCode === 404">
@@ -31,7 +31,7 @@ const updatePage = () => {
           </div>
           <div class="page-error__action">
             <BaseButton v-if="error.statusCode !== 404" type="teriary" text="Обновить страницу" @click="updatePage" />
-            <BaseButton type="teriary" text="Перейдите на главную" to="/" />
+            <BaseButton type="secondary" text="Перейдите на главную" to="/" />
           </div>
         </div>
 
@@ -46,10 +46,18 @@ const updatePage = () => {
 
 <style scoped lang="scss">
 .page-error {
+  width: 100%;
   &__row {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    @media (max-width: $sm) {
+      z-index: 2;
+      backdrop-filter: blur(5px);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: $box-shadow-middle;
+    }
   }
   &__title {
     @include h2;
@@ -63,6 +71,10 @@ const updatePage = () => {
   &__action {
     display: flex;
     gap: 20px;
+    @media (max-width: $xs) {
+      flex-direction: column;
+      gap: 5px;
+    }
   }
 }
 </style>

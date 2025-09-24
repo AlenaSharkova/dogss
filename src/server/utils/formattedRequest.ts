@@ -1,6 +1,7 @@
 import {AdBDItemStruct, AdFormatShortItemStruct} from "~/server/struct/AdStruct.js";
 import {UserBDItemStruct} from "~/server/struct/UserStruct";
 import type {UserItemPublicAdStruct} from "~/server/struct/UserStruct";
+import {AdCommentView} from "~/server/struct/AdCommentStruct";
 
 export const formattedUserGlobal = (user: UserBDItemStruct) => {
     return {
@@ -27,7 +28,22 @@ export const formattedUserGlobal = (user: UserBDItemStruct) => {
             }, {
                 active: [],
                 archive: [],
-            })
+            }),
+        comments: user.UserAdList.reduce((list: AdCommentView[], ad) => {
+            console.log('ad.rating_commenter000', ad.rating_commenter)
+            if (ad.rating_commenter) {
+                list.push({
+                    id_user: ad.id_user_commenter,
+                    ad_info: {
+                        id: ad.id,
+                        name: ad.name
+                    },
+                    text: ad.text_comment || '',
+                    rating: ad.rating_commenter,
+                })
+            }
+            return list
+        }, []),
     };
 }
 export const formattedUserGlobalForAdItem = (user: UserBDItemStruct) => {
@@ -45,6 +61,8 @@ export const formattedUserGlobalForAdItem = (user: UserBDItemStruct) => {
         },
         ad_list_count: {
             active: (user.UserAdList?.filter((ad) => ad.status === 'active') || [] ).length,
+            archive_success: (user.UserAdList?.filter((ad) => ad.status === 'archive-success')|| []).length,
+            archive_close: (user.UserAdList?.filter((ad) => ad.status === 'archive-close')|| []).length,
             archive: (user.UserAdList?.filter((ad) => ad.status === 'archive')|| []).length,
         }
     };

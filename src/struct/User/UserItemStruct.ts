@@ -1,7 +1,7 @@
-import type {Database} from "db0";
-import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
+import type { ISelectNumber} from "~/struct/Common/ISelectComponent";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {ICommonFormValid} from "~/struct/Common/ICommonForm";
+import type {AdCommentView} from "~/struct/Ad/AdCommentStruct";
 
 
 export interface UserItemFullStruct {
@@ -24,7 +24,8 @@ export interface UserItemFullStruct {
 }
 export interface UserItemPublicAdStruct {
     active: AdItemStruct[],
-    archive: AdItemStruct[]
+    archive_success: AdItemStruct[]
+    archive_close: AdItemStruct[]
 }
 export interface UserItemPublicStruct {
     id: number;
@@ -44,6 +45,7 @@ export interface UserItemPublicStruct {
         },
     },
     ad_list: UserItemPublicAdStruct
+    comments: AdCommentView[]
 }
 export interface UserItemPublicPreviewStruct {
     id: number;

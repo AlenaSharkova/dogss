@@ -2,7 +2,7 @@ html {
   width: 100vw;
   @include scrollbar();
   scroll-behavior: smooth;
-
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 body {
   margin: 0;

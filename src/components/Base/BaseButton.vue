@@ -72,9 +72,12 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
   cursor: pointer;
   text-decoration: none;
   width: 100%;
-  transition: border 0.3s;
-
+  transition: box-shadow 0.3s, background-color 0.1s, border 0.3s;
   box-shadow: $box-shadow-lite;
+
+  &:hover {
+    box-shadow: $box-shadow-middle
+  }
   span {
     &.hidden {
       opacity: 0;
@@ -109,27 +112,49 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
       &:hover {
        // border: 1px solid #5E5E5E;
       }
+      &:active {
+        background: $second-yellow;
+      }
       &.base-button__disabled {
         opacity: 0.5;
       }
     }
     &--secondary {
-      color: var(--primary, #2D2D2D);
-      border: 1px solid var(--border, #D3D8E6);
-      background: var(--white, #FFF);
+      color: $violet;
+      border: 1px solid $violet-opacity-max;
+      background: $white-text;
+
       &:hover {
-        border: 1px solid var(--primary, #2D2D2D);
+        border: 1px solid $violet-opacity;
+      }
+      &:active {
+        background: $violet-opacity;
+        // border: 1px solid #5E5E5E;
       }
       &.base-button__disabled {
-        border: 1px solid var(--border, #D3D8E6);
+        border: 1px solid $violet-opacity-max;
+        color: $violet-opacity-66;
       }
     }
     &--teriary {
       color: $violet;
-      border: $light-teal;
+      border: 1px solid $light-teal;
       background: $light-teal;
+      &:hover {
+        //border: 1px solid darken($light-teal, 10%)
+        //background: darken($light-teal, 10%);
+
+      }
+      &:active {
+        background: darken($light-teal, 10%);
+        background: darken($light-teal, 10%);
+
+        // border: 1px solid #5E5E5E;
+      }
       &.base-button__disabled {
-        color: var(--border, #D3D8E6);
+        color: $violet-opacity-66;
+        border: $light-teal-44;
+        background: $light-teal-44;
       }
     }
     &--violet {
@@ -137,7 +162,9 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
       border: $violet;
       background: $violet;
       &.base-button__disabled {
-        color: var(--border, #D3D8E6);
+        color: $white-text;
+        border: $violet-opacity-max;
+        background: $violet-opacity-max;
       }
     }
     &--red {
@@ -150,7 +177,8 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
     }
   }
   &__disabled {
-    color: var(--secondary, #958F9C);
+    //color: $violet-opacity;
+    //opacity: 0.8;
     background: var(--white, #FFF);
     pointer-events: none;
   }

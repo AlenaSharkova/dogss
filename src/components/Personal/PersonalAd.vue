@@ -4,6 +4,7 @@ import {useAuthStore} from "~/stores/auth.store";
 import {usePersonalStore} from "~/stores/personal.store";
 import {computed} from "vue";
 import {usePersonalAdStore} from "~/stores/personal-ad.store";
+import CardAdItem from "~/components/Card/CardAdItem.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -13,7 +14,8 @@ const authStore = useAuthStore()
 
 const personalAdActiveList = computed(() => personalAdStore.AdPersonalList?.ad_active);
 const personalAdDraftList = computed(() => personalAdStore.AdPersonalList?.ad_draft);
-const personalAdArchiveList = computed(() => personalAdStore.AdPersonalList?.ad_archive);
+const personalAdArchiveSuccessList = computed(() => personalAdStore.AdPersonalList?.ad_archive_success);
+const personalAdArchiveCloseList = computed(() => personalAdStore.AdPersonalList?.ad_archive_close);
 const personalAdModerationList = computed(() => personalAdStore.AdPersonalList?.ad_moderation);
 const tabTypeAdList = computed( () => [
   {
@@ -25,8 +27,12 @@ const tabTypeAdList = computed( () => [
     value: 'draft',
   },
   {
-    text: `Архив ( ${personalAdArchiveList.value?.length || 0} )`,
-    value: 'archive',
+    text: `Завершённые ( ${personalAdArchiveSuccessList.value?.length || 0} )`,
+    value: 'archive-success',
+  },
+  {
+    text: `Закрытые ( ${personalAdArchiveCloseList.value?.length || 0} )`,
+    value: 'archive-close',
   },
   {
     text: `На модерации ( ${personalAdModerationList.value?.length || 0} )`,
@@ -55,7 +61,16 @@ watch(() => selectTabTypeAd.value?.value,
     })
 
 
-
+const emptyBlock = computed(() => {
+  switch (selectTabTypeAd.value.value) {
+    case 'active': return !personalAdActiveList.value?.length
+    case 'draft': return !personalAdDraftList.value?.length
+    case 'archive-success': return !personalAdArchiveSuccessList.value?.length
+    case 'archive-close': return !personalAdArchiveCloseList.value?.length
+    case 'moderation': return !personalAdModerationList.value?.length
+    default: return true
+  }
+})
 
 </script>
 
@@ -72,15 +87,15 @@ watch(() => selectTabTypeAd.value?.value,
           type="secondary"
           size="small"
           to="/create-ad" />
-      <AdWrapperList>
-        <CardAdItem
-            v-if="selectTabTypeAd?.value === 'active'"
-            v-for="item in personalAdActiveList"
-            :key="item.id"
-            :item="item"
-            type="personal"
-        />
-        <!--пустой список common-->
+      <AdWrapperList :empty="emptyBlock">
+        <template v-if="selectTabTypeAd?.value === 'active'">
+          <CardAdItem
+              v-for="item in personalAdActiveList"
+              :key="item.id"
+              :item="item"
+              type="personal"
+          />
+        </template>
         <template v-if="selectTabTypeAd?.value === 'draft'">
           <CardAdItem
               v-for="item in personalAdDraftList"
@@ -90,21 +105,30 @@ watch(() => selectTabTypeAd.value?.value,
               @click="goToDraftItem(item.id)"
           />
         </template>
-        <template v-else-if="selectTabTypeAd?.value === 'archive'">
+        <template v-else-if="selectTabTypeAd?.value === 'archive-success'">
           <CardAdItem
-              v-for="item in personalAdArchiveList"
+              v-for="item in personalAdArchiveSuccessList"
               :key="item.id"
               :item="item"
               type="personal"
           />
         </template>
-        <CardAdItem
-            v-if="selectTabTypeAd?.value === 'moderation'"
-            v-for="item in personalAdModerationList"
-            :key="item.id"
-            :item="item"
-            type="personal"
-        />
+        <template v-else-if="selectTabTypeAd?.value === 'archive-close'">
+          <CardAdItem
+              v-for="item in personalAdArchiveCloseList"
+              :key="item.id"
+              :item="item"
+              type="personal"
+          />
+        </template>
+        <template v-else-if="selectTabTypeAd?.value === 'moderation'">
+          <CardAdItem
+              v-for="item in personalAdModerationList"
+              :key="item.id"
+              :item="item"
+              type="personal"
+          />
+        </template>
 
       </AdWrapperList>
     </div>

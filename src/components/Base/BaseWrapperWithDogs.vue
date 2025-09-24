@@ -34,6 +34,7 @@ defineProps({
     width: 40%;
     height: 80vh;
     max-width: 1100px;
+    min-width: 400px;
     @media (max-width: $sm) {
       width: 100%;
       opacity: 0.7;
@@ -61,10 +62,7 @@ defineProps({
   }
   &-content {
     width: 100%;
-    @media (max-width: $sm) {
-      //position: absolute;
-      //backdrop-filter: blur(10px);
-    }
+
     &-text {
       @include h6;
       text-align: center;

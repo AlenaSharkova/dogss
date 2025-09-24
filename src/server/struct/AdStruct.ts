@@ -25,6 +25,13 @@ export interface AdBDItemStruct {
     approximate_age: string;
     is_contractual_price: boolean;
     created_at: string;
+
+    hash_link_comment: string;
+    text_comment: string;
+    rating_commenter: number;
+    id_user_commenter: number;
+    expires_at_hash_link_comment: string;
+
     LocationRegion: object;
     LocationCity: object;
     Breed: object;
@@ -75,6 +82,7 @@ export interface AdQueryAdminStruct {
     status: string;
     id: string;
 }
+
 export interface AdAdminListStruct {
     moderation: AdFormatShortItemStruct[],
     blocked: AdFormatShortItemStruct[],

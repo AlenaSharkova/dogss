@@ -7,3 +7,6 @@ export function generateOTP() {
 export function generateRandomToken() {
     return randomBytes(25).toString('hex');
 }
+export function generateRandomHash() {
+    return randomBytes(25).toString('hex');
+}

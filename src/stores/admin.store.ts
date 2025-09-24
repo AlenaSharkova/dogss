@@ -51,7 +51,7 @@ export const useAdminStore = defineStore('adminStore', () => {
             .then(res => {
                 //if (res) adCreatedSuccessItem.value = res.value;
                 console.log('adCreatedSuccessItem in store', res)
-                commonStore.addUserErrorAlert( `Объявление обновлено ${id}`)
+                commonStore.addUserSuccessAlert( `Объявление обновлено ${id}`)
                 updateAdList()
             })
             .catch(e => {

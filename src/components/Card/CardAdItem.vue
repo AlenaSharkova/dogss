@@ -28,6 +28,7 @@ const props = defineProps({
 
 const personalStore = usePersonalStore()
 const personalAdStore = usePersonalAdStore()
+const adCommentStore = useAdCommentStore()
 const router = useRouter()
 
 const swiperInstance = ref()
@@ -52,7 +53,9 @@ const toEditAdAPage = () => {
 const toggleMorePersonal = () => {
   isShowMore.value = !isShowMore.value
 }
-
+const showModalCommentToAd = () => {
+  adCommentStore.showOfferLeaveComment(props.item.id)
+}
 const textRegionsExport = computed(() => {
   if(!props.item.exportRegions.isExport) return ''
   return `<p style="font-size: 12px">Возможна доставка в такие регионы, как:</p>
@@ -106,13 +109,11 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
                 <div v-for="i in 3" class="card-item__info-circle__content-more__point"></div>
               </div>
             </div>
-            <Transition name="fade">
-              <CardAdItemMore
-                  :id="item.id"
-                  v-if="isShowMore"
-                  @toEditAdPage="toEditAdAPage()"
-                  @toArchiveAd="" />
-            </Transition>
+            <CardAdItemMore
+                :id="item.id"
+                :is-show-more="isShowMore"
+                @toEditAdPage="toEditAdAPage()"
+                @toArchiveAd="" />
           </div>
           <AdFavoriteHeart
               v-else-if="isActive"
@@ -120,6 +121,13 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
               :id="item.id"
               :is-favorite="item.isFavorite"
           />
+          <div
+              v-else-if="item.status === 'archive-success'"
+              class="card-item__info-circle --top-right"
+              @click.stop="showModalCommentToAd"
+          >
+            <BaseIconEmpty class="card-item__info-circle__image"/>
+          </div>
           <div v-else-if="item.status === 'draft'"
                class="card-item__info-circle --top-right"
                @click.stop="removeFromDraft"
@@ -187,6 +195,7 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
   //height: 100%;
   transition: all 0.2s ease-out;
   box-shadow: $box-shadow-lite;
+  max-width: 500px;
   &.disabled {
     opacity: 0.6;
     pointer-events: none;

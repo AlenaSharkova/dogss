@@ -23,7 +23,7 @@ export const mailHtml = (otp, token) => `
 
            <tr>
             <td style="padding: 20px 40px; background-color: #ffffff; text-align: center;">
-              <a href="http://localhost:3000/auth/token?code=${token}" style="background-color: #47456D; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 15px;">Или подтвердите, перейдя по ссылке сейчас</a>
+              <a href="http://192.168.0.196:3000/auth/token?code=${token}" style="background-color: #47456D; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-size: 15px;">Или подтвердите, перейдя по ссылке сейчас</a>
             </td>
           </tr>
 

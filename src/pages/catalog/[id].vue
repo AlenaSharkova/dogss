@@ -15,6 +15,7 @@ definePageMeta({
 const route = useRoute();
 
 const usersStore = useUsersStore()
+const commonStore = useCommonStore()
 const { isMobile } = useScreen();
 const adStore = useAdStore()
 const authStore = useAuthStore()
@@ -31,6 +32,13 @@ const contacts = computed(() => adView.value?.ownerDetails.personal_data.contact
 const setThumbsSwiper = (swiper: Swiper) => {
   thumbsSwiper.value = swiper;
 };
+const showZoomPhotos = (photoClick: string) => {
+  if(!adView.value) return
+  commonStore.addZoomPhotosGallery({
+    list: adView.value.photos,
+    active_photo: photoClick
+  })
+}
 
 await adStore.requestViewAd(idPublication.value)
 
@@ -64,6 +72,7 @@ onUnmounted(() => {
                   <swiper-slide
                       class="page-publication__gallery-swiper__slide"
                       v-for="(image, index) in adView.photos"
+                      @click="showZoomPhotos(image)"
                       :key="index"
                   >
                     <img :src="image">

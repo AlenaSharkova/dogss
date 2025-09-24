@@ -104,7 +104,7 @@ const closeModalShare = () => {
               <BaseIconCheck class="publication-right__owner-additions__ads-icon" />
               <div class="publication-right__owner-additions__ads-text">
                 <span>{{item.ownerDetails.ad_list_count.archive}} состоявшиеся сделки</span>
-                <span class="publication-right__owner-additions__ads-text__active">+ {{item.ownerDetails.ad_list_count.active}} активных объявления</span>
+                <span class="publication-right__owner-additions__ads-text__active">+ {{item.ownerDetails.ad_list_count.archive_success}} активных объявления</span>
               </div>
             </div>
             <div class="publication-right__owner-additions__comments">

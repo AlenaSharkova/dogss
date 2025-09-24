@@ -1,9 +1,11 @@
 <script setup lang="ts">
 
-
-
 defineProps({
   hasFilter: {
+    type: Boolean,
+    default: false
+  },
+  empty: {
     type: Boolean,
     default: false
   }
@@ -13,7 +15,8 @@ defineProps({
 <template>
 <div class="ad-list" :class="{'--has-filter': hasFilter}">
   <div class="ad-list__wrapper">
-    <div class="ad-list__row">
+    <CommonEmptyBlock v-if="empty" />
+    <div v-else class="ad-list__row">
       <slot></slot>
     </div>
   </div>

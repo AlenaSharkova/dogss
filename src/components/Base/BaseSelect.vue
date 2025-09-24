@@ -11,15 +11,10 @@
           :class="[props.rounded, props.class]"
           :disabled="!props.showSearch"
           @blur="closeDropdown"
+          @focus="openDropdown"
       />
-      <div
-        v-if="props.showSearch && search && props.showClear"
-        class="absolute right-2 cursor-pointer outline-0"
-      >
 
-      </div>
-
-      <div @click.stop="closeInput" class="base-select__search-arrow" :class="{flipped: open, active: singleItemDisplay || multipleItemsDisplay}">
+      <div @click.stop="toggleDropdown" class="base-select__search-arrow" :class="{flipped: open, active: singleItemDisplay || multipleItemsDisplay}">
         <svg width="16" height="9" viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M15 1.125L9.52279 6.60221C8.81985 7.30515 7.68015 7.30515 6.97721 6.60221L1.5 1.125" stroke="#958F9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -326,9 +321,15 @@ const activeItemEnclosure = (option: ISelectComponentWithChildren) => {
 const toggleCity = () => {
   isOpen.value = !isOpen.value
 }
-const closeInput = () => {
+const toggleDropdown = () => {
   open.value = !open.value
-  selectedOptions.value = []
+  if(!open.value) {
+    selectedOptions.value = []
+    search.value = ''
+  }
+}
+const openDropdown = () => {
+  open.value = true
 }
 const selectOption = (option: ISelectComponent) => {
   if (props.multiple) {
@@ -366,6 +367,13 @@ function closeDropdown() {
       }
       open.value = false;
     }, 250);
+  } else {
+    /*setTimeout(() => {
+      if (!filteredOptions.value.find((option) => option.text === search.value)) {
+        search.value = "";
+        open.value = false;
+      }
+    }, 250);*/
   }
 }
 

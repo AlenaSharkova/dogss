@@ -46,7 +46,6 @@ const getCreateReq = async ( offset = 0 as number, isClient = false  ) => {
   const queryRoute = route.query as AdQueryFilterStruct
   const query = {
     ...queryRoute,
-    offset
   }
   lastQuery.value = query
   await adStore.updateAdFilter(query)
@@ -54,7 +53,7 @@ const getCreateReq = async ( offset = 0 as number, isClient = false  ) => {
 }
 
 const changePage = (offset: number) => {
-  getCreateReq(offset)
+  router.push({query: {offset: offset }})
 }
 
 await getCreateReq()
@@ -88,8 +87,8 @@ useHead({
           <AdSorting />
         </div>
         <div class="page-catalog__main-block">
-          <div v-if="adList?.length" class="page-catalog__main-listing">
-            <AdWrapperList has-filter>
+          <div class="page-catalog__main-listing">
+            <AdWrapperList has-filter :empty="!adList?.length">
               <CardAdItem
                   v-for="(item, index) in adList"
                   :key="index"
@@ -98,9 +97,6 @@ useHead({
             <CommonPaginationList
                 :data="adListDetails"
                 @change-page="changePage" />
-          </div>
-          <div v-else>
-            не найдено
           </div>
           <AdFilter class="page-catalog__main-filter"/>
         </div>

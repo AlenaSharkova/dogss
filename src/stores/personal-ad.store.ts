@@ -10,6 +10,7 @@ import {useCommonStore} from "~/stores/common.store";
 import type {PersonalAdListStruct} from "~/struct/Personal/PersonalAdListStruct";
 import type {UserChangeItemStruct} from "~/struct/User/UserItemStruct";
 import type {IStatusAd} from "~/struct/Common/IValueType";
+import type {ICommonZoomPhotosGallery} from "~/struct/Common/ICommonComponents";
 
 
 export const usePersonalAdStore = defineStore('personalAdStore', () => {
@@ -161,7 +162,7 @@ export const usePersonalAdStore = defineStore('personalAdStore', () => {
         changeAdAdmin,
         deletePersonalAd,
         createAd,
-        changeAd
+        changeAd,
     }
 })
 
