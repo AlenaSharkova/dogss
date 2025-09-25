@@ -297,7 +297,7 @@ const createAdForm = async (typeSaved = 'moderation' as 'moderation' | 'draft') 
   await personalAdStore.createAd(body)
       .then(res => {
         isNavigationWithoutConfirmation.value = true
-        router.push('/personal/publications')
+        router.push('/personal/publications?type=moderation')
       })
 
 }

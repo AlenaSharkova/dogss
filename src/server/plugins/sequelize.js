@@ -8,6 +8,9 @@ import adExportRegionsModel from '../models/AdExportRegions.js';
 import usersModel from '../models/Users.js';
 import otpModel from '../models/Otp.js';
 import favoritesAdModel from '../models/FavoritesAd.js';
+import {initEventTgBot} from "~/server/services/telegram.service.js";
+import {tokenTgBot} from "~/server/data/access-data.js";
+import TelegramBot from "node-telegram-bot-api";
 
 //import config from '/config/config.js';
 //const env = process.env.NODE_ENV || 'development';
@@ -46,6 +49,9 @@ export default defineNitroPlugin(async  (nitroApp) => {
     const AdExportRegions = adExportRegionsModel(sequelize);
     const Otp = otpModel(sequelize);
     const FavoritesAd = favoritesAdModel(sequelize);
+
+    const TelegramBotMain = new TelegramBot(tokenTgBot, { polling: true })
+    initEventTgBot(TelegramBotMain)
 
     // Определение связей Many-to-Many AdExportRegions
     AdList.belongsToMany(GeoRegions, {
@@ -125,6 +131,8 @@ export default defineNitroPlugin(async  (nitroApp) => {
         event.context.AdExportRegions = AdExportRegions;
         event.context.Otp = Otp;
         event.context.FavoritesAd = FavoritesAd;
+
+        event.context.TelegramBotMain = TelegramBotMain;
         console.log('model and sequelize added to context');
     });
    return {
@@ -136,7 +144,9 @@ export default defineNitroPlugin(async  (nitroApp) => {
             AdList,
             Users,
             Otp,
-            FavoritesAd
+            FavoritesAd,
+
+            TelegramBotMain
         },
     };
 });

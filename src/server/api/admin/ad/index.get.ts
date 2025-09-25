@@ -92,10 +92,7 @@ export default defineEventHandler(async (event) => {
     } catch (error) {
         console.log('Sequelize error:', error);
         console.error('Sequelize error:', error);
-        throw createError({
-            statusCode: 500,
-            statusMessage: 'Ошибка при запросе к базе данных',
-        });
+        throw error
     }
 
     // local functions

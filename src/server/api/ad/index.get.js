@@ -4,7 +4,6 @@ import { Op} from "sequelize";
 import dayjs from "dayjs";
 import {formattedAd, formattedAdShort} from "~/server/utils/formattedRequest.ts";
 import {getUserAuth} from "~/server/services/auth.service.js";
-import { ref } from 'vue';
 
 export default defineEventHandler(async (event) => {
     console.log('event.context', event.context)
@@ -18,7 +17,6 @@ export default defineEventHandler(async (event) => {
 
     const authHeader = getHeader(event, 'authorization')
     const token = authHeader && authHeader.split(' ')[1];// Bearer <token>
-
     const AdList = event.context.AdList;
     const Breeds = event.context.Breeds;
     const GeoCity = event.context.GeoCity;
@@ -86,10 +84,7 @@ export default defineEventHandler(async (event) => {
     } catch (error) {
         console.log('Sequelize error:', error);
         console.error('Sequelize error:', error);
-        throw createError({
-            statusCode: 500,
-            message: 'Ошибка при запросе к базе данных',
-        });
+        throw error
     }
 
     // local functions

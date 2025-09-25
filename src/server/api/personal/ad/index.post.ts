@@ -1,4 +1,5 @@
 import {getUserAuth} from "~/server/services/auth.service";
+import {sendAdModerationToTgAdmin} from "~/server/services/telegram.service";
 
 export default defineEventHandler(async (event)=>
 {
@@ -40,6 +41,7 @@ export default defineEventHandler(async (event)=>
             }
         }
 
+        sendAdModerationToTgAdmin(event.context.TelegramBotMain, adItemCreateResult.id)
         //await adItemCreateResult.reload()
 
         /*adItemCreateResult = await sql`

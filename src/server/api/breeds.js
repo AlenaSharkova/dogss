@@ -20,9 +20,6 @@ export default defineEventHandler(async (event) => {
         return await Breeds.findAll();
     } catch (error) {
         console.error('Sequelize error:', error);
-        throw createError({
-            statusCode: 500,
-            message: 'Ошибка при запросе к базе данных',
-        });
+        throw error
     }
 });
