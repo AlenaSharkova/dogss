@@ -14,6 +14,7 @@ defineProps({
 <template>
   <div class="user-comments-gallery">
     <swiper
+        v-if="comments?.length"
         class="user-comments-gallery__swiper"
         centered-slides
         :space-between="20"
@@ -23,6 +24,11 @@ defineProps({
         <UserPageCommentsItem :comment="item" />
       </swiper-slide>
     </swiper>
+    <CommonEmptyBlock
+        v-else
+        text="Отзывов пока нет"
+        mini-style
+    />
   </div>
 
 </template>

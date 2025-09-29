@@ -11,6 +11,8 @@ const props = defineProps({
     default: null
   }
 })
+const emits = defineEmits(['scroll-to-block'])
+
 const router = useRouter();
 const route = useRoute();
 
@@ -24,17 +26,17 @@ const tabNavList = reactive([
     isActive: true,
   },
   {
-    name: "Наши питомцы",
-    id: "dogs",
-    isActive: false,
-  },
-  {
     name: "Объявления",
     id: "ads",
     isActive: false,
   },
   {
-    name: "Комментарии",
+    name: "Контакты",
+    id: "contacts",
+    isActive: false,
+  },
+  {
+    name: "Отзывы",
     id: "comments",
     isActive: false,
   },
@@ -55,10 +57,11 @@ const changeTab = (idSelect: string) => {
   tabNavList.forEach((item, index) => {
     console.log(item, item.id, idSelect)
     if(item.id === idSelect) {
-      router.push({query: {type: ''}})
+      //router.push({query: {type: ''}})
       item.isActive = true
       isActiveIndex.value = index
-      router.push({hash: `#${item.id}`})
+      //router.push({hash: `#${item.id}`})
+      emits('scroll-to-block', idSelect)
     } else {
       item.isActive = false
     }
@@ -118,9 +121,9 @@ onMounted(async () => {
               <div v-if="classAdded" class="personal-header__bottom-nav__personal">
                 <BaseProfileCircle
                     :name="userFullName"
-                    size="medium"
+                    size="small"
                     unfull
-                    img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
+                    :img="user.personal_data.photo" />
                 <div class="personal-header__bottom-nav__personal-content">
                   <div class="personal-header__bottom-nav__personal-content__title">
                     <p>{{userFullName}}</p>
@@ -219,14 +222,14 @@ onMounted(async () => {
 
         flex-direction: column;
         gap: 0px;
-
         @media (max-width: $md) {
           padding: 15px 30px;
-          gap: 0px;
         }
         @media (max-width: $sm) {
           padding: 15px 20px;
-          gap: 0px;
+        }
+        @media (max-width: $xs) {
+          gap: 10px;
         }
       }
       &__personal {
@@ -241,7 +244,7 @@ onMounted(async () => {
           flex-direction: column;
           &__title {
             color: $white-text;
-            @include h4;
+            @include h5;
             p {
               text-wrap: nowrap;
             }
@@ -264,18 +267,64 @@ onMounted(async () => {
         gap: 0;
         position: relative;
         padding: 0;
+        @media (max-width: $xs) {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          gap: 5px;
+        }
       }
       &__item {
-        flex: 1;
+        //flex: 1;
         padding: 5px 20px 8px;
         display: flex;
         align-items: center;
         cursor: pointer;
         justify-content: center;
-        p {
+        @media (max-width: $xs) {
+          padding: 5px 5px 2px;
+          position: relative;
+          &:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            right: 50%;
+            bottom: -5px;
+            background-color: $second-yellow;
+            height: 2px;
+            transition: all 0.2s;
+            opacity: 0;
+          }
+        }
+        @media (max-width: 400px) {
+          padding: 5px 2px 8px;
+        }
+        &.active {
+          @media (max-width: $xs) {
+            //border-bottom: 5px solid $second-yellow;
+            &:after {
+              left: 0%;
+              right: 0%;
+              opacity: 1;
+              //width: 100%;
+
+            }
+          }
+        }
+        &-text {
           text-wrap: nowrap;
-          @include h5;
+          @include h6;
           color: #fff;
+          @media (max-width: $xss) {
+            @include subtitle-small(500);
+          }
+          @media (max-width: $xsss) {
+            font-size: 16px;
+          }
+          @media (max-width: 400px) {
+            @include text-normal(500);
+          }
         }
       }
       .line {
@@ -286,10 +335,12 @@ onMounted(async () => {
         height: 5px;
         transition: left .6s;
         padding: 0 10px;
+        @media (max-width: $xs) {
+          display: none;
+        }
         &-block {
-          background-color: #E0A96FFF;
+          background-color: $second-yellow;
           height: 100%;
-
         }
       }
     }

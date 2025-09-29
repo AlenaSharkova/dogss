@@ -4,7 +4,6 @@ import {useCommonStore} from "~/stores/common.store";
 import AdCommentService from "~/service/ad-comment.service";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {AdCommentSend} from "~/struct/Ad/AdCommentStruct";
-const { error } = useNuxtApp();
 
 export const useAdCommentStore = defineStore('adCommentStore', () => {
     const config = useRuntimeConfig();

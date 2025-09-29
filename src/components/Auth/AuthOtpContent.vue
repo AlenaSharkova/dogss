@@ -266,7 +266,7 @@ onMounted(() => {
         justify-content: space-between;
         gap: 8px;
       }
-      @media (max-width: $xsss) {
+      @media (max-width: $x4s) {
         gap: 2px;
       }
     }

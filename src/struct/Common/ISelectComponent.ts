@@ -1,7 +1,7 @@
 export interface ISelectComponent {
     text?: string;
     value?: string | number;
-    details?: Object;
+    details?: any;
 }
 export interface ISelectComponentWithChildren {
     text?: string;

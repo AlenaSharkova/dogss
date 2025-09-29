@@ -10,13 +10,16 @@ export default function useScreen() {
         console.log(isMobile.value)
     };
 
-    const isMobileS = computed(() => width.value < 361);
-    const isMobileM = computed(() => width.value < 451);
+    const isMobileX4s = computed(() => width.value < 361);
+    const isMobileXsss = computed(() => width.value < 451);
+    const isMobileXss = computed(() => width.value < 601);
+    const isMobileXs = computed(() => width.value < 770);
     const isMobile = computed(() => width.value < 1025);
     const isMaxTablet = computed(() => width.value < 1221);
     const isMaxLaptop = computed(() => width.value < 1441);
 
     onMounted(() => {
+        console.log('width.value', width.value, isMobile.value)
         setScreenSizes();
         window.addEventListener('resize', setScreenSizes);
     });
@@ -24,5 +27,5 @@ export default function useScreen() {
         window.removeEventListener('resize', setScreenSizes);
     });
 
-    return { width, height, isMobile, isMaxTablet, isMaxLaptop, isMobileM, isMobileS };
+    return { width, height, isMobile, isMaxTablet, isMaxLaptop, isMobileXs, isMobileXss, isMobileXsss, isMobileX4s };
 }

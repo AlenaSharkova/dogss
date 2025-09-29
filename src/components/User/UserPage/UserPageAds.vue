@@ -11,16 +11,25 @@ const props = defineProps({
 
 const tabTypeAdList = computed( () => [
   {
-    text: `Активные ( ${props.adsList?.ad_active?.length || 0} )`,
+    text: `Активные`,
     value: 'active',
+    details: {
+      count: props.adsList?.ad_active?.length || 0
+    }
   },
   {
-    text: `Завершённые ( ${props.adsList?.ad_archive_success?.length || 0} )`,
+    text: `Завершённые`,
     value: 'archive-success',
+    details: {
+      count: props.adsList?.ad_archive_success?.length || 0
+    }
   },
   {
-    text: `Закрытые ( ${props.adsList?.ad_archive_close?.length || 0} )`,
+    text: `Закрытые`,
     value: 'archive-close',
+    details: {
+      count: props.adsList?.ad_archive_close?.length || 0 || 0
+    }
   }
 ])
 
@@ -34,6 +43,25 @@ const emptyBlock = computed(() => {
     case 'archive-close': return !props.adsList?.ad_archive_close?.length
     default: return true
   }
+})
+const getExistingAdList = () => {
+  if(!props.adsList?.ad_active?.length) {
+    if(props.adsList?.ad_archive_success?.length) {
+      return 'archive-success'
+    } else if(props.adsList?.ad_archive_close?.length) {
+      return 'archive-close'
+    } else {
+      return 'active'
+    }
+  } else return 'active'
+}
+const showExistingAdList = () => {
+  const typeExistingAdList = getExistingAdList()
+  activeTab.value = tabTypeAdList.value.find(item => item.value === typeExistingAdList)
+  selectTabTypeAd.value = activeTab.value
+}
+onMounted(() => {
+  showExistingAdList()
 })
 </script>
 

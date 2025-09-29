@@ -1,10 +1,10 @@
 <script setup lang="ts">
-defineProps(['error'])
+const props = defineProps(['error'])
 
 const router = useRouter();
 
 const updatePage = () => {
-  router.resolve({name: 'publisher'}).href
+  router.go()
 }
 </script>
 
@@ -27,7 +27,7 @@ const updatePage = () => {
             <span>Обновите страницу или перейдите на главную</span>
           </div>
           <div class="page-error__text">
-            <span>{{error.message}}</span>
+            <span>{{error.statusMessage}}</span>
           </div>
           <div class="page-error__action">
             <BaseButton v-if="error.statusCode !== 404" type="teriary" text="Обновить страницу" @click="updatePage" />

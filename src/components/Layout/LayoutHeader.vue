@@ -151,7 +151,10 @@ const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMen
 
 
   &--hidden {
-    top: -77px;
+    top: -78px;
+    @media (max-width: $sm) {
+      top: -84px;
+    }
   }
 
   &-wrapper {

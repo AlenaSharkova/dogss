@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { defineProps, withDefaults, ref, computed } from "vue";
 import type { ISelectComponent } from "~/struct/Common/ISelectComponent";
+import useScreen from "~/utils/useScreen";
 
 const props = withDefaults(
     defineProps<{
@@ -9,6 +10,7 @@ const props = withDefaults(
     }>(),
     {}
 );
+const { isMobileXs, isMobile } = useScreen();
 
 const selectedItem = defineModel<ISelectComponent | null>({ default: null });
 
@@ -30,7 +32,11 @@ watch(() => selectedItem.value?.value,
       selectedItem.value = props.items.find((item) => item.value === newValue) as ISelectComponent;
     }
 )
-
+const countViewTabsLine = computed(() => {
+  if(isMobileXs.value) return 2
+  if(isMobile.value) return props.items?.length > 3? 3: props.items?.length || 1
+  return props.items?.length || 1
+})
 </script>
 
 <template>
@@ -39,8 +45,10 @@ watch(() => selectedItem.value?.value,
       <div
           class="base-tab-switch__active"
           :style="{
-            width:  `${100 / props.items.length}%`,
-            left: `${activeIndex * (100 / props.items.length)}%`,
+            width:  `${100 / countViewTabsLine}%`,
+            left: `${activeIndex % countViewTabsLine * 100/countViewTabsLine}%`,
+            top: `${  47 * Math.floor(activeIndex/countViewTabsLine) }px`,
+            height: '47px'
           }"
       ></div>
       <div
@@ -58,7 +66,12 @@ watch(() => selectedItem.value?.value,
             :for="`input-tab-switch-${name}-${item.value}`"
             :class="{ '--active': activeIndex === index }"
         >
+          <span></span>
           <span>{{ item.text }}</span>
+          <div v-if="item.details?.count || item.details.count == 0"
+               class="base-tab-switch__item-count">
+            <span>{{item.details.count}}</span>
+          </div>
         </label>
       </div>
 
@@ -80,29 +93,44 @@ watch(() => selectedItem.value?.value,
     position: relative;
     width: 100%;
     height: 100%;
+    @media (max-width: $sm) {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    @media (max-width: $xs) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
   }
-
   &__item {
     width: 100%;
-    height: 100%;
+    height: 47px;
     cursor: pointer;
     color: $dark-text;
     transition: all 0.5s;
     z-index: 1;
     box-sizing: border-box;
     text-align: center;
-
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span {
+      transition: all 0.5s;
+    }
     &.--active {
       span {
         color: $white-text;
       }
     }
-
     input {
       display: none;
     }
     label {
-      display: block;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 5px;
+      justify-content: center;
       width: 100%;
       height: 100%;
       padding: 14px 5px;
@@ -110,12 +138,32 @@ watch(() => selectedItem.value?.value,
     }
     input:checked + label {
       color: $white-text;
+      .base-tab-switch__item-count {
+        background-color: $light-teal;
+      }
+    }
+    &-count {
+      position: relative;
+      background-color: $light-teal-99;
+      backdrop-filter: blur(10px);
+      padding: 5px;
+      min-width: 30px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      top: -10px;
+      width: min-content;
+      transition: all 0.5s;
+      span {
+        color: $violet;
+        @include text-small(500);
+      }
     }
   }
 
   &__active {
     position: absolute;
-
     border-radius: 8px;
     height: 100%;
     top: 0;

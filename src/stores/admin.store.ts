@@ -38,10 +38,10 @@ export const useAdminStore = defineStore('adminStore', () => {
             .then((res) => {
                 adListAdmin.value = res as AdAdminItemStruct<AdItemStruct[]>
             })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
+            .catch(err => {
+                commonStore.addUserErrorAlert(err.data?.statusMessage)
+                commonStore.addUserErrorAlert(err.data?.message, true)
+                showError({statusCode: err.data?.statusCode, statusMessage: err.data?.statusMessage})
             });
     }
 
@@ -58,7 +58,10 @@ export const useAdminStore = defineStore('adminStore', () => {
                 console.log('eerrr in store ' , e)
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
                 commonStore.addUserErrorAlert(e.data?.message, true)
-                throw e.data
+                throw createError({
+                    statusCode: 500,
+                    message: `Пользователь с ID  не найден!`,
+                });
             });
     }
 

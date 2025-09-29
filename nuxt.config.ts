@@ -4,7 +4,6 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   pages: true,
   ssr: true,
-  plugins: ['@/plugins/axios.ts'],
   srcDir: 'src/',
   css: [
     '@/assets/style/global/index.scss',

@@ -19,24 +19,39 @@ const personalAdArchiveCloseList = computed(() => personalAdStore.AdPersonalList
 const personalAdModerationList = computed(() => personalAdStore.AdPersonalList?.ad_moderation);
 const tabTypeAdList = computed( () => [
   {
-    text: `Активные ( ${personalAdActiveList.value?.length || 0} )`,
+    text: `Активные`,
     value: 'active',
+    details: {
+      count: personalAdActiveList.value?.length || 0
+    }
   },
   {
-    text: `Черновики ( ${personalAdDraftList.value?.length || 0} )`,
+    text: `Черновики`,
     value: 'draft',
+    details: {
+      count: personalAdDraftList.value?.length || 0
+    }
   },
   {
-    text: `Завершённые ( ${personalAdArchiveSuccessList.value?.length || 0} )`,
+    text: `Завершённые`,
     value: 'archive-success',
+    details: {
+      count: personalAdArchiveSuccessList.value?.length || 0
+    }
   },
   {
-    text: `Закрытые ( ${personalAdArchiveCloseList.value?.length || 0} )`,
+    text: `Закрытые`,
     value: 'archive-close',
+    details: {
+      count: personalAdArchiveCloseList.value?.length || 0
+    }
   },
   {
-    text: `На модерации ( ${personalAdModerationList.value?.length || 0} )`,
+    text: `На модерации`,
     value: 'moderation',
+    details: {
+      count: personalAdModerationList.value?.length || 0
+    }
   }
 ])
 

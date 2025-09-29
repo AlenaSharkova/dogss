@@ -117,6 +117,7 @@ const toggleMobileMenu = () => {
     gap: 30px;
     @media (max-width: $sm) {
       flex-direction: column;
+      align-items: flex-start;
     }
   }
   &__item {
@@ -131,27 +132,34 @@ const toggleMobileMenu = () => {
     position: relative;
     padding: 3px;
     @include subtitle-small(500);
+    display: block;
     &:after {
       content: '';
       position: absolute;
-      left: 0;
+      left: 50%;
+      right: 50%;
       bottom: -5px;
       background-color: $second-yellow;
-      width: 0%;
+      opacity: 0;
       height: 2px;
-      transition: all 0.2s;
+      transition: all .2s;
     }
     &.--active {
       color: $violet;
       &:after {
-        width: 100%;
-        background-color: $second-yellow;
+        opacity: 1;
+        left: 0%;
+        right: 0%;
       }
     }
     &:hover {
       color: $violet;
       &:after {
-        width: 100%;
+        //width: 100%;
+        //background-color: $violet-opacity;
+        opacity: 1;
+        left: 0%;
+        right: 0%;
       }
 
     }

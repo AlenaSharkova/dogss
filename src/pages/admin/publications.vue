@@ -45,9 +45,7 @@ onMounted(() => {
 
 <template>
   <div class="page-admin-publications">
-    <LayoutWrapperPage>
-      {{activeTabs}}
-
+    <LayoutWrapperPage v-if="adListAdminActive?.length">
       <h3 class="page-admin-publications__title">Управление объявлениями</h3>
       <BaseTabSwitch class="page-admin-publications__tabs" name="admin-ads" :items="tabs" v-model="activeTabs" />
       <div v-if="adListAdminActive?.length" class="page-admin-publications__list">
@@ -66,6 +64,7 @@ onMounted(() => {
         </AdWrapperList>
       </div>
     </LayoutWrapperPage>
+    <CommonEmptyBlock v-else text="Кажется, здесь пусто" />
   </div>
 </template>
 
