@@ -17,17 +17,13 @@ const close = () => {
       <template #title>
         {{infoModal?.title}}
       </template>
-      <template>
+      <template #default>
         <div class="common-modal__result-main">
           <div class="base-window-result__wrapper">
             <div class="base-window-result__icon">
               <BaseIconResult :name="infoModal?.status" />
-              <canvas class="w-full h-full opacity-100 object-contain object-center lower-canvas" aria-label="Версия 1" role="img" width="702" height="727" style="position: absolute; width: 702px; height: 727.75px; left: 0px; top: 0px; touch-action: none; user-select: none;"></canvas><canvas class="upper-canvas w-full h-full opacity-100 object-contain object-center" width="702" height="727" style="position: absolute; width: 702px; height: 727.75px; left: 0px; top: 0px; touch-action: none; user-select: none; cursor: pointer;"></canvas>
             </div>
             <div class="base-window-result__header">
-              <div  v-if="infoModal?.title" class="base-window-result__header-title">
-                <span>{{infoModal.title}}</span>
-              </div>
               <div v-if="infoModal?.subtitle" class="base-window-result__header-subtitle">
                 <span v-html="infoModal.subtitle"></span>
               </div>

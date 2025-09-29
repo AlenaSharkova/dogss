@@ -64,11 +64,18 @@ export default defineEventHandler(async (event) => {
                     statusMessage: 'Отзыв уже был создан'
                 });
             }
+            if(user.value.id === ad.owner) {
+                throw createError({
+                    statusCode: 403,
+                    message: 'Пользователь и комментатор один и тот же человек',
+                    statusMessage: 'Вы ен можете оставить отзыв сами себе'
+                });
+            }
             if(ad.expires_at_hash_link_comment < new Date()) {
                 throw createError({
                     statusCode: 403,
                     message: 'Срок действия ссылки истек' + ad.expires_at_hash_link_comment,
-                    statusMessage: 'Срок действия ссылки истек'
+                    statusMessage: 'Срок действия ссылки истек. Пожалуйста, запросите новую'
                 });
             }
             return formattedAdShort(ad)

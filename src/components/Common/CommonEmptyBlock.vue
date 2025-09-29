@@ -4,12 +4,16 @@ const props = defineProps({
   text: {
     type: String,
     default: 'Ничего не найдено..'
+  },
+  miniStyle: {
+    type: Boolean,
+    default: false
   }
 })
 </script>
 
 <template>
-  <div class="empty-block">
+  <div class="empty-block" :class="{'--mini-style': miniStyle}">
     <div class="empty-block__row">
       <div class="empty-block__icon">
         <BaseIconEmpty />
@@ -29,6 +33,33 @@ const props = defineProps({
     //padding: 24px 0;
     height: auto;
     height: 100%;
+  }
+  &.--mini-style {
+    padding: 10px 0 16px;
+    .empty-block {
+      &__row {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        align-items: center;
+        justify-content: center;
+        @media (max-width: $xs) {
+          gap: 5px;
+          flex-direction: column;
+        }
+      }
+      &__icon {
+        width: 100px;
+        @media (max-width: $sm) {
+          width: 80px;
+        }
+      }
+      &__text {
+        @include h6();
+        color: $dark-text;
+        text-align: center;
+      }
+    }
   }
   &__row {
     display: flex;

@@ -1,4 +1,3 @@
-import * as string_decoder from "node:string_decoder";
 import {promisify} from "node:util";
 import jwt from "jsonwebtoken";
 
@@ -34,7 +33,7 @@ export async function getUserAuth(token, Users) {
     } catch (error) {
         console.error("Ошибка при верификации токена:", error);
         if (error.name === 'TokenExpiredError') {
-            throw createError({ statusCode: 401, message: 'Token has expired' });
+            throw createError({ statusCode: 401, message: 'Срок действия токена истек' });
         }
         if (error.name === 'JsonWebTokenError') {
             throw createError({ statusCode: 403, message: 'Invalid token' });

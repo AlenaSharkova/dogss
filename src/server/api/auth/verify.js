@@ -89,7 +89,7 @@ export default defineEventHandler(async (event) => {
             );
         }
         // Аутентификация успешна!  Создаем и возвращаем JWT токен
-        const token = jwt.sign({ userId: user?.id }, secretKey, { expiresIn: '6h' });
+        const token = jwt.sign({ userId: user?.id }, secretKey, { expiresIn: '30d' });
         if(user && user.status === 'unconfirmed') {
             user.status = 'active'
             await user.save();

@@ -7,9 +7,14 @@ export interface AdCommentSend {
 export interface AdCommentView {
     text: string;
     rating: number;
-    id_user: number;
+    commenter: {
+        id: number;
+        full_name: string;
+    }
     ad_info: {
         id: number;
         name: string;
+        status: string,
+        created_at: string
     }
 }

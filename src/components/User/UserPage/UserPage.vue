@@ -27,9 +27,15 @@ const props = defineProps({
       <div class="user-page__section">
         <h3 class="user-page__section-title">Объявления</h3>
         <UserPageAds id="ads" :ads-list="user.ad_list" class="user-page__section-block" />
+
       </div>
       <div class="user-page__section">
         <h3 class="user-page__section-title">Контакты</h3>
+        <CommonEmptyBlock
+            v-if="!(Object.keys(user.personal_data.contact_methods).length)"
+            text="Контакты не предоставлены"
+            mini-style
+        />
         <UserContactMethodsView :contacts="user.personal_data.contact_methods" />
       </div>
       <div class="user-page__section">

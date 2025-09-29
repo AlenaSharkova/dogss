@@ -66,6 +66,12 @@ export const formatFromAmount = (str: string) => {
 export const formatDate = (date: string | number | Dayjs, format = 'DD MMMM') => {
     return dayjs(date).locale('ru').format(format)
 }
+export const formatDateAdaptiveYear = (date: string | number | Dayjs) => {
+    let format = 'DD MMMM'
+    if(dayjs(date).year() === dayjs().year()) format = 'DD MMMM'
+    else format = 'DD MMMM YYYY г.'
+    return formatDate(format)
+}
 export const localDate = (date: string | number | null = null) => {
     const timeZone = dayjs.tz.guess()
     return date !== null ?

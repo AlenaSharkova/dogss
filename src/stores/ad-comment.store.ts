@@ -4,7 +4,7 @@ import {useCommonStore} from "~/stores/common.store";
 import AdCommentService from "~/service/ad-comment.service";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {AdCommentSend} from "~/struct/Ad/AdCommentStruct";
-
+const { error } = useNuxtApp();
 
 export const useAdCommentStore = defineStore('adCommentStore', () => {
     const config = useRuntimeConfig();
@@ -23,6 +23,10 @@ export const useAdCommentStore = defineStore('adCommentStore', () => {
 
     const showOfferLeaveComment = (idAd: number) => {
         idAdOfferLeaveComment.value = idAd
+    }
+    const closeOfferLeaveComment = () => {
+        idAdOfferLeaveComment.value = null
+        hashLink.value = null
     }
 
     async function getHashLinkComment(id: number) {
@@ -75,6 +79,7 @@ export const useAdCommentStore = defineStore('adCommentStore', () => {
         showOfferLeaveComment,
         getAdForComment,
         sendComment,
+        closeOfferLeaveComment,
         idAdOfferLeaveComment,
         adForComment,
         hashLink

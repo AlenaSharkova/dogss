@@ -23,9 +23,9 @@ export interface UserItemFullStruct {
     }
 }
 export interface UserItemPublicAdStruct {
-    active: AdItemStruct[],
-    archive_success: AdItemStruct[]
-    archive_close: AdItemStruct[]
+    ad_active: AdItemStruct[],
+    ad_archive_success: AdItemStruct[]
+    ad_archive_close: AdItemStruct[]
 }
 export interface UserItemPublicStruct {
     id: number;

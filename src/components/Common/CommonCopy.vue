@@ -11,7 +11,7 @@
  const commonStore = useCommonStore()
 
 const copyToClipboard = () => {
-  return navigator.clipboard.writeText(props.text).then(
+  return navigator?.clipboard?.writeText(props.text).then(
       () => {
         commonStore.addUserInfoAlert('Текст скопирован')
       }

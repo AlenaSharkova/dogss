@@ -18,7 +18,7 @@ const isShowChangePhoto = ref(false)
 const imageList = ref<ICommonUpload[]>([])
 const oldPhoto = ref('')
 
-const userFullName = computed(() => `${props.user.personal_data.last_name} ${props.user.personal_data.first_name}` )
+const userFullName = computed(() => `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}` )
 
 const changePhoto = () => {
   oldPhoto.value = props.user.personal_data.photo

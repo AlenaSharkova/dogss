@@ -1,4 +1,5 @@
 import {AdBDItemStruct, AdFormatShortItemStruct} from "~/server/struct/AdStruct";
+import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 
 export interface UserBDItemStruct {
 
@@ -19,8 +20,9 @@ export interface UserBDItemStruct {
     UserAdList: AdBDItemStruct[];
 }
 export interface UserItemPublicAdStruct {
-    active: AdFormatShortItemStruct[],
-    archive: AdFormatShortItemStruct[]
+    ad_active: AdFormatShortItemStruct[],
+    ad_archive_success: AdFormatShortItemStruct[],
+    ad_archive_close: AdFormatShortItemStruct[],
 }
 export interface UserContactMethodsOptimalStruct {
     email?: string,

@@ -24,9 +24,7 @@ const favoritesList = computed(() => personalStore.FavoritesList)
             :key="item.id"
             :item="item" />
       </AdWrapperList>
-      <div v-if="!favoritesList?.length" class="page-ads-favorite__empty">
-        <p> У Вас нет избранных объявления </p>
-      </div>
+      <!--TODO: либо рекоменации, либо инфа, с предолжением пеерйти в каталог и что-то выбрать-->
 
     </div>
   </div>

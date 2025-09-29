@@ -1,9 +1,9 @@
 import {AdBDItemStruct, AdFormatShortItemStruct} from "~/server/struct/AdStruct.js";
 import {UserBDItemStruct} from "~/server/struct/UserStruct";
 import type {UserItemPublicAdStruct} from "~/server/struct/UserStruct";
-import {AdCommentView} from "~/server/struct/AdCommentStruct";
+import {getCommentsListUsers} from "~/server/services/comment.service";
 
-export const formattedUserGlobal = (user: UserBDItemStruct) => {
+export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: any) => {
     return {
         id: user.id,
         status: user.status,
@@ -22,28 +22,16 @@ export const formattedUserGlobal = (user: UserBDItemStruct) => {
             }
         },
         ad_list: user.UserAdList.reduce((list: UserItemPublicAdStruct, ad) => {
-                if (ad.status === 'active') list.active.push(formattedAd(ad))
-                if (ad.status === 'archive') list.archive.push(formattedAd(ad))
+                if (ad.status === 'active') list.ad_active.push(formattedAd(ad))
+                if (ad.status === 'archive-success') list.ad_archive_success.push(formattedAd(ad))
+                if (ad.status === 'archive-close') list.ad_archive_close.push(formattedAd(ad))
                 return list
             }, {
-                active: [],
-                archive: [],
+                ad_active: [],
+                ad_archive_success: [],
+            ad_archive_close: [],
             }),
-        comments: user.UserAdList.reduce((list: AdCommentView[], ad) => {
-            console.log('ad.rating_commenter000', ad.rating_commenter)
-            if (ad.rating_commenter) {
-                list.push({
-                    id_user: ad.id_user_commenter,
-                    ad_info: {
-                        id: ad.id,
-                        name: ad.name
-                    },
-                    text: ad.text_comment || '',
-                    rating: ad.rating_commenter,
-                })
-            }
-            return list
-        }, []),
+        comments: await getCommentsListUsers(user, UsersModel),
     };
 }
 export const formattedUserGlobalForAdItem = (user: UserBDItemStruct) => {
@@ -63,7 +51,6 @@ export const formattedUserGlobalForAdItem = (user: UserBDItemStruct) => {
             active: (user.UserAdList?.filter((ad) => ad.status === 'active') || [] ).length,
             archive_success: (user.UserAdList?.filter((ad) => ad.status === 'archive-success')|| []).length,
             archive_close: (user.UserAdList?.filter((ad) => ad.status === 'archive-close')|| []).length,
-            archive: (user.UserAdList?.filter((ad) => ad.status === 'archive')|| []).length,
         }
     };
 }

@@ -12,7 +12,7 @@ const hashLink = computed(() => adCommentStore.hashLink)
 const textLink = computed(() => `http://192.168.0.196:3000/publication/comment/${adCommentStore.hashLink}`)
 
 const closeModalCommentToAd = () => {
-  adCommentStore.idAdOfferLeaveComment = null
+  adCommentStore.closeOfferLeaveComment()
 }
 
 const getHashLinkComment = async () => {
