@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
                 throw createError({
                     statusCode: 403,
                     message: 'Пользователь и комментатор один и тот же человек',
-                    statusMessage: 'Вы ен можете оставить отзыв сами себе'
+                    statusMessage: 'Вы не можете оставить отзыв сами себе'
                 });
             }
             if(ad.expires_at_hash_link_comment < new Date()) {

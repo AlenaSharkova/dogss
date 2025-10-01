@@ -40,7 +40,7 @@ const isHiddenMenu = ref(false)
 <template>
   <div class="personal-menu">
     <div @click="isHiddenMenu = !isHiddenMenu" class="personal-menu__arrow">
-      <BaseIconArrow color="white" nav="left" />
+      <BaseIconArrow color="white" :nav="isHiddenMenu? 'right': 'left'"  />
     </div>
     <div class="personal-menu__block" :class="{'--hidden': isHiddenMenu}">
       <div class="personal-menu__nav">

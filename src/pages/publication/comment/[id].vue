@@ -25,10 +25,10 @@ const activeStarts = ref(0)
 
 const adForComment = computed(() => adCommentStore.adForComment )
 const notAccess = () => {
-  throw createError({
+  throw showError({
     statusCode: 401,
     message: 'Нет доступа',
-    statusMessage: 'Нет доступа',
+    statusMessage: 'Доступ к этой странице закрыт. Уточните правильность ссылки',
   })
 }
 const sendComment = async () => {

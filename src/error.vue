@@ -26,8 +26,12 @@ const updatePage = () => {
           <div class="page-error__descr">
             <span>Обновите страницу или перейдите на главную</span>
           </div>
-          <div class="page-error__text">
+          <div v-if="error.statusMessage" class="page-error__line"/>
+          <div v-if="error.statusMessage" class="page-error__text">
             <span>{{error.statusMessage}}</span>
+          </div>
+          <div v-if="error.message" class="page-error__text">
+            <span>message: {{error.message}}</span>
           </div>
           <div class="page-error__action">
             <BaseButton v-if="error.statusCode !== 404" type="teriary" text="Обновить страницу" @click="updatePage" />
@@ -67,6 +71,14 @@ const updatePage = () => {
   }
   &__code {
     @include h1;
+  }
+  &__line {
+    width: 100%;
+    height: 1px;
+    background-color: $violet;
+  }
+  &__text {
+    @include h5;
   }
   &__action {
     display: flex;

@@ -23,7 +23,7 @@ export const useCommonStore = defineStore('commonStore', () => {
   const isInit = ref(false);
   const isHiddenHeader = ref(false);
   const isHiddenHeaderSite = ref(false);
-  let scrollTop = ref(0)
+  let scrollTopCurrent = ref(0)
   const userAlerts = ref<IUsersAlert[]>([])
   const isServiceMsg = ref(false)
   const zoomPhotosGallery = ref<ICommonZoomPhotosGallery | null>(null)
@@ -68,13 +68,12 @@ export const useCommonStore = defineStore('commonStore', () => {
     })
   }
   const handleScroll = () => {
-    //console.log('handleScroll', process.client ? window.scrollY:  0)
-    scrollTop.value = process.client ? window.scrollY:  0
+    scrollTopCurrent.value = process.client ? window.scrollY:  0
   };
 
-  const isScrolled = computed(() => scrollTop.value > 200)
+  const isScrolled = computed(() => scrollTopCurrent.value > 200)
 
-  watch(() => scrollTop.value,
+  watch(() => scrollTopCurrent.value,
       (newValue, oldValue) => {
         isHiddenHeader.value = newValue > oldValue && isScrolled.value;
         isHiddenHeaderSite.value = isScrolled.value;
@@ -88,7 +87,6 @@ export const useCommonStore = defineStore('commonStore', () => {
   onBeforeUnmount(() => {
     window.removeEventListener('scroll', () => handleScroll());
   });
-
 
   return {
     isHiddenHeader,
@@ -107,5 +105,6 @@ export const useCommonStore = defineStore('commonStore', () => {
     showResultModal,
     closeResultModal,
     infoResultModal,
+    scrollTopCurrent
   }
 })

@@ -37,7 +37,7 @@ watch(() => route.fullPath,
         <div class="ad-offer-leave-comment__content">
           <p>Вы можете отправить ссылку пользователю для написания отзыва</p>
           <div v-if="hashLink" class="ad-offer-leave-comment__content-link">
-            <p>{{textLink}}</p>
+            <p class="ad-offer-leave-comment__content-link__text">{{textLink}}</p>
             <CommonCopy :text="textLink" />
           </div>
         </div>
@@ -67,6 +67,12 @@ watch(() => route.fullPath,
       display: flex;
       gap: 15px;
       align-items: center;
+      &__text {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 85%;
+        width: auto;
+      }
     }
     &-success {
       display: flex;

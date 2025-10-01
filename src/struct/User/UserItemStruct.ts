@@ -63,6 +63,12 @@ export interface UserItemPublicPreviewStruct {
             address: string | null,
         },
     }
+    ad_list_count?: {
+        active: number
+        archive_close: number
+        archive_success: number
+    },
+    comments_count?: number,
 }
 export interface UserCreateItemStruct {
     email: string;

@@ -16,33 +16,14 @@ const personalStore = usePersonalStore()
 const commonStore = useCommonStore()
 const { isMobile } = useScreen();
 
-const goToPage = (page: string) => {
-  //router.push(page)
-  //emit('close')
-}
-
-const logout = async () => {
-  await authStore.logout()
-  await router.push("/")
-  //goToPage('/dashboard/authorization')
-}
-
-const getUserFullData = () => {
-  authStore.getUserFullData()
-}
 const userFullData = computed(() => authStore.userFullData )
 const favoritesAdsCount = computed(() => personalStore.FavoritesList?.length || 0 )
-
-onMounted( () => {
-  if (authStore.statusUser === 'unknown') {
-    //authStore.getUserFullData()
-  }
-})
-
+const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMenu.value) && isMobile.value)
 const userFullName = computed(() => userFullData.value? `${userFullData.value?.personal_data.first_name} ${userFullData.value?.personal_data.last_name}`: '')
 
 const isShowPersonalMenu = ref(false)
 const isShowMobileMenu = ref(false)
+const isPointedMenu = ref(!commonStore?.isScrolled)
 
 const togglePersonalMenu = () => {
   if(isShowMobileMenu.value) {
@@ -56,6 +37,12 @@ const toggleMobileMenu = () => {
   }
   isShowMobileMenu.value = !isShowMobileMenu.value
 }
+const showPointedMenu = () => {
+  isPointedMenu.value = true
+}
+const hiddenPointedMenu = () => {
+  isPointedMenu.value = false
+}
 
 watch(() => route.path,
     (newPath) => {
@@ -63,20 +50,24 @@ watch(() => route.path,
       isShowPersonalMenu.value = false
     }
 )
-const isPointedMenu = ref(commonStore?.isScrolled)
-const showPointedMenu = () => {
-  isPointedMenu.value = true
-}
-const hiddenPointedMenu = () => {
-  isPointedMenu.value = false
-}
-const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMenu.value) && isMobile.value)
+watch(() => !isPointedMenu.value || commonStore.scrollTopCurrent,
+    (newValue, oldValue) => {
+      if(typeof newValue==='number'&& typeof oldValue==='number')
+      isPointedMenu.value = !commonStore?.isScrolled
+    }
+)
+onMounted( () => {
+  if (authStore.statusUser === 'unknown') {
+    //authStore.getUserFullData()
+  }
+})
 </script>
 
 <template>
   <header
       @mouseover="showPointedMenu"
       @mouseout="hiddenPointedMenu"
+      @touchstart="showPointedMenu"
       class="header"
       :class="{'header--hidden': commonStore?.isScrolled && !isPointedMenu && !isShowMobile, '--violet-gradient': isShowPersonalMenu && isMobile}">
     <div class="header-wrapper">
@@ -126,6 +117,7 @@ const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMen
   background: linear-gradient(180deg, rgb(178, 225, 218), 0%, rgba(178, 225, 218, 1) 30%, rgba(178, 225, 218, 0.95) 60%,rgba(178, 225, 218, 0.85) 70%, rgba(178, 225, 218, 0.6) 82%, rgba(178, 225, 218, 0) 100%);
   z-index: 11;
   transition: top 0.5s;
+
   @media (max-width: $sm) {
     height: auto;
     &:before {
@@ -146,9 +138,7 @@ const isShowMobile = computed(() => (isShowMobileMenu.value || isShowPersonalMen
       }
 
     }
-
   }
-
 
   &--hidden {
     top: -78px;

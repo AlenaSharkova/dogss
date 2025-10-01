@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useUsersStore} from "~/stores/users.store";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import {useAdStore} from "~/stores/ad.store";
 import { FreeMode, Navigation, Thumbs, Mousewheel} from 'swiper/modules';
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
@@ -24,6 +24,7 @@ const idPublication = ref<string | null>(null)
 idPublication.value = route.params.id as string
 const modules = ref([FreeMode, Navigation, Thumbs])
 const thumbsSwiper = ref<Swiper | null>(null);
+const contactsHtmlBlock = ref<HTMLElement | null>(null);
 
 const statusUser = computed(() => authStore.statusUser)
 const adView = computed(() => adStore.adView )
@@ -39,7 +40,12 @@ const showZoomPhotos = (photoClick: string) => {
     active_photo: photoClick
   })
 }
-
+const goToContacts = () => {
+  contactsHtmlBlock.value?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+}
 await adStore.requestViewAd(idPublication.value)
 
 onUnmounted(() => {
@@ -116,7 +122,7 @@ onUnmounted(() => {
               <Teleport :disabled="!isMobile" to="#page-publication__main">
                 <div class="page-publication__details">
                   <AdPageDetails :item="adView" />
-                  <div class="page-publication__details-contacts">
+                  <div ref="contactsHtmlBlock" class="page-publication__details-contacts">
                     <div class="page-publication__details-contacts__title">
                       <span>Связаться с автором объявления</span>
                     </div>
@@ -128,7 +134,11 @@ onUnmounted(() => {
               </Teleport>
             </ClientOnly>
           </div>
-          <AdPageRight class="page-publication__main-right" :item="adView" />
+          <AdPageRight
+              class="page-publication__main-right"
+              :item="adView"
+              @goToContacts="goToContacts"
+          />
         </div>
       </div>
     </LayoutWrapperPage>
@@ -323,6 +333,7 @@ onUnmounted(() => {
       order: 2;
     }
     &-contacts {
+      scroll-margin: 50px;
       margin-top: 40px;
       &__title {
         margin-bottom: 20px;

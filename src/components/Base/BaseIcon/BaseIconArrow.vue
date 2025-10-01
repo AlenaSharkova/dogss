@@ -23,10 +23,12 @@ svg {
     transform: rotateX(180deg);
   }
   &.left {
-    transform: rotate(90deg);
+    transform: rotateY(0deg) rotate(90deg);
+
   }
   &.right {
-    transform: rotate(270deg);
+    transform: rotateY(180deg) rotate(90deg);
+
   }
 
   &.violet path {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
-import {formatAmountInput} from "~/utils/formatData";
+import {formatAmountInput, getPluralForm} from "~/utils/formatData";
 import BaseWithMiniPopup from "~/components/Base/BaseWithMiniPopup.vue";
 import BaseIconGeo from "~/components/Base/BaseIcon/BaseIconGeo.vue";
 import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";
@@ -15,6 +15,7 @@ const props = defineProps({
     required: true,
   }
 })
+const emits = defineEmits(['go-to-contacts'])
 const filterStore = useFilterStore()
 const router = useRouter()
 
@@ -26,6 +27,11 @@ const approximateAgeText = computed(() => {
 })
 const textMainRegions = computed(() => `Регион: ${props.item.geo_main.region?.text}`)
 const userFullName = computed(() => props.item.ownerDetails? `${props.item.ownerDetails.personal_data.first_name} ${props.item.ownerDetails.personal_data.last_name}`: '')
+const countAds = computed(() => {
+  if(props.item.ownerDetails.ad_list_count) return props.item.ownerDetails.ad_list_count
+  else return null
+})
+const countComments = computed(() => props.item.ownerDetails.comments_count)
 
 const goToOwner = () => {
   router.push(`/user/${props.item?.ownerDetails.id}`)
@@ -36,6 +42,20 @@ const showModalShare = () => {
 }
 const closeModalShare = () => {
   isShowModalShare.value = false
+}
+const getTextCountProperty = (nameProperty: 'active' | 'archive_success' | 'comments') => {
+  switch (nameProperty) {
+    case 'active': return countAds.value?.active && `${countAds.value?.archive_success? '+ ': ''}${countAds.value?.active} ${getPluralForm(countAds.value?.active, 'активное объявление', 'активных объявления', 'активных объявлений')}`
+    case "archive_success": return countAds.value?.archive_success && `${countAds.value.archive_success} ${getPluralForm(countAds.value.archive_success, 'состоявшаяся сделка', 'состоявшиеся сделки', 'состоявшихся сделок')}`
+    case "comments": return countComments.value && `${countComments.value} ${getPluralForm(countComments.value, 'отзыв', 'отзыва', 'отзывов')}`
+    default: return ''
+  }
+}
+const goPageUser = (nameBlock: 'publications-active' | 'publications-archive-success' | 'comments') => {
+  return `/user/${props.item?.ownerDetails.id}?section-default=${nameBlock}`
+}
+const goToContacts = () => {
+  emits('go-to-contacts')
 }
 </script>
 
@@ -102,20 +122,31 @@ const closeModalShare = () => {
           <div class="publication-right__owner-additions">
             <div class="publication-right__owner-additions__ads">
               <BaseIconCheck class="publication-right__owner-additions__ads-icon" />
-              <div class="publication-right__owner-additions__ads-text">
-                <span>{{item.ownerDetails.ad_list_count.archive}} состоявшиеся сделки</span>
-                <span class="publication-right__owner-additions__ads-text__active">+ {{item.ownerDetails.ad_list_count.archive_success}} активных объявления</span>
+              <div v-if="countAds && (countAds.archive_success || countAds.active)" class="publication-right__owner-additions__ads-text">
+                <nuxt-link v-if="countAds.archive_success" 
+                           :to="goPageUser('publications-archive-success')">
+                  {{getTextCountProperty('archive_success')}}
+                </nuxt-link>
+                <nuxt-link
+                    :to="goPageUser('publications-active')"
+                    v-if="countAds.active"
+                    class="publication-right__owner-additions__ads-text__active">
+                  {{getTextCountProperty('active')}}
+                </nuxt-link>
               </div>
             </div>
-            <div class="publication-right__owner-additions__comments">
+            <div v-if="countComments" class="publication-right__owner-additions__comments">
               <BaseIconCheck class="publication-right__owner-additions__comments-icon" />
               <div class="publication-right__owner-additions__comments-text">
-                <span>2 отзыва</span>
+                <nuxt-link
+                    :to="goPageUser('comments')"
+                    v-if="countComments"
+                >{{getTextCountProperty('comments')}}</nuxt-link>
               </div>
             </div>
           </div>
 
-          <BaseButton @click.stop="" text="Связаться" />
+          <BaseButton @click.stop="goToContacts" text="Связаться" />
         </div>
       </div>
     </div>

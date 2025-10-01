@@ -181,7 +181,7 @@ export const calculateAge = (birthDate: string | number | null = null) => {
  * @param {string} many - Форма для 5, 6, 7, ... (например, "лет").
  * @returns {string} - Правильная форма слова.
  */
-const getPluralForm = (number: number, one: string, few: string, many: string) => {
+export const getPluralForm = (number: number, one: string, few: string, many: string) => {
     const mod10 = number % 10;
     const mod100 = number % 100;
 

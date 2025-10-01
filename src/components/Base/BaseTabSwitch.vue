@@ -32,10 +32,21 @@ watch(() => selectedItem.value?.value,
       selectedItem.value = props.items.find((item) => item.value === newValue) as ISelectComponent;
     }
 )
-const countViewTabsLine = computed(() => {
-  if(isMobileXs.value) return 2
-  if(isMobile.value) return props.items?.length > 3? 3: props.items?.length || 1
+const countViewTabsLine = computed( () => {
+  if(process.server) return props.items?.length
+  console.log('isMobileXs.value', isMobileXs.value, isMobile.value, props.items?.length)
+  if (isMobileXs.value) return 2
+  if (isMobile.value) return props.items?.length >= 3 ? 3 : props.items?.length || 1
   return props.items?.length || 1
+})
+
+const styleLine = computed(() => {
+  return {
+    width:  `${(100 / countViewTabsLine.value).toFixed(2)}%`,
+    left: `${activeIndex.value % countViewTabsLine.value * 100/countViewTabsLine.value}%`,
+    top: `${  (47+9) * Math.floor(activeIndex.value/countViewTabsLine.value) }px`,
+    height: '47px'
+  }
 })
 </script>
 
@@ -44,12 +55,7 @@ const countViewTabsLine = computed(() => {
     <div class="base-tab-switch__wrapper">
       <div
           class="base-tab-switch__active"
-          :style="{
-            width:  `${100 / countViewTabsLine}%`,
-            left: `${activeIndex % countViewTabsLine * 100/countViewTabsLine}%`,
-            top: `${  47 * Math.floor(activeIndex/countViewTabsLine) }px`,
-            height: '47px'
-          }"
+          :style="styleLine"
       ></div>
       <div
           class="base-tab-switch__item"
@@ -68,7 +74,7 @@ const countViewTabsLine = computed(() => {
         >
           <span></span>
           <span>{{ item.text }}</span>
-          <div v-if="item.details?.count || item.details.count == 0"
+          <div v-if="item.details?.count || item.details?.count == 0"
                class="base-tab-switch__item-count">
             <span>{{item.details.count}}</span>
           </div>
@@ -93,6 +99,7 @@ const countViewTabsLine = computed(() => {
     position: relative;
     width: 100%;
     height: 100%;
+    row-gap: 9px;
     @media (max-width: $sm) {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -135,11 +142,23 @@ const countViewTabsLine = computed(() => {
       height: 100%;
       padding: 14px 5px;
       cursor: pointer;
+      @media (max-width: $sm) {
+        grid-template-columns: minmax(auto, 30px) 1fr 30px;
+      }
+      @media (max-width: $xss) {
+        grid-template-columns: 0px 1fr auto;
+      }
+      span {
+        text-wrap: nowrap;
+      }
     }
     input:checked + label {
       color: $white-text;
       .base-tab-switch__item-count {
         background-color: $light-teal;
+        span {
+          color: $violet;
+        }
       }
     }
     &-count {
@@ -155,8 +174,12 @@ const countViewTabsLine = computed(() => {
       top: -10px;
       width: min-content;
       transition: all 0.5s;
+      @media (max-width: $xss) {
+        min-width: 25px;
+        padding: 3px;
+      }
       span {
-        color: $violet;
+        color: $violet-opacity-66;
         @include text-small(500);
       }
     }

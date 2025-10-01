@@ -4,44 +4,41 @@ import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";
 import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import type {UserPageSectionType} from "~/struct/User/UserPageStruct";
 
 const props = defineProps({
   user: {
     type: Object as PropType<UserItemPublicStruct>,
     default: null
-  }
+  },
 })
 const emits = defineEmits(['scroll-to-block'])
+const idActiveSection = defineModel<UserPageSectionType | null>({default: null})
 
 const router = useRouter();
 const route = useRoute();
 
 const classAdded = ref(false)
-const isActiveIndex = ref(0)
+const isActiveIndex = computed(() => tabNavList.findIndex(tab => tab.id === idActiveSection.value))
 
-const tabNavList = reactive([
+const tabNavList = reactive<{name: string, id: UserPageSectionType}[]>([
   {
     name: "О нас",
     id: "about",
-    isActive: true,
   },
   {
     name: "Объявления",
     id: "ads",
-    isActive: false,
   },
   {
     name: "Контакты",
     id: "contacts",
-    isActive: false,
   },
   {
     name: "Отзывы",
     id: "comments",
-    isActive: false,
   },
 ])
-const activeTabId = computed(() => tabNavList?.find(item => item.isActive)?.id )
 const userFullName = computed(() => `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`)
 
 const lineWidthTabNum = computed(() => 100 / tabNavList.length )
@@ -53,22 +50,11 @@ const scrollTriggerInstance = ref<globalThis.ScrollTrigger | null>(null);
 const animationInstance = ref<gsap.core.Tween | null>(null);
 
 
-const changeTab = (idSelect: string) => {
-  tabNavList.forEach((item, index) => {
-    console.log(item, item.id, idSelect)
-    if(item.id === idSelect) {
-      //router.push({query: {type: ''}})
-      item.isActive = true
-      isActiveIndex.value = index
-      //router.push({hash: `#${item.id}`})
-      emits('scroll-to-block', idSelect)
-    } else {
-      item.isActive = false
-    }
-  })
+const changeTab = (idSelect: UserPageSectionType) => {
+  //idActiveSection.value = idSelect
+  emits('scroll-to-block', idSelect)
 }
 const createTrigger = async () => {
-
   if (scrollTriggerInstance.value) {
     scrollTriggerInstance.value.kill(); // Убиваем старый ScrollTrigger
   }
@@ -90,13 +76,11 @@ const createTrigger = async () => {
       },
     }
   });
-
 }
+
 
 onMounted(async () => {
   gsap.registerPlugin(ScrollTrigger); // Убедитесь, что ScrollTrigger зарегистрирован
-  console.log('targetElement.value 1', targetElement.value)
-
   await createTrigger()
 
 });
@@ -139,16 +123,18 @@ onMounted(async () => {
               <div class="personal-header__bottom-nav__item"
                    v-for="tab in tabNavList"
                    :key="tab.id"
-                   :class="{active: tab.isActive}"
+                   :class="{active: tab.id === idActiveSection}"
                    @click="changeTab(tab.id)"
               >
                 <p class="personal-header__bottom-nav__item-text">
                   {{tab.name}}
                 </p>
               </div>
-              <div class="line" :style="{width: lineWidthTab, left: lineLeftTab}">
-                <div class="line-block" />
-              </div>
+              <Transition name="fade">
+                <div v-show="isActiveIndex !== -1" class="line" :style="{width: lineWidthTab, left: lineLeftTab}">
+                  <div class="line-block" />
+                </div>
+              </Transition>
 
             </nav>
           </div>
@@ -199,11 +185,8 @@ onMounted(async () => {
       backdrop-filter: blur(6px);
       transition: all 0.2s;
 
-
-
       &.fixed {
         background-color: $violet-opacity;
-
         z-index: 10;
         position: fixed;
         top: 0px;

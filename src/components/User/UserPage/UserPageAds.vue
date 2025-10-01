@@ -9,6 +9,8 @@ const props = defineProps({
   }
 })
 
+const route = useRoute()
+
 const tabTypeAdList = computed( () => [
   {
     text: `Активные`,
@@ -33,6 +35,7 @@ const tabTypeAdList = computed( () => [
   }
 ])
 
+const sectionRouteScroll = ref(route.query['section-default'])
 const activeTab = ref(tabTypeAdList.value.find(item => item.value === 'active'))
 const selectTabTypeAd = ref(activeTab.value)
 
@@ -60,8 +63,16 @@ const showExistingAdList = () => {
   activeTab.value = tabTypeAdList.value.find(item => item.value === typeExistingAdList)
   selectTabTypeAd.value = activeTab.value
 }
+const showRequiredInRouting = (typeAds: 'archive-success' | 'active') => {
+  activeTab.value = tabTypeAdList.value.find(item => item.value === typeAds)
+  selectTabTypeAd.value = activeTab.value
+}
 onMounted(() => {
-  showExistingAdList()
+  if(sectionRouteScroll.value === 'publications-archive-success') {
+    showRequiredInRouting('archive-success')
+  } else if(sectionRouteScroll.value === 'publications-active') {
+    showRequiredInRouting('active')
+  } else showExistingAdList()
 })
 </script>
 

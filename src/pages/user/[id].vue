@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import {useUsersStore} from "~/stores/users.store";
 import {computed} from "vue";
-import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
-import {useAdStore} from "~/stores/ad.store";
-import CardAdItem from "~/components/Card/CardAdItem.vue";
-import {Autoplay, EffectCoverflow} from "swiper/modules";
-import BreedersSiteHead from "~/components/Breeders/BreedersSite/BreedersSiteHead.vue";
-import BaseIconPaws from "~/components/Base/BaseIcon/BaseIconPaws.vue";
-import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 
 definePageMeta({
-  requirementUser : null
+  requirementUser : null,
+  scrollToTop: false
 })
 const route = useRoute();
 const idUser = ref<string | null>(null)
@@ -22,6 +16,16 @@ const userViewData = computed(() => usersStore.userViewData )
 idUser.value = route.params.id as string
 
 usersStore.getUserViewData(idUser.value)
+
+const router = useRouter()
+
+onMounted(() => {
+
+})
+
+onBeforeMount(() => {
+  usersStore.userViewData = null
+})
 
 </script>
 

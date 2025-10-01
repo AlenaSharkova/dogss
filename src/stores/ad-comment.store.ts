@@ -50,9 +50,10 @@ export const useAdCommentStore = defineStore('adCommentStore', () => {
                     adForComment.value = res
                 }
             })
-            .catch(e => {
-                commonStore.addUserErrorAlert(e.data?.statusMessage)
-                commonStore.addUserErrorAlert(e.data?.message, true)
+            .catch(err => {
+                //commonStore.addUserErrorAlert(err.data?.statusMessage)
+                //commonStore.addUserErrorAlert(err.data?.message, true)
+                showError({statusCode: err.data?.statusCode, statusMessage: err.data?.statusMessage})
             });
     }
     async function sendComment(info: AdCommentSend) {

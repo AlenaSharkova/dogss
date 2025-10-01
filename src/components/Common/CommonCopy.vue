@@ -39,6 +39,7 @@ const copyToClipboard = () => {
   align-items: center;
   border-radius: 8px;
   cursor: pointer;
+  flex-shrink: 0;
   &__icon {
     width: 22px;
     color: white;

@@ -126,7 +126,11 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
               class="card-item__info-circle --top-right"
               @click.stop="showModalCommentToAd"
           >
-            <BaseIconEmpty class="card-item__info-circle__image"/>
+            <div class="card-item__info-circle__content">
+              <div class="card-item__info-circle__content-icon">
+                <BaseIconComment class="card-item__info-circle__image"/>
+              </div>
+            </div>
           </div>
           <div v-else-if="item.status === 'draft'"
                class="card-item__info-circle --top-right"

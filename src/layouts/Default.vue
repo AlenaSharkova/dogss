@@ -36,6 +36,9 @@ await breedsStore.updateBreedsList()
       <CommonModalResult isShow/>
       <AdOfferLeaveComment />
     </main>
+    <footer>
+
+    </footer>
   </div>
 </template>
 
@@ -59,6 +62,10 @@ await breedsStore.updateBreedsList()
       padding: 30px 0 0;
     }
   }
+}
+footer {
+  height: 500px;
+  background-color: $violet;
 }
 
 </style>

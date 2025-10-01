@@ -29,7 +29,7 @@ export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: an
             }, {
                 ad_active: [],
                 ad_archive_success: [],
-            ad_archive_close: [],
+                ad_archive_close: [],
             }),
         comments: await getCommentsListUsers(user, UsersModel),
     };
@@ -51,7 +51,8 @@ export const formattedUserGlobalForAdItem = (user: UserBDItemStruct) => {
             active: (user.UserAdList?.filter((ad) => ad.status === 'active') || [] ).length,
             archive_success: (user.UserAdList?.filter((ad) => ad.status === 'archive-success')|| []).length,
             archive_close: (user.UserAdList?.filter((ad) => ad.status === 'archive-close')|| []).length,
-        }
+        },
+        comments_count: (user.UserAdList?.filter((ad) => ad.rating_commenter) || []).length
     };
 }
 export const formattedUserGlobalShort = (user: UserBDItemStruct) => {
