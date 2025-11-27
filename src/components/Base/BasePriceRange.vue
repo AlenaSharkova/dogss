@@ -20,24 +20,29 @@
     <div class="slider">
       <div class="progress" :style="progressStyle"></div>
     </div>
-    <div class="range-input">
-      <input
-          type="range"
-          class="range-min"
-          :min="minValue"
-          :max="maxValue"
-          v-model.number="rangeMin"
-          :step="step"
-      />
-      <input
-          type="range"
-          class="range-max"
-          :min="minValue"
-          :max="maxValue"
-          v-model.number="rangeMax"
-          :step="step"
-      />
-    </div>
+    <ClientOnly>
+      <div class="range-input">
+
+        <input
+            type="range"
+            class="range-min"
+            :min="minValue"
+            :max="maxValue"
+            :value="rangeMin"
+            @input="({ target }) => (rangeMin = parseFloat(target?.value || 0))"
+            :step="step"
+        />
+        <input
+            type="range"
+            class="range-max"
+            :min="minValue"
+            :max="maxValue"
+            :value="rangeMax"
+            @input="({ target }) => (rangeMax = parseFloat(target?.value || 0))"
+            :step="step"
+        />
+      </div>
+    </ClientOnly>
     <div class="range-descr">
       <div class="range-descr__min">
         <span>{{ formatAmount(minValue, true) }}</span>

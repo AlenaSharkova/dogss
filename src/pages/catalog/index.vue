@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {useAdStore} from "~/stores/ad.store";
-import {computed} from "vue";
+import {computed, ref} from "vue";
 import CardAdItem from "~/components/Card/CardAdItem.vue";
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
 import BaseMiniBlock from "~/components/Base/BaseMiniBlock.vue";
 import type {ISelectComponent} from "~/struct/Common/ISelectComponent";
 import type {AdQueryFilterStruct} from "~/struct/Ad/AdItemStruct";
+import type {UserPageSectionType} from "~/struct/User/UserPageStruct";
 
 definePageMeta({
   requirementUser : null
@@ -41,6 +42,8 @@ const title = computed<ISelectComponent[] | null>(() => {
   + " в " + (queryRegionObj.value?.length ? queryRegionObj.value[0].text : "России")
 })
 
+const adListHtmlBlock = ref<HTMLElement | null>(null);
+
 
 const getCreateReq = async ( offset = 0 as number, isClient = false  ) => {
   const queryRoute = route.query as AdQueryFilterStruct
@@ -53,14 +56,32 @@ const getCreateReq = async ( offset = 0 as number, isClient = false  ) => {
 }
 
 const changePage = (offset: number) => {
-  router.push({query: {offset: offset }})
+  router.push({query: { ...route.query, offset: offset }})
 }
 
 await getCreateReq()
 
+const goToAdList = () => {
+  scrollToBlock(adListHtmlBlock.value)
+}
+const scrollToBlock = (block: HTMLElement | null) => {
+  if(!block) {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  } else {
+    block?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+}
+
 watch(() => route.fullPath,
     async () => {
       await getCreateReq()
+      goToAdList()
       useHead({
         title: `Dogs - ${title.value || '' }`,
       });
@@ -87,7 +108,8 @@ useHead({
           <AdSorting />
         </div>
         <div class="page-catalog__main-block">
-          <div class="page-catalog__main-listing">
+          <div ref="adListHtmlBlock" class="page-catalog__main-listing">
+            {{adListHtmlBlock}}
             <AdWrapperList has-filter :empty="!adList?.length">
               <CardAdItem
                   v-for="(item, index) in adList"
@@ -136,6 +158,7 @@ useHead({
     }
     &-listing {
       width: 100%;
+      scroll-margin-top: 80px;
     }
     &-filter {
       position: sticky;

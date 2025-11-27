@@ -28,6 +28,7 @@ interface Props {
   mask?: string;
   validCharacters?: string;
   styleAmount?: boolean;
+  replaceForData?: boolean;
   postfix?: string;
   invalidSend?: boolean;
 
@@ -110,11 +111,34 @@ const onInput = (e: InputEvent & { target: HTMLInputElement }) => {
       }
     }
   }
+  if(props.replaceForData) {
+    let value = e.target.value?.split('')
+    console.log('replaceForData', value)
 
+    //const valueNumber = value.replace(/[^0-9]/g, '')
+    value[0] = value[0]?.replace(/[^0-3]/g, '') || ''
+    console.log('replaceForData 0', value)
+
+    value[1] = value[0] === '3'
+        ? value[1]?.replace(/[^0-1]/g, '') || ''
+        : (value[0] === '0'? value[1]?.replace(/[^1-9]/g, '') || '': value[1]?.replace(/[^0-9]/g, '') || '')
+    console.log('replaceForData 1', value)
+
+    value[2] = value[2] || ''
+    value[3] = value[3]?.replace(/[^0-1]/g, '') || ''
+    value[4] = value[3] === '1'? value[4]?.replace(/[^0-2]/g, ''): value[4]?.replace(/[^1-9]/g, '') || ''
+    console.log('replaceForData 4', value)
+
+    value[5] = value[5] || ''
+    value[6] = value[6]?.replace(/[^1-2]/g, '') || ''
+    value[7] = value[6] === '1'? value[7]?.replace(/[^9]/g, '') || '': value[7]?.replace(/[^0]/g, '') || ''
+    value[8] = value[6] === '2'? value[8]?.replace(/[^0-2]/g, '') || '': value[8]?.replace(/[^9]/g, '') || ''
+    value[9] = value[9]?.replace(/[^0-9]/g, '') || ''
+    e.target.value = value.join('')
+
+  }
   emits('update:model-value', e.target.value);
   emits('input', e.target.value);
-
-
 };
 const actionPassword = () => {
   isShowPassword.value = !isShowPassword.value
@@ -214,13 +238,9 @@ const formMask = (value: string, isFocus = false, e?: InputEvent & { target: HTM
       //i = val.length
       value = def;
       console.log('value', value)
-
-
       return {value, position};
     }
   } else  {
-
-
     let def = props.totalNumberMask?
         matrix.replace(/[\D]/g, ''):
         matrix.replace(/[^a-zA-Z0-9_/:.@]/g, '')
@@ -328,7 +348,6 @@ onMounted(() => {
     <div class="base-field__item" :class="{ invalid: invalidText && !isDisabledInvalidText || errorCustomer, focused: focused, '--no-title': !title, disabled: disabled}">
       <input
         :id="formName"
-        pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
         placeholder=""
         :type="typeInput"
         :value="modelValue"
@@ -396,13 +415,13 @@ onMounted(() => {
   &__item {
     display: flex;
     align-items: center;
-    color: var(--secondary, #958F9C);
+    color: $dark-text;
     position: relative;
-    padding: 19px 12px 6px;
-    border: 1px solid var(--border, #D3D8E6);
+    padding: 21px 12px 7px;
+    border: 1px solid $violet-opacity-max;
     border-radius: 8px;
     min-width: 150px;
-    background: var(--white, #fff);
+    background: $white-background;
     transition: border .3s;
     line-height: 22px;
     letter-spacing: -0.27px;
@@ -414,15 +433,17 @@ onMounted(() => {
       order: 4;
     }
     &.disabled {
-      border: 1px solid var(--light-gray, #EEE);
-      background: var(--light-gray, #EEE);
+      border: 1px solid $violet-opacity-max;
+      background: $white-background;
       .label-title {
-        color: var(--secondary, #958F9C);
+        color: $grey-violet;
       }
       input {
-        color: var(--secondary, #958F9C);
-
+        color: $dark-text;
       }
+    }
+    &:hover {
+      border: 1px solid $violet;
     }
     &.focused {
       //border: 1px solid  darken($light-teal, 8%);
@@ -439,7 +460,6 @@ onMounted(() => {
     }
 
     input {
-
       margin: 0;
       padding: 0;
       order: 3;
@@ -447,10 +467,8 @@ onMounted(() => {
       border: 0;
       background-color: transparent;
       transition: all 0.3s;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 22px;
+      @include text-normal();
+      color: $dark-text;
       &:-webkit-autofill,
       &:-webkit-autofill:hover,
       &:-webkit-autofill:focus {
@@ -488,19 +506,18 @@ onMounted(() => {
     .label-title {
       left: 12px;
       pointer-events: none;
-      color: #7c8b9d;
+      color: $grey-violet;
       position: absolute;
-      top: 15px;
+      top: 16px;
       z-index: 2;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
+      @include text-normal();
       transition: all 0.2s;
     }
     .label-title.top {
-      top: 2.5px;
-      font-size: 12px;
+      top: 4px;
+      font-size: 11px;
+      letter-spacing: 0.12px;
+      font-weight: 500;
     }
     .label-invalid {
       display: block;
@@ -546,7 +563,7 @@ onMounted(() => {
   &__item.invalid {
     border: 1px solid $error-text;
     &.focused {
-      border: 1px solid #D3D8E6;
+      border: 1px solid $violet-opacity-max;
     }
   }
 }

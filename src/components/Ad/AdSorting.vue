@@ -14,11 +14,11 @@ const sortingList = reactive([
   },
   {
     text: 'Сначала старые',
-    value: 'createdAtUp'
+    value: 'createdAtDown'
   },
   {
     text: 'Сначала новые',
-    value: 'createdAtDown'
+    value: 'createdAtUp'
   },
 ])
 const selectedSort = ref(route.query.sorting as string || 'createdAtUp')
@@ -44,6 +44,11 @@ watch(() => selectedSort.value,
   <div class="ad-sorting">
     <div class="ad-sorting__wrapper">
       <div class="ad-sorting__block">
+        <BaseSorting
+            v-model="selectedSort"
+            name="sorting"
+            :list="sortingList"
+            placeholder="Сортировка" />
         <BaseSelect
             v-model="selectedSort"
             name="sorting"

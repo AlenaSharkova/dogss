@@ -19,7 +19,6 @@ const router = useRouter();
 const route = useRoute();
 
 const classAdded = ref(false)
-const isActiveIndex = computed(() => tabNavList.findIndex(tab => tab.id === idActiveSection.value))
 
 const tabNavList = reactive<{name: string, id: UserPageSectionType}[]>([
   {
@@ -39,6 +38,7 @@ const tabNavList = reactive<{name: string, id: UserPageSectionType}[]>([
     id: "comments",
   },
 ])
+const isActiveIndex = computed(() => tabNavList.findIndex(tab => tab.id === idActiveSection.value))
 const userFullName = computed(() => `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`)
 
 const lineWidthTabNum = computed(() => 100 / tabNavList.length )
@@ -202,7 +202,6 @@ onMounted(async () => {
         padding: 24px 50px;
         display: flex;
         justify-content: flex-end;
-
         flex-direction: column;
         gap: 0px;
         @media (max-width: $md) {
@@ -235,7 +234,6 @@ onMounted(async () => {
         }
       }
       &__list {
-
         margin-left: auto;
         margin-right: auto;
         min-width: 70%;

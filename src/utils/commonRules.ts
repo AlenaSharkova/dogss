@@ -11,7 +11,7 @@ export const ruleValidUserNikName = (value: string) =>
         : "";
 
 export const ruleValidDate = (value: string) =>
-    !dayjs(value).isValid() && value
+    !dayjs(value, 'DD.MM.YYYY', true).isValid() && value
         ? "Неверная дата"
         : "";
 

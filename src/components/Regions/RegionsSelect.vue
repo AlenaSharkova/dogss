@@ -4,9 +4,9 @@ import RegionsItem from "~/components/Regions/RegionsItem.vue";
 
 const regionsStore = useRegionsStore()
 
-const regionsList = computed<any>(() => regionsStore.regionsListFull)
 
 await regionsStore.updateRegionsListFull()
+const regionsListFull = computed(() => regionsStore.regionsListFull)
 
 
 </script>
@@ -16,7 +16,7 @@ await regionsStore.updateRegionsListFull()
   <div
       class="regions-list"
   >
-    <div v-if="regionsList?.length" class="regions-list__row">
+    <div v-if="regionsListFull?.length" class="regions-list__row">
       <RegionsItem
           v-for="(region, indexRegion) in regionsListFull"
           :key="indexRegion"

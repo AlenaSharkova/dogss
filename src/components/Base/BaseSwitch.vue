@@ -38,7 +38,7 @@ const model = computed({
   position: relative;
   width: 52px;
   height: 24px;
-  background-color: var(--secondary, #958F9C);
+  background-color: $violet-opacity-66;
   border-radius: 100px;
   mix-blend-mode: normal;
   transition: all 0.15s ease-in-out;
@@ -67,13 +67,13 @@ const model = computed({
     margin: auto 0;
     width: $bounce-width;
     height: $bounce-width;
-    background-color: var(--white, #fff);
+    background-color: $white-background;
     border-radius: 100rem;
     box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
     transition: all 0.15s ease-in-out;
   }
   &_active {
-    background-color: var(--primary, #2D2D2D);
+    background-color: $violet;
   }
 }
 </style>

@@ -7,13 +7,15 @@
           class="base-select__search-input"
           type="text"
           v-model="search"
-          :placeholder="placeHolder"
           :class="[props.rounded, props.class]"
           :disabled="!props.showSearch"
+          :placeholder="valueSelectSearch"
           @blur="closeDropdown"
           @focus="openDropdown"
       />
-
+      <label class="label-title" :for="`base-select-${name}`" :class="{'--top': valueSelectSearch}">
+        {{ placeholder }}
+      </label>
       <div @click.stop="toggleDropdown" class="base-select__search-arrow" :class="{flipped: open, active: singleItemDisplay || multipleItemsDisplay}">
         <svg width="16" height="9" viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M15 1.125L9.52279 6.60221C8.81985 7.30515 7.68015 7.30515 6.97721 6.60221L1.5 1.125" stroke="#958F9C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -27,17 +29,20 @@
         @click="open = !open"
         :class="[props.rounded, props.class, {active: open}]"
       >
-        <div class="base-select__main-button__text"
-             v-if="props.modelValue && !props.multiple && singleItemDisplay">
-          {{ singleItemDisplay }}
+        <div class="base-select__main-button__text">
+          <Transition name="fade">
+            <span v-if="props.modelValue && !props.multiple && singleItemDisplay">
+              {{ singleItemDisplay }}
+            </span>
+            <span v-else-if="props.modelValue && props.multiple && multipleItemsDisplay">
+              {{ multipleItemsDisplay }}
+            </span>
+
+          </Transition>
         </div>
-        <div class="base-select__main-button__text"
-             v-else-if="props.modelValue && props.multiple && multipleItemsDisplay">
-         {{ multipleItemsDisplay }}
-        </div>
-        <div class="base-select__main-button__placeholder"
-             v-else >
-          {{ props.placeholder }}
+
+        <div class="base-select__main-button__placeholder" :class="{'--top': props.modelValue && (multipleItemsDisplay || singleItemDisplay)}" >
+          <span>{{ props.placeholder }}</span>
         </div>
         <div class="base-select__main-button__arrow" :class="{flipped: open, active: singleItemDisplay || multipleItemsDisplay}">
           <svg width="16" height="9" viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +73,7 @@
                 type="text"
                 v-model="search"
                 @blur="closeDropdown"
-                :placeholder="placeHolder"
+                :placeholder="valueSelectSearch"
                 :class="[props.rounded, props.class]"
                 :disabled="!props.showSearch"
                 :style="{ width: '100%' }"
@@ -204,11 +209,10 @@ const itemsFormat: ComputedRef<ISelectComponentWithChildren[]> = computed(() => 
   return props.items || []
 })
 
-const placeHolder = computed(() => {
-  console.log('placeHolder 0', props.multiple, multipleItemsDisplay.value, singleItemDisplay.value)
-  if (props.multiple)
-    return multipleItemsDisplay.value || props.placeholder
-  else return singleItemDisplay.value || props.placeholder
+const valueSelectSearch = computed(() => {
+  console.log('valueSelectSearch 0', props.multiple, multipleItemsDisplay.value, singleItemDisplay.value)
+  if (props.multiple) return multipleItemsDisplay.value
+  else return singleItemDisplay.value
 })
 const emit = defineEmits(["select", "clear", "update:modelValue", "input", 'onError', 'click-changes', 'open']);
 const error = ref("");
@@ -587,11 +591,11 @@ defineExpose({
 
 .base-select {
   position: relative;
-  font-size: 15px;
-  font-weight: 400;
+  @include text-normal();
+  color: $violet;
   width: 100%;
   &.disable {
-   pointer-events: none;
+    pointer-events: none;
     opacity: 0.6;
   }
   &.small {
@@ -643,10 +647,11 @@ defineExpose({
     display: flex;
     align-items: center;
     //cursor: pointer;
-    padding: 14px 12px;
-    border: 1px solid var(--border, #D3D8E6);
+    //padding: 14px 12px;
+    padding: 21px 12px 7px;
+    border: 1px solid $violet-opacity-max;
     border-radius: 8px;
-    background: var(--white, #fff);
+    background: $white-text;
     transition: border .3s;
     gap: 15px;
     &.--mobile {
@@ -656,7 +661,7 @@ defineExpose({
       }
     }
     &:hover {
-      border: 1px solid var(--primary, #2D2D2D)
+      border: 1px solid $violet;
     }
     @media (max-width: $sm) {
       min-width: auto;
@@ -664,36 +669,67 @@ defineExpose({
     }
     &-input {
       //cursor: pointer;
+      padding: 0;
       display: flex;
       width: 100%;
       font-family: "Montserrat", sans-serif;
       justify-content: space-between;
       align-items: center;
-      color: var(--primary, #2D2D2D);
+      color: $dark-text;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       border: 0;
       @include text-normal();
+      &::placeholder {
+        color: $dark-text;
+        @include text-normal();
+      }
 
       &.active {
-        border: 1px solid var(--primary, #2D2D2D);
+        border: 1px solid $violet;
         .base-filter__main-button__placeholder {
-          color: var(--primary, #2D2D2D);
+          color: $violet;
         }
       }
-      &__placeholder {
-        transition: color 0.2s;
-        color: var(--secondary, #b1afb3);
-        @media (max-width: $sm){
-          width: 100%;
-          font-size: 14px;
-          line-height: 143%;
-          text-align: left;
-        }
+      &::placeholder {
+        //color: transparent;
+      }
+      &:focus-visible {
+        outline: none;
+      }
+      &:focus ~ .prefix,
+      &:not(:placeholder-shown) ~ .prefix {
+        display: block;
+      }
+      &:focus ~ .label-title,
+      &:not(:placeholder-shown) ~ .label-title {
+        top: 4px;
+        font-size: 11px;
+        letter-spacing: 0.12px;
+        font-weight: 500;
+      }
+    }
+    .label-title {
+      left: 12px;
+      pointer-events: none;
+      color: $grey-violet;
+      position: absolute;
+      top: 16px;
+      z-index: 2;
+      @include text-normal();
+      transition: all 0.2s;
+      &.--top {
+        top: 4px;
+        font-size: 11px;
+        letter-spacing: 0.12px;
+        font-weight: 500;
       }
     }
     &-arrow {
+      position: absolute;
+      right: 12px;
+      top: 15px;
       cursor: pointer;
       width: 10px;
       transition: transform .5s;
@@ -706,7 +742,7 @@ defineExpose({
       &.active {
         svg {
           path {
-            stroke: #2D2D2D
+            stroke: $grey-violet;
           }
         }
       }
@@ -730,45 +766,65 @@ defineExpose({
       width: 100%;
     }
     &-button {
+      position: relative;
       cursor: pointer;
       font-family: "Montserrat", sans-serif;
       display: flex;
       width: 100%;
       justify-content: space-between;
-      padding: 14px 12px;
+      //padding: 14px 12px;
       align-items: center;
-      border: 1px solid var(--border, #D3D8E6);
+      border: 1px solid $violet-opacity-max;
       border-radius: 8px;
       background: white;
       transition: border .3s;
       gap: 15px;
+      padding: 21px 12px 7px;
       @include text-normal();
       &:hover {
-        border: 1px solid var(--primary, #2D2D2D)
+        border: 1px solid $violet;
       }
       &.active {
-        border: 1px solid var(--primary, #2D2D2D);
+        border: 1px solid $violet;
         .base-filter__main-button__placeholder {
-          color: var(--primary, #2D2D2D);
+          color: $grey-violet;
         }
       }
       &__text {
-        color: var(--primary, #2D2D2D);
+        color: $dark-text;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        height: 20px;
       }
       &__placeholder {
-        transition: color 0.2s;
-        color: var(--secondary, #958F9C);
+        left: 12px;
+        pointer-events: none;
+        color: $grey-violet;
+        position: absolute;
+        top: 16px;
+        z-index: 2;
+        @include text-normal();
+        transition: all 0.2s;
         @media (max-width: $sm){
           width: 100%;
           font-size: 14px;
           line-height: 143%;
           text-align: left;
         }
+
+        &.--top {
+          top: 4px;
+          font-size: 11px;
+          letter-spacing: 0.12px;
+          font-weight: 500;
+        }
+
       }
       &__arrow {
+        position: absolute;
+        right: 12px;
+        top: 15px;
         width: 10px;
         transition: transform .5s;
         flex-shrink: 0;
@@ -780,7 +836,7 @@ defineExpose({
         &.active {
           svg {
             path {
-              stroke: #2D2D2D
+              stroke: $grey-violet;
             }
           }
         }
@@ -805,8 +861,8 @@ defineExpose({
       height: 100vh;
       top: 0;
       left: 0;
-      background-color: #000;
-      opacity: 40%;
+      background-color: rgba(71, 69, 109, 0.6);
+      backdrop-filter: blur(10px);
       z-index: 13;
     }
   }
@@ -818,9 +874,9 @@ defineExpose({
     position: absolute;
     z-index: 10;
     width: 100%;
-    background: var(--white, #FFFFFF);
-    border: 1px solid var(--border, #D3D8E6);
-    box-shadow: 0 4px 12px 0 #A2AFBB40;
+    background: $white-background;
+    border: 1px solid $violet-opacity-max;
+    box-shadow: $box-shadow-lite;
     padding: 4px;
     //border-radius: 8px;
     flex-direction: column;
@@ -885,7 +941,7 @@ defineExpose({
         width: 20px;
       }
       &::-webkit-scrollbar-thumb {
-        background: var(--border, #D3D8E6);
+        background: $violet-opacity;
         border-radius: 4px;
       }
 
@@ -904,8 +960,7 @@ defineExpose({
         &-input:checked + label {
           //background: var(--primary, #2D2D2D);
           background: $violet;
-
-          color: var(--white, #FFFFFF);
+          color: $white-text;
 
         }
         &-input {
@@ -913,14 +968,13 @@ defineExpose({
           width: 16px;
           height: 16px;
           flex-shrink: 0;
-          border: 1px solid var(--primary, #2D2D2D);
+          border: 1px solid $violet;
           appearance: none;
           border-radius: 50%;
           transition: 0.1s all linear;
           position: relative;
-
           &:checked {
-            border: 5px solid var(--primary, #2D2D2D);
+            border: 5px solid $violet;
           }
         }
         &-text {
@@ -930,7 +984,7 @@ defineExpose({
           padding: 12px;
           border-radius: 8px;
           width: 100%;
-          background: var(--white, #FFFFFF);
+          background: $white-text;
           color: $dark-text;
           transition: all 0.2s;
           &:hover {

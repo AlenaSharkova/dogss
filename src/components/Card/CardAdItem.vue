@@ -216,6 +216,7 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
   }
   &__top {
     position: relative;
+    aspect-ratio: 1;
   }
   &__info {
     &-circle {

@@ -127,7 +127,7 @@ const fullnessInput = computed(() => {
     align-items: center;
     color: var(--secondary, #958F9C);
     position: relative;
-    padding: 19px 12px 6px;
+    padding: 21px 12px 7px;
     border: 1px solid var(--border, #D3D8E6);
     border-radius: 8px;
     min-width: 150px;
@@ -161,11 +161,8 @@ const fullnessInput = computed(() => {
       border: 0;
       background-color: transparent;
       transition: all 0.3s;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
+      @include text-normal();
       font-family: "Montserrat", sans-serif;
-      line-height: 22px;
       height: 22px;
       resize: none;
       &::-webkit-scrollbar {
@@ -212,17 +209,16 @@ const fullnessInput = computed(() => {
       pointer-events: none;
       color: #7c8b9d;
       position: absolute;
-      top: 15px;
+      top: 16px;
       z-index: 2;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
+      @include text-normal();
       transition: all 0.2s;
     }
     .label-title.top {
-      top: 2.5px;
-      font-size: 12px;
+      top: 4px;
+      font-size: 11px;
+      letter-spacing: 0.12px;
+      font-weight: 500;
     }
     .label-invalid {
       display: block;

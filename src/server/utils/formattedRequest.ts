@@ -2,6 +2,8 @@ import {AdBDItemStruct, AdFormatShortItemStruct} from "~/server/struct/AdStruct.
 import {UserBDItemStruct} from "~/server/struct/UserStruct";
 import type {UserItemPublicAdStruct} from "~/server/struct/UserStruct";
 import {getCommentsListUsers} from "~/server/services/comment.service";
+import {DogsBDItemStruct, DogsFormatShortItemStruct} from "~/server/struct/DogsStruct";
+import {BreederBDItemStruct, BreederItemStruct} from "~/server/struct/BreedersStruct";
 
 export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: any) => {
     return {
@@ -192,5 +194,41 @@ export const formattedAd = (item: AdBDItemStruct): AdFormatShortItemStruct => {
         ownerDetails: formattedUserGlobalForAdItem(item.Owner),
         isFavorite: !!item.UsersListFavoriteAd?.length,
         UsersListFavoriteAd: item.UsersListFavoriteAd,
+    }
+}
+
+export const formattedDogsShort = (item: DogsBDItemStruct): DogsFormatShortItemStruct => {
+    return {
+        id: item.id,
+        //created_at: item.created_at,
+        date_birth: item.date_birth,
+        gender: item.gender,
+        name: item.name,
+        approximate_age: item.approximate_age,
+        photos: item.photos,
+        //временнно
+        //
+
+        //breed: item.breeds,
+        breed: item.Breed,
+//        ownerDetails: formattedUserGlobalShort(item.Owner),
+    }
+}
+
+export const formattedBreeders = (item: BreederBDItemStruct): BreederItemStruct => {
+    return {
+        id: item.id,
+        //created_at: item.created_at,
+        name: item.name,
+        photos_gallery: item.photos_gallery,
+        photo_banner: item.photo_banner,
+        created_ad: item.created_ad,
+        my_dogs: item.MyDogs.map((item: DogsBDItemStruct) => formattedDogsShort(item))
+        //временнно
+        //
+
+        //breed: item.breeds,
+
+//        ownerDetails: formattedUserGlobalShort(item.Owner),
     }
 }

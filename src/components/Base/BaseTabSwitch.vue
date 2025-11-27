@@ -6,9 +6,12 @@ import useScreen from "~/utils/useScreen";
 const props = withDefaults(
     defineProps<{
       items: ISelectComponent[];
-      name: String
+      name: string;
+      isSmall: boolean;
     }>(),
-    {}
+    {
+      isSmall: false
+    }
 );
 const { isMobileXs, isMobile } = useScreen();
 
@@ -35,7 +38,7 @@ watch(() => selectedItem.value?.value,
 const countViewTabsLine = computed( () => {
   if(process.server) return props.items?.length
   console.log('isMobileXs.value', isMobileXs.value, isMobile.value, props.items?.length)
-  if (isMobileXs.value) return 2
+  if (isMobileXs.value || props.isSmall) return 2
   if (isMobile.value) return props.items?.length >= 3 ? 3 : props.items?.length || 1
   return props.items?.length || 1
 })
@@ -51,7 +54,7 @@ const styleLine = computed(() => {
 </script>
 
 <template>
-  <div class="base-tab-switch">
+  <div class="base-tab-switch" :class="{'--small': isSmall}">
     <div class="base-tab-switch__wrapper">
       <div
           class="base-tab-switch__active"
@@ -92,6 +95,19 @@ const styleLine = computed(() => {
   padding: 6px 10px;
   background-color: #fff;
   box-shadow: $box-shadow-lite;
+  &.--small {
+    .base-tab-switch {
+      &__wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+      &__item{
+        label {
+          grid-template-columns: minmax(auto, 30px) 1fr 30px;
+        }
+      }
+    }
+  }
   &__wrapper {
     display: flex;
     justify-content: flex-start;
@@ -105,7 +121,6 @@ const styleLine = computed(() => {
       grid-template-columns: 1fr 1fr 1fr;
     }
     @media (max-width: $xs) {
-      display: grid;
       grid-template-columns: 1fr 1fr;
     }
   }

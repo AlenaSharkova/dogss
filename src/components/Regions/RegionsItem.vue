@@ -61,7 +61,7 @@ const selectChild = (children: ISelectComponent) => {
 watch(() => props.search,
     (newValue) => {
       isOpen.value = !!newValue
-      children.value = props.regionItem?.children?.sort((a, b) => !!selectedChildren.value.find(item => item.value === b.value ) - !!selectedChildren.value.find(item => item.value === a.value) )
+      children.value = props.regionItem?.children?.sort((a, b) => !!selectedChildren.value?.find(item => item.value === b.value ) - !!selectedChildren.value?.find(item => item.value === a.value) )
 
     }
 )
@@ -95,7 +95,7 @@ onMounted(() => {
       selectedChildren.value = props.selected
     }
   }
-  children.value = props.regionItem?.children?.sort((a, b) => !!selectedChildren.value.find(item => item.value === b.value ) - !!selectedChildren.value.find(item => item.value === a.value) )
+  children.value = props.regionItem?.children?.sort((a, b) => !!selectedChildren.value?.find(item => item.value === b.value ) - !!selectedChildren.value?.find(item => item.value === a.value) )
 })
 </script>
 

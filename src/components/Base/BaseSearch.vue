@@ -162,10 +162,8 @@ const fullnessInput = computed(() => {
       border: 0;
       background-color: transparent;
       transition: all 0.3s;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
-      color: var(--primary, #2D2D2D);
+      color: $violet;
+      @include text-normal();
       @media (max-width: $lg) {
         font-size: 14px;
       }
@@ -202,17 +200,17 @@ const fullnessInput = computed(() => {
       pointer-events: none;
       color: #7c8b9d;
       position: absolute;
-      top: 15px;
+      top: 16px;
       z-index: 2;
-      font-size: 15px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
+      @include text-normal();
       transition: all 0.2s;
+      text-wrap: nowrap;
     }
     .label-title.top {
-      top: 2.5px;
-      font-size: 12px;
+      top: 4px;
+      font-size: 11px;
+      letter-spacing: 0.12px;
+      font-weight: 500;
     }
     .label-invalid {
       display: block;

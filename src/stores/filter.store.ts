@@ -126,9 +126,19 @@ export const useFilterStore = defineStore('filterStore', () => {
             value: 'male'
         },
         {
-            text: 'Несколько собак / Помёт',
+            text: 'Несколько / Помёт',
             value: 'litter'
         },
+    ])
+    const genderSmallList = ref<ISelectGender[]>( [
+        {
+            text: 'Девочка',
+            value: 'female'
+        },
+        {
+            text: 'Мальчик',
+            value: 'male'
+        }
     ])
     const quantitativeList = ref<IFilterQuantitative[]>( [
 
@@ -137,7 +147,7 @@ export const useFilterStore = defineStore('filterStore', () => {
             value: 'one'
         },
         {
-            text: 'Несколько собак / Помёт',
+            text: 'Несколько / Помёт',
             value: 'litter'
         }
 
@@ -183,6 +193,7 @@ export const useFilterStore = defineStore('filterStore', () => {
         genderList,
         ageList,
         quantitativeList,
+        genderSmallList,
         approximateAgeList
     }
 })

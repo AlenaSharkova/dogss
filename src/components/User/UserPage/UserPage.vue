@@ -24,7 +24,7 @@ const adsHtmlBlock = ref<HTMLElement | null>(null);
 const contactsHtmlBlock = ref<HTMLElement | null>(null);
 const commentsHtmlBlock = ref<HTMLElement | null>(null);
 const idActiveSection = ref<UserPageSectionType | null>(null)
-const sectionsElemList = ref<HTMLElement[] | []>([])
+const sectionsElemList = ref<(HTMLElement | null)[] | null>([])
 const commonStore = useCommonStore()
 
 const getBlockHtml = (id: string) => {
@@ -69,8 +69,10 @@ watch(() => commonStore.scrollTopCurrent,
     const marginTop = 125 + 40
     console.log('newTop', newTop)
     console.log(sectionsElemList.value)
+    if(!sectionsElemList.value) return
     window.requestAnimationFrame(() => {
-      const activeSection = sectionsElemList.value.find((item , index, arr) => {
+      const activeSection = sectionsElemList.value?.find((item , index, arr) => {
+        if(!item) return
         const differenceTop = newTop - item.offsetTop + marginTop + 40
         const differenceBottom = newTop - (item.offsetTop + item.offsetHeight - marginTop)
         const position = item.getBoundingClientRect();
@@ -108,7 +110,6 @@ onMounted(  () => {
 <template>
   <div class="user-page">
     <UserPageHeader
-        class="aaa"
         v-model="idActiveSection"
         :user="user"
         @scroll-to-block="goToBlock" />
@@ -117,6 +118,8 @@ onMounted(  () => {
     <LayoutWrapperPage :isPaddingY="false" class="user-page__wrapper" >
       <div ref="aboutHtmlBlock" id="about" class="user-page__section">
         <h3 class="user-page__section-title">О нас</h3>
+        <BaseButton to="/breeders/19" />
+
         <UserPageAbout class="user-page__section-block" />
       </div>
       <div ref="adsHtmlBlock" id="ads" class="user-page__section">

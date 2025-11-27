@@ -16,6 +16,7 @@ import {useBreedsStore} from "~/stores/breeds.store";
 import type {UserChangeItemStruct, UserFormItemStruct} from "~/struct/User/UserItemStruct";
 import type {ICommonFormValid} from "~/struct/Common/ICommonForm";
 import type {IStatusAd} from "~/struct/Common/IValueType";
+import useScreen from "~/utils/useScreen";
 
 
 const route = useRoute();
@@ -31,6 +32,7 @@ useHead({
   title: `Dogs - создать объявление`,
 });
 
+const { isMaxTablet, isMobile } = useScreen();
 const defaultSelect = ref({})
 const breedsStore = useBreedsStore()
 const adStore = useAdStore()
@@ -54,9 +56,6 @@ const form = reactive({
 const userFullData = computed(() => authStore.userFullData)
 const isActiveUser = computed(() => authStore.statusUser === 'active')
 
-if(!breedsStore.breedsList) {
-  //breedsStore.updateBreedsList()
-}
 if(!regionsStore.regionsList) {
   regionsStore.updateRegionsList()
 }
@@ -230,8 +229,6 @@ const getBody = (typeSaved: 'active' | 'moderation' | 'draft'): AdCreateItemStru
       || !imageUploadList.length
       || !userFullData.value
       || !selectRegion.value.value
-
-
       )
       && (typeSaved === 'moderation' || typeSaved === 'active')
   ) return false
@@ -402,12 +399,16 @@ if(authStore.statusUser === 'active') {
               placeholder="Выберите породу"
           />
           <div class="form-create-ad__list-row">
-
+            <div class="form-create-ad__list-together">
+              <BaseSwitch v-model="isUnknownDateOfBirth" />
+              <p class="form-create-ad__list-date__text">Дата рождения неизвестна</p>
+            </div>
             <BaseInput
                 v-if="!isUnknownDateOfBirth"
                 v-model="form.date_birth"
                 title="Дата рождения (DD.MM.YYYY)"
                 mask="**.**.****"
+                replaceForData
                 total-number-mask
                 :rules="[ruleValidDate]"
             />
@@ -419,13 +420,9 @@ if(authStore.statusUser === 'active') {
                 name="approximate-age"
                 placeholder="Выберите примерный возраст"
             />
-            <div class="form-create-ad__list-together">
-              <BaseSwitch v-model="isUnknownDateOfBirth" />
-              <p class="form-create-ad__list-date__text">Дата рождения неизвестна</p>
-            </div>
+
           </div>
-          {{selectGender}}
-          <BaseTabSwitch :items="genderList" v-model="selectGender" name="gender"/>
+          <BaseTabSwitch :items="genderList" v-model="selectGender" name="gender" :isSmall="isMaxTablet && !isMobile"/>
           <div v-if="selectGender.value === 'litter'" class="form-create-ad__list-together">
               <BaseInput total-number :max-length="2" title="Количество девочек" v-model="form.number_dogs.female" />
               <BaseInput total-number :max-length="2" title="Количество мальчиков" v-model="form.number_dogs.male"  />
@@ -570,7 +567,7 @@ if(authStore.statusUser === 'active') {
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      @media (max-width: $sm) {
+      @media (max-width: 1180px) {
         align-items: flex-start;
         flex-direction: column;
       }

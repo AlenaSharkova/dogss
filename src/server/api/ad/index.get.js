@@ -139,9 +139,7 @@ export default defineEventHandler(async (event) => {
     async function requestDBAdListCount() {
         console.log('Внутри requestDBAdListCount, queryDB:', queryDB);  // <-- ВАЖНО!
         return await AdList.findAndCountAll({
-
             order: sorting,
-
             offset: offset,
             limit: limit,
             where: {
@@ -194,9 +192,9 @@ export default defineEventHandler(async (event) => {
                 return [ ['created_at', 'DESC'] ]
             } else if(query.sorting === 'createdAtUp') {
                 return [ ['created_at', 'ASC'] ]
-            } else return [ ['created_at', 'DESC'] ]
+            } else return [ ['created_at', 'ASC'] ]
         } else {
-            return [ ['created_at', 'DESC'] ]
+            return [ ['created_at', 'ASC'] ]
         }
     }
 

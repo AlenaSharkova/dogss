@@ -74,7 +74,9 @@ export default defineEventHandler(async (event)=>
                     statusMessage: 'Пользователь не найден',
                 })
             } else {
-                return formattedUserGlobal(user)
+                const a = await formattedUserGlobal(user, Users)
+                console.log(222)
+                return a
             }
         } else {
             const usersList = await Users.findAll(

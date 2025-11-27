@@ -1,64 +1,66 @@
 <script setup lang="ts">
 
-import {defineProps, ref, withDefaults} from "vue";
+import {computed, defineProps, type PropType, ref, withDefaults} from "vue";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";
 import {useCommonStore} from "~/stores/common.store";
+import type {UserPageSectionType} from "~/struct/User/UserPageStruct";
+import type {BreederSiteSectionType} from "~/struct/Breeder/BreederSiteStruct";
 gsap.registerPlugin(ScrollTrigger);
+const props = defineProps({
+  name: {
+    type: String,
+    default: ''
+  },
+  typeAction: {
+    type: String as PropType< 'create' | 'change' | 'view'>,
+    default: 'create'
+  },
+})
+const emits = defineEmits(['scroll-to-block'])
 
-const props = withDefaults(
-    defineProps<{
-      title: string
+const newNameFinal = defineModel('name-breeder', {default: ''})
+const newNameInput = ref('')
+const idActiveSection = defineModel<UserPageSectionType | null>('section', {default: null})
+const isShowNameInput = ref(false)
 
-    }>(),
-    {
-    },
-);
-
-const tabNavList = reactive([
+const tabNavList = reactive<{name: string, id: BreederSiteSectionType}[]>([
   {
     name: "О нас",
     id: "about",
-    isActive: true,
   },
   {
     name: "Наши питомцы",
-    id: "dogs",
-    isActive: false,
+    id: "my-dogs",
   },
   {
     name: "Объявления",
-    id: "ad",
-    isActive: false,
+    id: "ads",
   },
   {
-    name: "Комментарии",
+    name: "Контакты",
+    id: "contacts",
+  },
+  {
+    name: "Отзывы",
     id: "comments",
-    isActive: false,
   },
 ])
-const isActiveIndex = ref(0)
-const lineWidthTabNum = computed(() => 100 / tabNavList.length )
-const lineWidthTab = computed(() => lineWidthTabNum.value +'%' )
-const lineLeftTab = computed(() => isActiveIndex.value * lineWidthTabNum.value + '%' )
 
 const changeTab = (idSelect: string) => {
-  tabNavList.forEach((item, index) => {
-    console.log(item, item.id, idSelect)
-    if(item.id === idSelect) {
-      item.isActive = true
-      isActiveIndex.value = index
-    } else {
-      item.isActive = false
-    }
-  })
+  emits('scroll-to-block', idSelect)
 }
 const classAdded = ref(false)
 const startValue = ref('+=130px')
 const targetElement = useTemplateRef<HTMLElement>('target-element')
 const scrollTriggerInstance = ref<globalThis.ScrollTrigger | null>(null);
 const animationInstance = ref<gsap.core.Tween | null>(null);
+const isActiveIndex = computed(() => tabNavList.findIndex(tab => tab.id === idActiveSection.value))
+
+const lineWidthTabNum = computed(() => 100 / tabNavList.length )
+const lineWidthTab = computed(() => lineWidthTabNum.value +'%' )
+const lineLeftTab = computed(() => isActiveIndex.value * lineWidthTabNum.value + '%' )
 
 onMounted(async () => {
   gsap.registerPlugin(ScrollTrigger); // Убедитесь, что ScrollTrigger зарегистрирован
@@ -75,14 +77,14 @@ const createTrigger = async () => {
   }
 
 
-  animationInstance.value = gsap.to('.user-site__head-nav', {
-    height: '165px',
+  animationInstance.value = gsap.to('.breeder-site-header__bottom-nav', {
+    height: '125px',
     duration: 1,
     scrollTrigger: {
-      trigger: ".user-site__head-block",
+      trigger: ".breeder-site-header",
       start: `bottom +=90px`,
 
-      end: "bottom -=100px",
+      end: "bottom +=90px",
       scrub: true,
       //toggleClass: { targets: targetElement.value, className: "active" },
      // markers: true, // Для отладки: показывает маркеры ScrollTrigger
@@ -132,57 +134,85 @@ onBeforeUnmount(() => {
 })
 
 const isShowMenu = ref(false)
-
+const fullName = computed(() => {
+  switch (props.typeAction) {
+    case 'create': `Написа`
+  }
+})
+const applyNewName = () => {
+  newNameFinal.value = newNameInput.value
+  console.log('applay', newNameFinal.value)
+  isShowNameInput.value = false
+}
 </script>
 
 <template>
-  <div class="user-site__head">
-    <div class="user-site__head-block">
-      <div class="user-site__head-image">
+  <div class="breeder-site-header">
+    <div class="breeder-site-header__block">
+      <div class="breeder-site-header__image">
         <img src="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp"/>
-        <div class="user-site__head-image__mask" />
+        <div class="breeder-site-header__image-mask" />
       </div>
-      <div class="user-site__head-content">
-        <div class="user-site__head-content__title">
-          <h1>{{title}}</h1>
+      <div class="breeder-site-header__content">
+        <div class="breeder-site-header__content-name">
+          <h1 v-if="props.typeAction === 'view'"
+              class="breeder-site-header__content-name__text">
+            {{name}}
+          </h1>
+          <div v-if="typeAction === 'create'" class="breeder-site-header__content-name__select">
+            <h1
+                class="breeder-site-header__content-name__text">
+              {{newNameFinal || 'Введите название питомника'}}
+            </h1>
+            <div class="breeder-site-header__content-name__select">
+              <BaseInput v-if="isShowNameInput" v-model="newNameInput" title="Название питомника" />
+              <BaseButton v-if="isShowNameInput" text="Применить" @click="applyNewName" />
+              <BaseButton
+                  v-else
+                  :text="newNameFinal? 'Изменить': 'Ввести'"
+                  @click="isShowNameInput = true"
+              />
+            </div>
+          </div>
         </div>
       </div>
-      <div ref="target-element" class="user-site__head-nav"
-           :class="{fixed: classAdded}">
-        <div class="user-site__head-nav__row">
-          <Transition name="fade">
-            <div v-if="classAdded" class="user-site__head-nav__personal">
-              <BaseProfileCircle
-                  name="Николай Шарков"
-                  size="medium"
-                  unfull
-                  img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
-              <div class="user-site__head-nav__personal-content">
-                <div class="user-site__head-nav__personal-content__title">
-                  <p>{{title}}</p>
-                </div>
-                <div class="user-site__head-nav__personal-content__action">
-                  <BaseButton text="Подпсиаться" size="medium"/>
+      <div class="breeder-site-header__bottom">
+        <div ref="target-element" class="breeder-site-header__bottom-nav"
+             :class="{fixed: classAdded}">
+          <div class="breeder-site-header__bottom-nav__row">
+            <Transition name="fade">
+              <div v-if="classAdded" class="breeder-site-header__bottom-nav__personal">
+                <BaseProfileCircle
+                    name="Николай Шарков"
+                    size="small"
+                    unfull
+                    img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
+                <div class="breeder-site-header__bottom-nav__personal-content">
+                  <div class="breeder-site-header__bottom-nav__personal-content__title">
+                    <p v-if="typeAction === 'create'">{{newNameFinal || 'Введите название питомника'}}</p>
+                    <p v-if="typeAction === 'view'">{{name}}</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Transition>
-          <nav class="user-site__head-nav__list">
-            <div class="user-site__head-nav__item"
-                 v-for="tab in tabNavList"
-                 :key="tab.id"
-                 :class="{active: tab.isActive}"
-                 @click="changeTab(tab.id)"
-            >
-              <p class="user-site__head-nav__item-text">
-                {{tab.name}}
-              </p>
-            </div>
-            <div class="line" :style="{width: lineWidthTab, left: lineLeftTab}">
-              <div class="line-block" />
-            </div>
-
-          </nav>
+            </Transition>
+            <nav class="breeder-site-header__bottom-nav__list">
+              <div class="breeder-site-header__bottom-nav__item"
+                   v-for="tab in tabNavList"
+                   :key="tab.id"
+                   :class="{active: tab.id === idActiveSection}"
+                   @click="changeTab(tab.id)"
+              >
+                <p class="breeder-site-header__bottom-nav__item-text">
+                  {{tab.name}}
+                </p>
+              </div>
+              <Transition name="fade">
+                <div v-show="isActiveIndex !== -1" class="line" :style="{width: lineWidthTab, left: lineLeftTab}">
+                  <div class="line-block" />
+                </div>
+              </Transition>
+            </nav>
+          </div>
         </div>
       </div>
     </div>
@@ -191,16 +221,16 @@ const isShowMenu = ref(false)
 </template>
 
 <style scoped lang="scss">
-.user-site__head {
+.breeder-site-header {
   box-sizing: border-box;
-  &-block {
+  &__block {
     height: calc(100vh - 30px);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  &-image {
+  &__image {
     position: absolute;
     z-index: -1;
     top: 0;
@@ -218,7 +248,7 @@ const isShowMenu = ref(false)
       object-position: center;
       object-fit: cover;
     }
-    &__mask {
+    &-mask {
       width: 100%;
       height: 100%;
       position: absolute;
@@ -227,116 +257,184 @@ const isShowMenu = ref(false)
       background-color: rgba(0, 0, 0, 32%);
     }
   }
-  &-content {
+  &__content {
     padding: 50px;
 
-    &__title {
+    &-name {
       @include h0;
       color: #fff;
+      &__select {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
     }
   }
-  &-nav {
+  &__bottom {
+    width: 100%;
+    margin-top: auto;
     position: absolute;
     bottom: 0;
     right: 0;
     background-color: $violet-opacity;
-    backdrop-filter: blur(6px);
-    width: 100%;
-    height: 90px;
-    display: flex;
-    justify-content: center;
-    will-change: header;
-
-    &.fixed {
-      z-index: 10;
-      position: fixed;
-      top: 0px;
-      transition: all 0.5s;
-      .user-site__head-nav {
-        &__row {
-          padding-top: 34px;
-        }
-      }
-    }
-    &__row {
+    z-index: 20;
+    //backdrop-filter: blur(6px);
+    &-nav {
       width: 100%;
-      padding: 24px 50px;
+      height: 90px;
       display: flex;
-      justify-content: flex-end;
+      justify-content: center;
+      will-change: header;
+      background-color: #47456D00;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s;
 
-      flex-direction: column;
-      gap: 0px;
+      &.fixed {
+        background-color: $violet-opacity;
+        z-index: 10;
+        position: fixed;
+        top: 0px;
+        transition: all 0.5s;
 
-      @media (max-width: $md) {
-        padding: 15px 30px;
-        gap: 10px;
-      }
-      @media (max-width: $sm) {
-        padding: 15px 20px;
-        gap: 16px;
-      }
-    }
-    &__personal {
-      display: flex;
-
-      gap: 15px;
-      align-items: center;
-      &-content {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        flex-direction: column;
-        &__title {
-          color: $white-text;
-          @include h4;
-          p {
-            text-wrap: nowrap;
+        .breeder-site-header__bottom-nav {
+          &__row {
+            padding-top: 34px;
           }
         }
       }
-    }
-    &__list {
 
-      margin-left: auto;
-      margin-right: auto;
-      min-width: 70%;
-      /* grid-template-rows: 100px; */
-      grid-row: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      /* flex-direction: row; */
-      /* justify-content: space-between; */
-      /* align-items: center; */
-      grid-auto-flow: column dense;
-      gap: 0;
-      position: relative;
-      padding: 0;
-    }
-    &__item {
-      flex: 1;
-      padding: 5px 20px 8px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      justify-content: center;
-      p {
-        text-wrap: nowrap;
-        @include h5;
-        color: #fff;
+      &__row {
+        width: 100%;
+        padding: 24px 50px;
+        display: flex;
+        justify-content: flex-end;
+        flex-direction: column;
+        gap: 0px;
+        @media (max-width: $md) {
+          padding: 15px 30px;
+          gap: 10px;
+        }
+        @media (max-width: $sm) {
+          padding: 15px 20px;
+        }
+        @media (max-width: $xs) {
+          gap: 10px;
+        }
       }
-    }
-    .line {
-      position: absolute;
-      bottom: 0;
-      width: 20%;
-      left: 0;
-      height: 5px;
-      transition: left .6s;
-      padding: 0 10px;
-      &-block {
-        background-color: #E0A96FFF;
-        height: 100%;
 
+      &__personal {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        &-content {
+          display: flex;
+          align-items: flex-start;
+          gap: 8px;
+          flex-direction: column;
+
+          &__title {
+            color: $white-text;
+            @include h4;
+            p {
+              text-wrap: nowrap;
+            }
+          }
+        }
+      }
+
+      &__list {
+
+        margin-left: auto;
+        margin-right: auto;
+        min-width: 70%;
+        grid-row: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        grid-auto-flow: column dense;
+        gap: 0;
+        position: relative;
+        padding: 0;
+        @media (max-width: $xs) {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          gap: 5px;
+        }
+      }
+
+      &__item {
+        //flex: 1;
+        padding: 5px 20px 8px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        justify-content: center;
+        @media (max-width: $xs) {
+          padding: 5px 5px 2px;
+          position: relative;
+          &:after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            right: 50%;
+            bottom: -5px;
+            background-color: $second-yellow;
+            height: 2px;
+            transition: all 0.2s;
+            opacity: 0;
+          }
+        }
+        @media (max-width: 400px) {
+          padding: 5px 2px 8px;
+        }
+
+        &.active {
+          @media (max-width: $xs) {
+            //border-bottom: 5px solid $second-yellow;
+            &:after {
+              left: 0%;
+              right: 0%;
+              opacity: 1;
+              //width: 100%;
+
+            }
+          }
+        }
+
+        &-text {
+          text-wrap: nowrap;
+          @include h6;
+          color: #fff;
+          @media (max-width: $xss) {
+            @include subtitle-small(500);
+          }
+          @media (max-width: $xsss) {
+            font-size: 16px;
+          }
+          @media (max-width: 400px) {
+            @include text-normal(500);
+          }
+        }
+      }
+
+      .line {
+        position: absolute;
+        bottom: 0;
+        width: 20%;
+        left: 0;
+        height: 5px;
+        transition: left .6s;
+        padding: 0 10px;
+        @media (max-width: $xs) {
+          display: none;
+        }
+
+        &-block {
+          background-color: $second-yellow;
+          height: 100%;
+
+        }
       }
     }
   }

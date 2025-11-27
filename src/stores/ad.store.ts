@@ -55,7 +55,7 @@ export const useAdStore = defineStore('adStore', () => {
     async function updateAdList() {
         await adService.getAdList(queryRequest.value)
             .then((res) => {
-                if (res) setFilterAd(res as AdListApi)
+                if (res) setFilterAdApi(res as AdListApi)
             })
             .catch(e => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
@@ -66,34 +66,37 @@ export const useAdStore = defineStore('adStore', () => {
     async function updateAdFilter(query = null as AdQueryFilterStruct | null, hashAuthLocal = false) {
         console.log('updateAdFilter query', query)
         if(query) {
-            getQueryAd(query)
-            queryRequest.value = setQueryAd(query)
+            getFilterAd(query)
+            console.log('updateAdFilter00', query)
+
+            queryRequest.value = addQueryAgeCategory(query)
         }
     }
 
-    function getQueryAd(query: AdQueryFilterStruct) {
+    function getFilterAd(query: AdQueryFilterStruct) {
+        console.log('getFilterAd', getFilterAd)
         if(query.type) {
             adCatalogFilter.value.type = filterStore.typeAdList?.find(item => String(item.value) === query.type ) || null
-        }
+        } else delete adCatalogFilter.value.type
         adCatalogFilter.value['max-price'] = Number(query['max-price'] ) || 0
         adCatalogFilter.value['min-price'] = Number(query['min-price']) || 0
         if(query.gender) {
             adCatalogFilter.value.gender = filterStore.genderList?.find(item => String(item.value) === query.gender ) || null
-        }
+        } else delete adCatalogFilter.value.gender
         if(query.ageCategory) {
             adCatalogFilter.value.ageCategory = filterStore.ageList?.find(item => item.value === query.ageCategory ) || null
-        }
+        } else delete adCatalogFilter.value.ageCategory
         if(query.status === 'moderation') {
             adCatalogFilter.value.status = query.status
         }
     }
-    function setQueryAd(query: AdQueryFilterStruct) {
+    function addQueryAgeCategory(query: AdQueryFilterStruct) {
         query.minAgeMonth = adCatalogFilter.value.ageCategory?.details.minAgeMonth
         query.maxAgeMonth = adCatalogFilter.value.ageCategory?.details.maxAgeMonth
         delete query.ageCategory
         return query
     }
-    function setFilterAd(res: AdListApi) {
+    function setFilterAdApi(res: AdListApi) {
         console.log('res.result ad', res.result)
         adCatalogList.value = res.result;
         adCatalogListDetails.value = {

@@ -98,7 +98,7 @@ const goFilter = () => {
     }})
 }
 const swipeFilter = () => {
-  router.push({name: 'catalog', query: {}})
+  router.push({ query: {}})
 }
 
 const handlePriceRangeChanged = (range: any) => {
@@ -165,6 +165,7 @@ const showPriceRange = ref(false)
         <RegionsSelect/>
       </BaseSelect>
       <BasePriceRange
+          v-if="minFullPrice !== null  && maxFullPrice && selectedMinPrice !== null && selectedMaxPrice "
           :min-value="minFullPrice"
           :max-value="maxFullPrice"
           :step="10"

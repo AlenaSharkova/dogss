@@ -1,7 +1,5 @@
 //import {createError, defineEventHandler} from 'h3';
 
-import { Op} from "sequelize";
-import dayjs from "dayjs";
 import {formattedAd, formattedAdShort} from "~/server/utils/formattedRequest.ts";
 import {getUserAuth} from "~/server/services/auth.service.js";
 import { ref } from 'vue';

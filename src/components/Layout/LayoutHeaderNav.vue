@@ -74,6 +74,12 @@ const toggleMobileMenu = () => {
             size="small"
             to="/create-ad" />
         <BaseButton
+            class="header-nav__actions-ad"
+            text="Создать сайт"
+            size="small"
+            type="violet"
+            to="/breeders/create" />
+        <BaseButton
             v-if="!userFullData"
             class="header-nav__actions-login"
             text="Войти"
