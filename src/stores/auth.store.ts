@@ -15,6 +15,8 @@ export const useAuthStore = defineStore('authStore', () => {
     const commonStore = useCommonStore()
 
     const authService = new AuthService(config.public.apiBaseUrl);
+    //const breederStore = useBreederStore()
+
 
     const sessionToken = ref('');
     const sessionTokenCookie = ref(
@@ -162,6 +164,7 @@ export const useAuthStore = defineStore('authStore', () => {
                 if (res) {
                     userFullData.value = res
                     statusUser.value = res.status
+                   // breederStore.idMyBreeder = res.id_breeder
                     console.log('обновили пользователя')
                 }
             })

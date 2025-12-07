@@ -20,10 +20,7 @@ usersStore.updateUsersList()
               v-for="(user, index) in usersList"
               :key="index"
               class="page-breeders__list-item"
-              :user="user">
-            <CardBreederItem />
-
-          </CardBreederItem>
+              :user="user" />
         </div>
       </LayoutWrapperPage>
     </div>

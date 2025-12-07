@@ -7,6 +7,9 @@ import BaseProfileCircle from "~/components/Base/BaseProfileCircle.vue";
 import {useCommonStore} from "~/stores/common.store";
 import type {UserPageSectionType} from "~/struct/User/UserPageStruct";
 import type {BreederSiteSectionType} from "~/struct/Breeder/BreederSiteStruct";
+import BreedersSiteHeadUpload from "~/components/Breeders/BreedersSite/BreedersSiteHeadUpload.vue";
+import type {ICommonUpload} from "~/struct/Common/ICommonUpload";
+import useScreen from "~/utils/useScreen";
 gsap.registerPlugin(ScrollTrigger);
 const props = defineProps({
   name: {
@@ -21,9 +24,11 @@ const props = defineProps({
 const emits = defineEmits(['scroll-to-block'])
 
 const newNameFinal = defineModel('name-breeder', {default: ''})
-const newNameInput = ref('')
+const photoBannerItem = defineModel<ICommonUpload | null>('banner-images', {default: null})
 const idActiveSection = defineModel<UserPageSectionType | null>('section', {default: null})
-const isShowNameInput = ref(false)
+
+const commonStore = useCommonStore()
+const { isRangeTablet, isMobile } = useScreen();
 
 const tabNavList = reactive<{name: string, id: BreederSiteSectionType}[]>([
   {
@@ -48,35 +53,38 @@ const tabNavList = reactive<{name: string, id: BreederSiteSectionType}[]>([
   },
 ])
 
-const changeTab = (idSelect: string) => {
-  emits('scroll-to-block', idSelect)
-}
+const photoBannerList = ref<ICommonUpload[]>([])
+const newNameInput = ref('')
+const isShowNameInput = ref(false)
 const classAdded = ref(false)
 const startValue = ref('+=130px')
 const targetElement = useTemplateRef<HTMLElement>('target-element')
 const scrollTriggerInstance = ref<globalThis.ScrollTrigger | null>(null);
 const animationInstance = ref<gsap.core.Tween | null>(null);
-const isActiveIndex = computed(() => tabNavList.findIndex(tab => tab.id === idActiveSection.value))
 
+const isActiveIndex = computed(() => tabNavList.findIndex(tab => tab.id === idActiveSection.value))
 const lineWidthTabNum = computed(() => 100 / tabNavList.length )
 const lineWidthTab = computed(() => lineWidthTabNum.value +'%' )
 const lineLeftTab = computed(() => isActiveIndex.value * lineWidthTabNum.value + '%' )
-
-onMounted(async () => {
-  gsap.registerPlugin(ScrollTrigger); // Убедитесь, что ScrollTrigger зарегистрирован
-  console.log('targetElement.value 1', targetElement.value)
-
-  await createTrigger()
-
-});
-
+const styleBanner = computed(() => {
+  if(photoBannerItem.value) {
+    let positionStyle = 'center center'
+    if(isRangeTablet.value) positionStyle = photoBannerItem.value?.positionBanner.table
+    else if(isMobile.value) positionStyle = photoBannerItem.value?.positionBanner.mobile
+    else positionStyle = photoBannerItem.value?.positionBanner.desktop
+    return {
+      'background-image': `url(${photoBannerItem.value.imageUrl})`,
+      'background-position': positionStyle
+    }
+  }
+})
+const changeTab = (idSelect: string) => {
+  emits('scroll-to-block', idSelect)
+}
 const createTrigger = async () => {
-
   if (scrollTriggerInstance.value) {
     scrollTriggerInstance.value.kill(); // Убиваем старый ScrollTrigger
   }
-
-
   animationInstance.value = gsap.to('.breeder-site-header__bottom-nav', {
     height: '125px',
     duration: 1,
@@ -98,14 +106,9 @@ const createTrigger = async () => {
     }
 
   });
-
 }
-
 const updateStart = () => {
   return
-
-
-
   // Изменяем значение start
 /*
   startValue.value = `${commonStore.isHiddenHeader? '-=137px': '+=130px'}`
@@ -122,37 +125,44 @@ const updateStart = () => {
 
     //ScrollTrigger.refresh();
 };
-const commonStore = useCommonStore()
-
-watch(() => commonStore.isScrolled,
-    () => updateStart()
-)
-
-
-onBeforeUnmount(() => {
-  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-})
-
-const isShowMenu = ref(false)
-const fullName = computed(() => {
-  switch (props.typeAction) {
-    case 'create': `Написа`
-  }
-})
 const applyNewName = () => {
   newNameFinal.value = newNameInput.value
   console.log('applay', newNameFinal.value)
   isShowNameInput.value = false
 }
+watch(() => commonStore.isScrolled,
+    () => updateStart()
+)
+watch(() => photoBannerList.value,
+    (newList) => {
+      if(!newList?.length) photoBannerItem.value = null
+      photoBannerItem.value = newList[0]
+    }
+)
+
+onMounted(async () => {
+  gsap.registerPlugin(ScrollTrigger); // Убедитесь, что ScrollTrigger зарегистрирован
+  console.log('targetElement.value 1', targetElement.value)
+  await createTrigger()
+});
+onBeforeUnmount(() => {
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+})
 </script>
 
 <template>
   <div class="breeder-site-header">
     <div class="breeder-site-header__block">
-      <div class="breeder-site-header__image">
-        <img src="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp"/>
+      <div class="breeder-site-header__image" :style="styleBanner">
+        <img v-if="photoBannerItem?.imageUrl" :src="photoBannerItem?.imageUrl"/>
+        <img v-else src="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp"/>
         <div class="breeder-site-header__image-mask" />
       </div>
+      <BreedersSiteHeadUpload
+          v-if="props.typeAction !== 'view'"
+          v-model="photoBannerList"
+          class="breeder-site-header__upload"
+      />
       <div class="breeder-site-header__content">
         <div class="breeder-site-header__content-name">
           <h1 v-if="props.typeAction === 'view'"
@@ -164,11 +174,19 @@ const applyNewName = () => {
                 class="breeder-site-header__content-name__text">
               {{newNameFinal || 'Введите название питомника'}}
             </h1>
-            <div class="breeder-site-header__content-name__select">
+            <div class="breeder-site-header__content-name__select-row">
               <BaseInput v-if="isShowNameInput" v-model="newNameInput" title="Название питомника" />
-              <BaseButton v-if="isShowNameInput" text="Применить" @click="applyNewName" />
+              <BaseButton
+                  v-if="isShowNameInput"
+                  text="Применить"
+                  @click="applyNewName"
+                  type="teriary"
+                  unfull
+              />
               <BaseButton
                   v-else
+                  type="teriary"
+                  unfull
                   :text="newNameFinal? 'Изменить': 'Ввести'"
                   @click="isShowNameInput = true"
               />
@@ -183,7 +201,7 @@ const applyNewName = () => {
             <Transition name="fade">
               <div v-if="classAdded" class="breeder-site-header__bottom-nav__personal">
                 <BaseProfileCircle
-                    name="Николай Шарков"
+                    :name="name"
                     size="small"
                     unfull
                     img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
@@ -259,6 +277,9 @@ const applyNewName = () => {
   }
   &__content {
     padding: 50px;
+    @media (max-width: $sm) {
+      padding: 20px;
+    }
 
     &-name {
       @include h0;
@@ -266,7 +287,10 @@ const applyNewName = () => {
       &__select {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        &-row {
+          display: flex;
+          gap: 10px;
+        }
       }
     }
   }
@@ -277,7 +301,7 @@ const applyNewName = () => {
     bottom: 0;
     right: 0;
     background-color: $violet-opacity;
-    z-index: 20;
+    z-index: 9;
     //backdrop-filter: blur(6px);
     &-nav {
       width: 100%;

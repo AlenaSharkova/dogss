@@ -27,7 +27,7 @@ const selectPoint = (item: ISelectComponent) => {
 </script>
 
 <template>
-  <div class="base-sorting">
+  <div v-if="false" class="base-sorting">
     <div class="base-sorting__wrapper">
       <div @click="openDropdown" class="base-sorting__selected">
         <span v-if="selectedValue && selectedText">

@@ -30,6 +30,7 @@ const adList = computed(() => adStore.adCatalogList )
 const breederView = computed(() => breederStore.breederView )
 const breedsList = computed(() => breedsStore.breedsList )
 const userFullData = computed(() => authStore.userFullData)
+const idMyBreeder = computed(() => breederStore.idMyBreeder)
 
 
 const actionScrollPaws = () => {
@@ -42,22 +43,18 @@ const actionScrollPaws = () => {
     //pawsCount.value = Math.ceil((window.pageYOffset +window.innerHeight/2 )/ 50)
   })
 }
-const getData = async (userId: string | number) => {
-  breederStore.idRequestBreederView = userId
-  await breederStore.getViewBreeder('setting')
-      .then(res => usersStore.getUserViewData(userId))
-      .catch(err => {
-        if(err.code === 403) {
-          isHasBreeder.value = true
-          commonStore.infoResultModal = {
-            status: 'error',
-            title: "У Вас уже есть питомник"
-          }
-        }
-    })
-
+const getData = async (userId: number) => {
+  if(idMyBreeder.value) {
+    isHasBreeder.value = true
+    commonStore.infoResultModal = {
+      status: 'error',
+      title: "У Вас уже есть питомник"
+    }
+  } else {
+    await nextTick()
+    await usersStore.getUserViewData(userId, true)
+  }
 }
-//проверка на наличие breeder
 if( userFullData.value?.id) {
   getData(userFullData.value.id)
 }
@@ -73,14 +70,13 @@ onMounted(() => {
   actionScrollPaws()
 })
 onUnmounted(() => {
-  usersStore.userViewData = null
-  breederStore.breederView = null
+  usersStore.userForBreederViewData = null
 })
 </script>
 
 <template>
   <div class="page-breeder-create">
-    <BreedersSiteManage :user="usersStore.userViewData" type="create" />
+    <BreedersSiteManage :user="usersStore.userForBreederViewData" type="create" />
   </div>
 </template>
 

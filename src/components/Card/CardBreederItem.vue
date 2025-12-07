@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
-import {formatAmountInput, formatDate, getYearsOld} from "~/utils/formatData";
 import type Swiper from "swiper";
 import type {UserItemPublicPreviewStruct, UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import {computed} from "vue";
@@ -17,6 +15,7 @@ const props = defineProps({
 const swiperInstance = ref()
 
 const userFullName = computed(() => `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`)
+const hasBreeder = computed(() => !!props.user.breeder)
 
 
 const onSwiper = (swiper: Swiper) => {
@@ -24,14 +23,16 @@ const onSwiper = (swiper: Swiper) => {
 };
 const router = useRouter();
 
-const goToBreeder = (id: number) => {
+const goToBreeder = () => {
   //router.push(`/breeders/${id}`)
-  router.push(`/user/${id}`)
+  console.log('hasBreeder.value', hasBreeder.value)
+  if(hasBreeder.value) router.push(`/breeders/${props.user.breeder?.id as number}`)
+  else router.push(`/user/${props.user.id}`)
 }
 </script>
 
 <template>
-  <div @click="goToBreeder(user.id)" class="card-breeder-item">
+  <div @click="goToBreeder()" class="card-breeder-item">
     <div class="card-breeder-item__wrapper">
       <BaseProfileCircle
           :name="userFullName"
@@ -46,6 +47,7 @@ const goToBreeder = (id: number) => {
           </div>
         </div>
       </div>
+      <BaseMiniBlock v-if="hasBreeder" text="Питомник" />
     </div>
   </div>
 </template>

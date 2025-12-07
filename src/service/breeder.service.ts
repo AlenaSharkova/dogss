@@ -1,14 +1,6 @@
 import BaseApiService from "~/service/baseApi.service";
-import type {
-  AdAdminItemStruct,
-  AdCreateItemStruct,
-  AdItemStruct,
-  AdListApi,
-  AdQueryFilterStruct
-} from "~/struct/Ad/AdItemStruct";
-import axios from "axios";
-import type {IStatusAd} from "~/struct/Common/IValueType";
-import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
+
+import type {BreederSiteItemStruct, BreederSiteSaveStruct} from "~/struct/Breeder/BreederSiteStruct";
 
 export default class BreederService extends BaseApiService {
   private readonly RESOURCE = '/api/breeder';
@@ -30,7 +22,7 @@ export default class BreederService extends BaseApiService {
     if(error.value ) throw {...error.value};
     else return data.value;
   }
-  async postBreeder(body: BreederSiteItemStruct) {
+  async postBreeder(body: BreederSiteSaveStruct) {
     const {data, error} = await useFetch<BreederSiteItemStruct>(this.RESOURCE, {
       method: "post",
       baseURL: this.baseURL,

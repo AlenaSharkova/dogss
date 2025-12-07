@@ -13,6 +13,7 @@ export default defineEventHandler(async (event) => {
     const GeoRegions = event.context.GeoRegions;
     const Users = event.context.Users;
     const AdExportRegions = event.context.AdExportRegions;
+    const UploadedFile = event.context.UploadedFile;
     const sequelize = event.context.sequelize;
     const statusMessage = 'Ошибка личных данных, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
@@ -117,7 +118,14 @@ export default defineEventHandler(async (event) => {
                 {
                     model: Users,
                     as: 'Owner',
-                }
+                },
+                {
+                    model: UploadedFile,
+                    as: 'PhotosObject',
+                    where: {
+                        purpose: 'ad'
+                    },
+                },
             ],
             required: true
         });
@@ -160,7 +168,14 @@ export default defineEventHandler(async (event) => {
                 {
                     model: Users,
                     as: 'Owner',
-                }
+                },
+                {
+                    model: UploadedFile,
+                    as: 'PhotosObject',
+                    where: {
+                        purpose: 'ad'
+                    },
+                },
             ],
         });
     }

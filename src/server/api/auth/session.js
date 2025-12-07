@@ -11,11 +11,12 @@ export default defineEventHandler(async (event) => {
     const Otp = event.context.Otp;
     const GeoCity = event.context.GeoCity;
     const GeoRegions = event.context.GeoRegions;
+    const Breeders = event.context.Breeders;
 
     const statusMessage = 'Ошибка получения Ваших данных, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
-    if (!Users || !Otp || !sequelize) {  // Исправлено: добавлены логические операторы OR
+    if (!Users || !Otp || !Breeders || !sequelize) {  // Исправлено: добавлены логические операторы OR
         console.error('Model or sequelize is not available in the context');
         throw createError({
             statusCode: 500,
@@ -58,7 +59,11 @@ export default defineEventHandler(async (event) => {
                 {
                     model: GeoRegions,
                     as: 'LocationUserRegion',
-                }
+                },
+                {
+                    model: Breeders,
+                    as: 'MyBreeder',
+                },
             ]});
         if(!user) {
             throw createError({ statusCode: 401, message: 'Неавторизованный пользователь: пользователь не найден' }); // Исправлено: Выбрасываем ошибку

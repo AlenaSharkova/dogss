@@ -27,7 +27,6 @@ const selectBreed = ref({
 const adList = computed(() => adStore.adCatalogList )
 const breederView = computed(() => breederStore.breederView )
 const breedsList = computed(() => breedsStore.breedsList )
-const userViewData = computed(() => usersStore.userViewData )
 
 const actionScrollPaws = () => {
   window.addEventListener('scroll', () => {
@@ -42,19 +41,19 @@ const actionScrollPaws = () => {
 
 breederStore.idRequestBreederView = route.params.id as string
 await breederStore.getViewBreeder('view')
-await usersStore.getUserViewData(breederStore.idRequestBreederView)
+//await usersStore.getUserViewData(breederStore.idRequestBreederView)
 onMounted(async () => {
   actionScrollPaws()
 })
 onUnmounted(() => {
-  usersStore.userViewData = null
+  //usersStore.userViewData = null
   breederStore.breederView = null
 })
 </script>
 
 <template>
   <div class="page-breeder">
-    <BreedersSiteMain :user="userViewData" :breeder="breederView" />
+    <BreedersSiteMain :user="breederView.ownerDetails" :breeder="breederView" />
   </div>
 </template>
 

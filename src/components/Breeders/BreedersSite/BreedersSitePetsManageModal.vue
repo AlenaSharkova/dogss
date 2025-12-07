@@ -27,7 +27,7 @@ const props = defineProps({
     default: 'create'
   },
 })
-const emits = defineEmits(['create', 'change'])
+const emits = defineEmits(['create', 'change', 'close'])
 
 const breedsStore = useBreedsStore()
 const filterStore = useFilterStore()
@@ -119,7 +119,7 @@ const changeDataAd = async () => {
 <template>
   <div class="breeder-site__pets-manage__modal">
     <Teleport to="body">
-      <BaseModal :is-show-modal="isShow">
+      <BaseModal :is-show-modal="isShow" @close="emits('close')">
         <FormWindow modal class="breeder-site__pets-manage__modal-form">
           <template #title>
             Добавить Питомца

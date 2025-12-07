@@ -8,6 +8,7 @@ import useScreen from "~/utils/useScreen";
 import UserContactMethodsView from "~/components/User/UserContactMethodsView.vue";
 import type Swiper from "swiper";
 import type {UserContactMethodsOptimalStruct} from "~/struct/User/UserItemStruct";
+import {coordinatesStyleSingle} from "~/utils/croppedImage";
 
 definePageMeta({
   requirementUser : null
@@ -19,16 +20,23 @@ const commonStore = useCommonStore()
 const { isMobile } = useScreen();
 const adStore = useAdStore()
 const authStore = useAuthStore()
+const { width } = useScreen();
 
 const idPublication = ref<string | null>(null)
 idPublication.value = route.params.id as string
 const modules = ref([FreeMode, Navigation, Thumbs])
 const thumbsSwiper = ref<Swiper | null>(null);
 const contactsHtmlBlock = ref<HTMLElement | null>(null);
+const cardItemHTML = ref<HTMLElement | null>(null)
+const cardAdditionItemHTML = ref<HTMLElement | null>(null)
+const displayContainerWidth = ref(0)
+const imageStylesMap = ref<Record<string | number, Record<string, string>>>({})
 
 const statusUser = computed(() => authStore.statusUser)
 const adView = computed(() => adStore.adView )
 const contacts = computed(() => adView.value?.ownerDetails.personal_data.contact_methods as UserContactMethodsOptimalStruct<string>)
+
+await adStore.getViewAd(idPublication.value)
 
 const setThumbsSwiper = (swiper: Swiper) => {
   thumbsSwiper.value = swiper;
@@ -46,8 +54,35 @@ const goToContacts = () => {
     block: "start",
   });
 }
-await adStore.requestViewAd(idPublication.value)
 
+const coordinatesStyleUpdate = async () => {
+  console.log('coordinatesStyleUpdate', cardItemHTML.value, adView.value?.photos )
+  if(!cardItemHTML.value || !adView.value?.photos) return null
+  for (const dataImg of adView.value.photos) {
+    const index = adView.value.photos.indexOf(dataImg);
+    imageStylesMap.value[index] = await coordinatesStyleSingle(dataImg, index, displayContainerWidth.value, cardItemHTML.value);
+  }
+}
+const getImageStyle = (id: string | number) => {
+  return imageStylesMap.value[id] || {}; // Возвращаем стили по ID или пустой объект, если их нет
+}
+watch(() => width.value,
+    async () => {
+      displayContainerWidth.value = cardItemHTML.value?.clientWidth || 0
+      await coordinatesStyleUpdate()
+    }
+)
+watch(() => adView.value?.photos,
+    async () => {
+      displayContainerWidth.value = cardItemHTML.value?.clientWidth || 0
+      await coordinatesStyleUpdate()
+    }
+)
+onMounted(async () => {
+  await nextTick()
+  displayContainerWidth.value = cardItemHTML.value?.clientWidth || 0
+  await coordinatesStyleUpdate()
+})
 onUnmounted(() => {
   adStore.clearViewAd()
 })
@@ -61,12 +96,12 @@ onUnmounted(() => {
           <h1>{{adView.name}}</h1>
         </div>
         <div class="page-publication__date">
-          <h1>{{formatDate(adView.created_at, 'DD MMMM YYYY, HH:mm')}}</h1>
+          <span>{{formatDate(adView.created_at, 'DD MMMM YYYY, HH:mm')}}</span>
         </div>
         <div v-if="adView" class="page-publication__main" id="page-publication__main">
           <div class="page-publication__main-left">
             <div class="page-publication__gallery">
-              <div class="page-publication__gallery-item --main">
+              <div class="page-publication__gallery-item --main"  ref="cardItemHTML">
                 <swiper
                     class="page-publication__gallery-swiper --main"
                     :navigation="true"
@@ -77,16 +112,16 @@ onUnmounted(() => {
                 >
                   <swiper-slide
                       class="page-publication__gallery-swiper__slide"
-                      v-for="(image, index) in adView.photos"
-                      @click="showZoomPhotos(image)"
-                      :key="index"
+                      v-for="(image, indexImg) in adView.photos"
+                      @click="showZoomPhotos(image.url)"
+                      :key="indexImg"
                   >
-                    <img :src="image">
+                    <img :src="image.url" :style="getImageStyle(indexImg)" >
                   </swiper-slide>
                 </swiper>
               </div>
 
-              <div v-if="adView.photos.length > 1" class="page-publication__gallery-item --addition">
+              <div v-if="adView.photos.length > 1" class="page-publication__gallery-item --addition" ref="cardAdditionItemHTML">
                 <swiper
                     class="page-publication__gallery-swiper --addition"
                     @swiper="setThumbsSwiper"
@@ -113,7 +148,7 @@ onUnmounted(() => {
                       :key="index"
                       slide-active-class="--active"
                   >
-                    <img :src="image">
+                    <img :src="image.url">
                   </swiper-slide>
                 </swiper>
               </div>
@@ -208,9 +243,12 @@ onUnmounted(() => {
 
     &-item {
       &.--main {
+
         width: 500px;
         border-radius: 10px;
         overflow: hidden;
+        aspect-ratio: 1;
+
         @media (max-width: $md) {
           width: 450px;
         }
@@ -220,8 +258,8 @@ onUnmounted(() => {
         .page-publication__gallery-swiper {
 
           &__slide {
+
             img {
-              aspect-ratio: 1;
 
               border-radius: 10px;
               box-shadow: $box-shadow-lite;
@@ -311,6 +349,7 @@ onUnmounted(() => {
       &__slide {
         display: flex;
         align-items: center;
+
         @media (max-width: $sm) {
           width: auto;
         }

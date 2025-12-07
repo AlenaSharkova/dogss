@@ -2,6 +2,7 @@ import type { ISelectNumber} from "~/struct/Common/ISelectComponent";
 import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 import type {ICommonFormValid} from "~/struct/Common/ICommonForm";
 import type {AdCommentView} from "~/struct/Ad/AdCommentStruct";
+import type {BreederShortsItemStruct} from "~/struct/Breeder/BreederSiteStruct";
 
 
 export interface UserItemFullStruct {
@@ -21,6 +22,7 @@ export interface UserItemFullStruct {
             address: string | null,
         },
     }
+    id_breeder: number | null,
 }
 export interface UserItemPublicAdStruct {
     ad_active: AdItemStruct[],
@@ -69,6 +71,7 @@ export interface UserItemPublicPreviewStruct {
         archive_success: number
     },
     comments_count?: number,
+    breeder?: null | BreederShortsItemStruct
 }
 export interface UserCreateItemStruct {
     email: string;

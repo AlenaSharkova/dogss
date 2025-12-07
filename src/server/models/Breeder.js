@@ -28,9 +28,15 @@ module.exports = (sequelize) => {
             type: DataTypes.ARRAY(DataTypes.TEXT),
             allowNull: true,
         },
-        my_dogs: {
-            type: DataTypes.ARRAY(DataTypes.INTEGER),
-            allowNull: true,
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Users',
+                key: 'id',
+            },
+            onUpdate: 'CASCADE',
+            onDelete: 'SET NULL',
         },
     }, {
         tableName: 'breeders',

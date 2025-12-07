@@ -11,10 +11,13 @@ export default defineEventHandler(async (event) => {
     const Dogs = event.context.Dogs;
     const Breeders = event.context.Breeders;
     const Breeds = event.context.Breeds;
-
+    const Users = event.context.Users;
+    const GeoRegions = event.context.GeoRegions;
+    const GeoCity = event.context.GeoCity;
+    const UploadedFile = event.context.UploadedFile;
 
     try {
-        if (!AdList || !Breeders || !Dogs || !Breeds || !sequelize) {
+        if (!AdList || !Breeders || !Dogs || !Breeds || !Users || !GeoCity || !GeoRegions || !sequelize) {
             console.error('Model or sequelize is not available in the context');
             throw createError({
                 statusCode: 500,
@@ -26,7 +29,7 @@ export default defineEventHandler(async (event) => {
         if(query.id) {
             const breederInfo = await requestDBBreeders()
             if(breederInfo) {
-                return formattedBreeders(breederInfo)
+                return await formattedBreeders(breederInfo, Users)
             } else {
                 throw createError({
                     statusCode: 403,
@@ -57,8 +60,55 @@ export default defineEventHandler(async (event) => {
                             model: Breeds,
                             as: 'Breed',
                         },
+                    ],
+                },
+                {
+                    model: Users,
+                    as: 'OwnerBreeder',
+                    include: [
+                        {
+                            model: GeoCity,
+                            as: 'LocationUserCity',
+                        },
+                        {
+                            model: GeoRegions,
+                            as: 'LocationUserRegion',
+                        },
+                        {
+                            model: AdList,
+                            as: 'UserAdList',
+                            include: [
+                                {
+                                    model: GeoRegions,
+                                    as: 'LocationRegion',
+                                },
+                                {
+                                    model: GeoRegions,
+                                    as: 'ExportRegions',
+                                    through: { attributes: [] }
+                                },
+                                {
+                                    model: Breeds,
+                                    as: 'Breed',
+                                },
+                                {
+                                    model: GeoCity,
+                                    as: 'LocationCity',
+                                },
+                                {
+                                    model: Users,
+                                    as: 'Owner',
+                                },
+                                {
+                                    model: UploadedFile,
+                                    as: 'PhotosObject',
+                                    where: {
+                                        purpose: 'ad',
+                                    },
+                                },
+                            ],
+                        }
                     ]
-
                 }
             ]
         })

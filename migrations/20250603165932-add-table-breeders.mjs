@@ -38,10 +38,6 @@ export async function up(data) {
         type: DataTypes.ARRAY(DataTypes.TEXT),
         allowNull: true,
       },
-      my_dogs: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
-        allowNull: true,
-      },
     }, {
       tableName: 'breeders',
       timestamps: true,

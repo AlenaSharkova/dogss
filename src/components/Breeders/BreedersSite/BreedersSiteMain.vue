@@ -12,8 +12,8 @@ import type {UserPageSectionType} from "~/struct/User/UserPageStruct";
 import {useCommonStore} from "~/stores/common.store";
 import {useUsersStore} from "~/stores/users.store";
 import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
-import BreederSitePets from "~/components/Breeders/BreedersSite/BreederSitePets.vue";
-import BreederSiteGallery from "~/components/Breeders/BreedersSite/BreederSiteGallery.vue";
+import BreedersSitePets from "~/components/Breeders/BreedersSite/BreedersSitePets.vue";
+import BreedersSiteGallery from "~/components/Breeders/BreedersSite/BreedersSiteGallery.vue";
 
 const props = defineProps({
   user: {
@@ -150,17 +150,17 @@ onUnmounted(() => {
         type-action="view"
         :name="`Питомник ${breeder?.name || ''}`"
         @scroll-to-block="goToBlock"
-        v-model="idActiveSection"
+        v-model:section="idActiveSection"
     />
     <LayoutWrapperPage :isPaddingY="false" :isPaddingX="false" class="breeder-site__wrapper" >
       <div ref="aboutHtmlBlock" id="about" class="breeder-site__section --no-padding">
         <h3 class="breeder-site__section-title">О нас</h3>
         <UserPageAbout class="breeder-site__section-block" />
-        <BreederSiteGallery />
+        <BreedersSiteGallery />
       </div>
       <div ref="myDogsHtmlBlock" id="my-dogs" class="breeder-site__section">
         <h3 class="breeder-site__section-title">Наши питомцы</h3>
-        <BreederSitePets :dogs="breeder?.my_dogs" />
+        <BreedersSitePets :dogs="breeder?.my_dogs" />
       </div>
 
       <div ref="adsHtmlBlock" id="ads" class="breeder-site__section">

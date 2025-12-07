@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
 import CardDogsItem from "~/components/Card/CardDogsItem.vue";
-import type {PropType} from "vue";
+import {type PropType, ref} from "vue";
 import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
 import type {DogShortItemStruct} from "~/struct/Dog/DogItemStruct";
 import {Autoplay, EffectCoverflow} from "swiper/modules";
+import type {ICommonUpload} from "~/struct/Common/ICommonUpload";
 
 const props = defineProps({
   dogs: {
@@ -17,7 +18,15 @@ const props = defineProps({
     default: 'view'
   },
 })
+const imageList = defineModel<ICommonUpload[]>({default: []});
 
+const isShowUploadModal = ref(false)
+const showUploadModal = () => {
+  isShowUploadModal.value = true
+}
+const closeUploadModal = () => {
+  isShowUploadModal.value = false
+}
 </script>
 
 <template>
@@ -53,11 +62,28 @@ const props = defineProps({
     >
       <swiper-slide
           class="breeder-site__gallery-swiper__slide"
-          v-for="i in 7"
+          v-for="(itemImg, index) in imageList"
       >
-        <img :src="`/server/image/users/1/${i}.jpg`">
+        <img :src="itemImg.imageUrl">
+        <!--<img :src="`/server/image/users/1/${i}.jpg`">-->
       </swiper-slide>
     </swiper>
+    <div class="breeder-site__gallery-manage">
+      <BaseButton
+          class="breeder-site__gallery-manage__button"
+          text="Перейти к добавлению фото"
+          type="teriary"
+          @click="showUploadModal"
+      />
+      <CommonUploadImageModal
+          :isShow="isShowUploadModal"
+          titleModal="Загрузите фото для галереи"
+          :limit="15"
+          text-next-btn="Перейти к странице"
+          v-model="imageList"
+          @close="closeUploadModal"
+      />
+    </div>
   </div>
 </template>
 

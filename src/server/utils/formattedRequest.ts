@@ -1,29 +1,28 @@
 import {AdBDItemStruct, AdFormatShortItemStruct} from "~/server/struct/AdStruct.js";
-import {UserBDItemStruct} from "~/server/struct/UserStruct";
+import {UserBDItemStruct, UserGlobalItemStruct} from "~/server/struct/UserStruct";
 import type {UserItemPublicAdStruct} from "~/server/struct/UserStruct";
 import {getCommentsListUsers} from "~/server/services/comment.service";
 import {DogsBDItemStruct, DogsFormatShortItemStruct} from "~/server/struct/DogsStruct";
 import {BreederBDItemStruct, BreederItemStruct} from "~/server/struct/BreedersStruct";
+import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct";
 
-export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: any) => {
+export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: any): Promise<UserGlobalItemStruct> => {
     return {
         id: user.id,
         status: user.status,
         personal_data: {
             email: user.email,
-            id: user.id,
             last_name: user.last_name,
             photo: user.photo,
             first_name: user.first_name,
             contact_methods: user.contact_methods,
-            status: user.status,
             geo_main: {
                 city: user.LocationUserCity,
                 region: user.LocationUserRegion,
                 address: user.address,
             }
         },
-        ad_list: user.UserAdList.reduce((list: UserItemPublicAdStruct, ad) => {
+        ad_list: user.UserAdList? user.UserAdList.reduce((list: UserItemPublicAdStruct, ad) => {
                 if (ad.status === 'active') list.ad_active.push(formattedAd(ad))
                 if (ad.status === 'archive-success') list.ad_archive_success.push(formattedAd(ad))
                 if (ad.status === 'archive-close') list.ad_archive_close.push(formattedAd(ad))
@@ -32,7 +31,11 @@ export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: an
                 ad_active: [],
                 ad_archive_success: [],
                 ad_archive_close: [],
-            }),
+            }): {
+                ad_active: [],
+                ad_archive_success: [],
+                ad_archive_close: [],
+            },
         comments: await getCommentsListUsers(user, UsersModel),
     };
 }
@@ -73,7 +76,8 @@ export const formattedUserGlobalShort = (user: UserBDItemStruct) => {
                 region: user.LocationUserRegion,
                 address: user.address,
             }
-        }
+        },
+        breeder: user.MyBreeder
     };
 }
 export const formattedUserAuth = (user: UserBDItemStruct) => {
@@ -93,10 +97,17 @@ export const formattedUserAuth = (user: UserBDItemStruct) => {
                 region: user.LocationUserRegion,
                 address: user.address,
             }
-        }
+        },
+        id_breeder: user.MyBreeder?.id || null
     };
 }
-
+export const formattedImageUploadAd = (item: IUploadImageBD): IUploadImageBody => {
+    return {
+        url: item.url,
+        coordinates: item.coordinates,
+        positionBanner: item.positionBanner,
+    }
+}
 export const formattedAdShort = (item: AdBDItemStruct): AdFormatShortItemStruct => {
     return {
         id: item.id,
@@ -110,7 +121,7 @@ export const formattedAdShort = (item: AdBDItemStruct): AdFormatShortItemStruct 
         number_female: item.number_female,
         approximate_age: item.approximate_age,
         is_contractual_price: item.is_contractual_price,
-        photos: item.photos,
+        photos: item.PhotosObject.map(img => formattedImageUploadAd(img)),
         region_main: item.region_main,
         city_main: item.city_main,
         geo_main: {
@@ -144,6 +155,7 @@ export const formattedAdShort = (item: AdBDItemStruct): AdFormatShortItemStruct 
         ownerDetails: formattedUserGlobalShort(item.Owner),
         isFavorite: !!item.UsersListFavoriteAd?.length,
         UsersListFavoriteAd: item.UsersListFavoriteAd,
+
     }
 }
 export const formattedAd = (item: AdBDItemStruct): AdFormatShortItemStruct => {
@@ -159,7 +171,7 @@ export const formattedAd = (item: AdBDItemStruct): AdFormatShortItemStruct => {
         number_female: item.number_female,
         approximate_age: item.approximate_age,
         is_contractual_price: item.is_contractual_price,
-        photos: item.photos,
+        photos: item.PhotosObject.map(img => formattedImageUploadAd(img)),
         region_main: item.region_main,
         city_main: item.city_main,
         geo_main: {
@@ -194,6 +206,7 @@ export const formattedAd = (item: AdBDItemStruct): AdFormatShortItemStruct => {
         ownerDetails: formattedUserGlobalForAdItem(item.Owner),
         isFavorite: !!item.UsersListFavoriteAd?.length,
         UsersListFavoriteAd: item.UsersListFavoriteAd,
+        PhotosObject: item.PhotosObject,
     }
 }
 
@@ -215,7 +228,7 @@ export const formattedDogsShort = (item: DogsBDItemStruct): DogsFormatShortItemS
     }
 }
 
-export const formattedBreeders = (item: BreederBDItemStruct): BreederItemStruct => {
+export const formattedBreeders = async (item: BreederBDItemStruct, UsersModel: any): BreederItemStruct => {
     return {
         id: item.id,
         //created_at: item.created_at,
@@ -223,7 +236,8 @@ export const formattedBreeders = (item: BreederBDItemStruct): BreederItemStruct 
         photos_gallery: item.photos_gallery,
         photo_banner: item.photo_banner,
         created_ad: item.created_ad,
-        my_dogs: item.MyDogs.map((item: DogsBDItemStruct) => formattedDogsShort(item))
+        my_dogs: item.MyDogs.map((item: DogsBDItemStruct) => formattedDogsShort(item)),
+        ownerDetails: item.OwnerBreeder ? await formattedUserGlobal(item.OwnerBreeder, UsersModel) : null,
         //временнно
         //
 

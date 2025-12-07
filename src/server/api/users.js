@@ -13,10 +13,12 @@ export default defineEventHandler(async (event)=>
     const GeoRegions = event.context.GeoRegions;
     const AdList = event.context.AdList;
     const Breeds = event.context.Breeds;
+    const Breeders = event.context.Breeders;
+    const UploadedFile = event.context.UploadedFile;
 
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
 
-    if (!Users || !GeoCity  || !AdList || !GeoRegions || !sequelize) {
+    if (!Users || !GeoCity  || !AdList || !GeoRegions || !Breeders || !sequelize) {
         console.error('Breeds model or sequelize is not available in the context');
         throw createError({
             statusCode: 500,
@@ -25,6 +27,8 @@ export default defineEventHandler(async (event)=>
         });
     }
     try {
+        console.log('query usersss', query)
+
         if (query?.id) {
             const user = await Users.findOne({
                 where: {
@@ -63,11 +67,19 @@ export default defineEventHandler(async (event)=>
                             {
                                 model: Users,
                                 as: 'Owner',
-                            }
+                            },
+                            {
+                                model: UploadedFile,
+                                as: 'PhotosObject',
+                                where: {
+                                    purpose: 'ad'
+                                },
+                            },
                         ],
                     }
                 ]
             });
+
             if (!user) {
                 throw createError({
                     statusCode: 404,
@@ -79,6 +91,8 @@ export default defineEventHandler(async (event)=>
                 return a
             }
         } else {
+            console.log('query else')
+
             const usersList = await Users.findAll(
                 {include: [
                     {
@@ -88,15 +102,22 @@ export default defineEventHandler(async (event)=>
                     {
                         model: GeoRegions,
                         as: 'LocationUserRegion',
-                    }
+                    },
+                    {
+                        model: Breeders,
+                        as: 'MyBreeder',
+                    },
                 ]}
             );
+            console.log('formattedUserGlobalShort', usersList)
             return usersList.map(user => formattedUserGlobalShort(user))
         }
     } catch (error) {
+        console.log('error current', error)
         throw createError({
             statusCode: 500,
-            statusMessageServer
+            statusMessage: statusMessageServer,
+            message: error
         });
     }
 })

@@ -14,12 +14,16 @@ export const useUsersStore = defineStore('usersStore', () => {
 
   let usersList = ref<UserItemPublicPreviewStruct[] | null>(null)
   const userViewData = ref<UserItemPublicStruct | null>(null)
+  const userForBreederViewData = ref<UserItemPublicStruct | null>(null)
 
     async function updateUsersList() {
         await usersService
         .getUsersList()
         .then((res) => {
             if (res) usersList.value = res;
+            else {
+                commonStore.addUserErrorAlert('Упс, Ошибка загрузки данных каталога..')
+            }
           console.log('usersList in store', usersList.value, res)
 
         })
@@ -30,11 +34,18 @@ export const useUsersStore = defineStore('usersStore', () => {
           });
   }
 
-  async function getUserViewData(id: string | number) {
+  async function getUserViewData(id: string | number, isForBreeder = false) {
       await usersService
         .getUserData(id)
         .then((res) => {
-          if (res) userViewData.value = res;
+          if (res) {
+              if(isForBreeder) userForBreederViewData.value = res;
+              else userViewData.value = res;
+          } else {
+              commonStore.addUserErrorAlert('Упс, Ошибка загрузки данных пользователя..')
+              userForBreederViewData.value = null
+              userViewData.value = null
+          }
         })
           .catch(e => {
               commonStore.addUserErrorAlert(e.data?.statusMessage)
@@ -48,6 +59,7 @@ export const useUsersStore = defineStore('usersStore', () => {
       usersList,
       updateUsersList,
       getUserViewData,
-      userViewData
+      userViewData,
+      userForBreederViewData
   }
 })

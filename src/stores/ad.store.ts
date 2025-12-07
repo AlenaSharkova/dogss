@@ -10,9 +10,7 @@ import type {
     AdListApiQuery,
     AdQueryFilterStruct
 } from "~/struct/Ad/AdItemStruct";
-import {q} from "~~/.output/server/chunks/runtime.mjs";
 import {useCommonStore} from "~/stores/common.store";
-import type {IStatusAd} from "~/struct/Common/IValueType";
 
 
 export const useAdStore = defineStore('adStore', () => {
@@ -40,7 +38,8 @@ export const useAdStore = defineStore('adStore', () => {
     async function clearViewAd() {
         idRequestAdView.value = null
     }
-    async function getViewAd() {
+    async function getViewAd(id: string) {
+        idRequestAdView.value = id
         await adService.getAdList({id: String(idRequestAdView.value)})
             .then((res) => {
                 if (res) adView.value = res as AdItemStruct;
@@ -108,15 +107,6 @@ export const useAdStore = defineStore('adStore', () => {
         adCatalogFilter.value.breeds = res.queryDetails.breeds
         adCatalogFilter.value.maxFullPrice = res.queryDetails.maxFullPrice
     }
-
-    watch(() => idRequestAdView.value,
-        async (newIdRequestAdView) => {
-            if(newIdRequestAdView) {
-                await getViewAd()
-            } else {
-                adView.value = null
-            }
-        })
     watch(() => authStore.statusUser,
         async (newStatus) => {
             console.log('newStatus', newStatus)

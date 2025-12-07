@@ -61,8 +61,9 @@ const selectChild = (children: ISelectComponent) => {
 watch(() => props.search,
     (newValue) => {
       isOpen.value = !!newValue
-      children.value = props.regionItem?.children?.sort((a, b) => !!selectedChildren.value?.find(item => item.value === b.value ) - !!selectedChildren.value?.find(item => item.value === a.value) )
-
+      if(selectedChildren.value) {
+        children.value = props.regionItem?.children?.sort((a, b) => !!selectedChildren.value.find(item => item.value === b.value ) - !!selectedChildren.value?.find(item => item.value === a.value) )
+      }
     }
 )
 watch(() => props.selected,
@@ -74,12 +75,12 @@ watch(() => props.selected,
       }
       console.log('mount', newValue)
 
-      if(props.selected.children?.length) {
+      if(props.selected?.children?.length && props.regionItem?.children) {
         statusRegion.value = 'active'
         selectedChildren.value = props.regionItem.children
       } else {
         statusRegion.value = 'incomplete'
-        selectedChildren.value = newValue
+        selectedChildren.value = newValue.children
       }
     }
 )
@@ -92,7 +93,7 @@ onMounted(() => {
       selectedChildren.value = props.selected.children
     } else {
       statusRegion.value = 'incomplete'
-      selectedChildren.value = props.selected
+      selectedChildren.value = props.selected.children
     }
   }
   children.value = props.regionItem?.children?.sort((a, b) => !!selectedChildren.value?.find(item => item.value === b.value ) - !!selectedChildren.value?.find(item => item.value === a.value) )

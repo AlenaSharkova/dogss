@@ -54,7 +54,7 @@ const approximateAgeText = computed(() => {
 
 .card-item__content {
   padding: 12px 0;
-  height: 220px;
+  height: 120px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

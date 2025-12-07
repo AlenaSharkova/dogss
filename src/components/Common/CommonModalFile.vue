@@ -86,8 +86,6 @@ const sendFile = async () => {
 }
 
 const uploadFiles = async (formData: any) => {
-  console.log('uploadFiles: ', formData)
-
    await uploadStore.uploadImage(formData).then(res => {
     console.log(res)
   }).catch(err => {

@@ -118,8 +118,6 @@ onMounted(  () => {
     <LayoutWrapperPage :isPaddingY="false" class="user-page__wrapper" >
       <div ref="aboutHtmlBlock" id="about" class="user-page__section">
         <h3 class="user-page__section-title">О нас</h3>
-        <BaseButton to="/breeders/19" />
-
         <UserPageAbout class="user-page__section-block" />
       </div>
       <div ref="adsHtmlBlock" id="ads" class="user-page__section">

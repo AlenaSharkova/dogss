@@ -45,9 +45,9 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
 
         </BaseWithMiniPopup>
         <div class="card-item__content-address">
-          <p v-if="item.approximate_age"> {{approximateAgeText}}</p>
-          <p v-if="!item.approximate_age"> Рождение: {{formatDate(item.date_birth, 'DD MMMM YYYY')}}</p>
-          <p v-if="!item.approximate_age"> {{getYearsOld(item.date_birth)}}</p>
+          <p v-if="item.approximate_age"> ~{{approximateAgeText}}</p>
+          <p v-if="!item.approximate_age && false"> Рождение: {{formatDate(item.date_birth, 'DD MMMM YYYY')}}</p>
+          <p v-if="!item.approximate_age && false"> {{getYearsOld(item.date_birth)}}</p>
           <p v-if="!item.approximate_age"> {{calculateAge(item.date_birth)}}</p>
         </div>
       </div>
@@ -63,11 +63,11 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
         </span>
         <span v-else>{{formatAmountInput(item.price)}} ₽</span>
       </div>
-      <div class="card-item__content-date">
+      <!--<div class="card-item__content-date">
         <span>Date: {{formatDate(item.created_at, 'DD.MM.YY HH:mm:ss')}}</span>
-      </div>
+      </div>-->
       <div class="card-item__content-owner">
-        <span>Мать: {{item.ownerDetails?.personal_data.first_name}} {{item.ownerDetails?.personal_data.last_name}}</span>
+        <span>Хозяин: {{item.ownerDetails?.personal_data.first_name}} {{item.ownerDetails?.personal_data.last_name}}</span>
       </div>
     </div>
   </div>

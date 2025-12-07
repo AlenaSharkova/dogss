@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const statusMessage = 'Ошибка входа, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
+    const UploadedFile = event.context.UploadedFile;
 
     let user = ref<UserBDItemStruct | null>(null)
 

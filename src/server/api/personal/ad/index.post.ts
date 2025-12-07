@@ -1,5 +1,6 @@
 import {getUserAuth} from "~/server/services/auth.service";
 import {sendAdModerationToTgAdmin} from "~/server/services/telegram.service";
+import {IUploadImageBD, IUploadImageBody, IUploadImageInBase} from "~/server/struct/UploadFileStruct";
 
 export default defineEventHandler(async (event)=>
 {
@@ -11,6 +12,7 @@ export default defineEventHandler(async (event)=>
     const AdList = event.context.AdList;
     const Users = event.context.Users;
     const AdExportRegions = event.context.AdExportRegions;
+    const UploadedFile = event.context.UploadedFile;
 
     let adItemCreateResult
     //TODO: валидация
@@ -30,8 +32,19 @@ export default defineEventHandler(async (event)=>
                 message: `Пользователь с ID ${body.owner} не найден!`,
             });
         }
-        adItemCreateResult = await AdList.create(body);
 
+        if (!body.photos) {
+            throw createError({
+                statusCode: 400,
+                message: `Получены не все данные`,
+            });
+        }
+        let photoBase: IUploadImageBD[] = []
+        for (const photo of body.photos) {
+            photoBase.push(await sendPhoto(photo))
+        }
+        body.photos = photoBase.map(item => item.id);
+        adItemCreateResult = await AdList.create(body);
         if (body.is_export && body.regionsExport && body.regionsExport.length ) {
             for (const regionId of body.regionsExport) {
                 await AdExportRegions.create({
@@ -42,112 +55,26 @@ export default defineEventHandler(async (event)=>
         }
 
         sendAdModerationToTgAdmin(event.context.TelegramBotMain, adItemCreateResult.id)
-        //await adItemCreateResult.reload()
-
-        /*adItemCreateResult = await sql`
-            INSERT INTO ad_list (
-                    img, name, owner, price,
-                    count_image, date_birth, breed_id, type_ad, 
-                    description, is_export, parents_mum, parents_dad,
-                    region_main, city_main, gender, quantitative,
-                    status
-                ) 
-                VALUES (
-                    ${body.img}, ${body.name}, ${body.owner}, ${body.price},
-                    ${body.count_image}, ${body.date_birth}, ${body.breed_id}, ${body.type_ad},
-                    ${body.description}, ${body.is_export}, ${body.parents_mum}, ${body.parents_dad},
-                    ${body.region_main}, ${body.city_main}, ${body.gender}, ${body.quantitative},
-                    'active'
-                    )
-                RETURNING *
-                `
-        console.log('adItemCreateResult', adItemCreateResult)
-        if (body.is_export && body.regionsExport && body.regionsExport.length ) {
-            for (const regionId of body.regionsExport) {
-                await sql`
-                INSERT INTO ad_export_regions (ad_id, region_id) 
-                VALUES (${adItemCreateResult[0].id}, ${regionId})
-                RETURNING *;
-            `;
-            }
-        }
-
-        event.waitUntil(sql.end())*/
 
         return adItemCreateResult
     }
     catch (error) {
-        console.log('Ошибка при создании объявления ', error )
+        console.log('Ошибка при создании объявления ', error)
         throw createError({
             statusCode: 400,
             message: JSON.stringify(error),
             statusMessage: 'Ошибка при создании объявления',
         })
-
     }
 
-    /*
-    const { title, description, category, price, location, contact_phone, images } = req.body;
-
-  // 1. Валидация данных (очень важна!)
-  if (!title || !description || !category || !contact_phone) {
-    return res.status(400).json({ error: 'Не все обязательные поля заполнены' });
-  }
-
-  // 2. Создание нового объявления в таблице ad_list
-  const adData = {
-    title: title,
-    description: description,
-    category: category,
-    price: price || null, // Если цена не указана, ставим NULL
-    location: location || null,
-    contact_phone: contact_phone,
-  };
-
-  db.query('INSERT INTO ad_list SET ?', adData, (err, result) => {
-    if (err) {
-      console.error('Ошибка при создании объявления:', err);
-      return res.status(500).json({ error: 'Ошибка при создании объявления' });
+    async function sendPhoto (photo: IUploadImageBody) {
+        return await UploadedFile.create({
+            url: photo.url,
+            typeFile: 'image',
+            purpose: 'ad',
+            owner: body.owner,
+            coordinates: photo.coordinates,
+            positionBanner: photo.positionBanner
+        });
     }
-
-    const adId = result.insertId; // Получаем ID созданного объявления
-
-    // 3. Добавление изображений в таблицу ad_images (если они есть)
-    if (images && images.length > 0) {
-      const imageValues = images.map((imageUrl) => [adId, imageUrl]);  // Формируем массив значений для вставки
-
-      db.query('INSERT INTO ad_images (ad_id, image_url) VALUES ?', [imageValues], (err, result) => {
-        if (err) {
-          console.error('Ошибка при добавлении изображений:', err);
-          // ВАЖНО: Здесь нужно откатить транзакцию, если произошла ошибка! (см. ниже)
-          return res.status(500).json({ error: 'Ошибка при добавлении изображений' });
-        }
-
-        // 4. Успешный ответ
-        res.status(201).json({ message: 'Объявление успешно создано', adId: adId });
-      });
-    } else {
-      // Если нет изображений, просто отправляем успешный ответ
-      res.status(201).json({ message: 'Объявление успешно создано', adId: adId });
-    }
-  });*/
-
-    /*var results = await Promise.all(ad.map(async (item) => {
-        const adOwner =  await sql`SELECT * FROM users WHERE id=${item.owner}`
-        console.log('ad 22 owner', `SELECT * FROM users WHERE id=${item.owner}`, adOwner);
-        return {
-            ...item,
-            ownerDetails: adOwner.length? adOwner[0] : null,
-        }
-    }));
-*/
-
-
-    // //  INSERT INTO
-
-    // Ensure the database connection is closed after the request is processed
-
-
-
-
 })

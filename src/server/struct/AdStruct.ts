@@ -1,4 +1,5 @@
 import {UserBDItemStruct} from "~/server/struct/UserStruct";
+import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct";
 
 export interface AdBDItemStruct {
     id: number;
@@ -38,14 +39,14 @@ export interface AdBDItemStruct {
     Owner: UserBDItemStruct;
     ExportRegions: object;
     UsersListFavoriteAd: object[];
-
+    PhotosObject: IUploadImageBD[];
 }
 export interface AdFormatShortItemStruct {
     id: number;
     name: string;
     price: number;
     status: string;
-    photos: string[];
+    photos: IUploadImageBody[];
     date_birth: string;
     type_ad: string;
     description: string;
@@ -76,7 +77,6 @@ export interface AdFormatShortItemStruct {
     isFavorite: boolean
     ownerDetails: object;
     UsersListFavoriteAd: object;
-
 }
 export interface AdQueryAdminStruct {
     status: string;

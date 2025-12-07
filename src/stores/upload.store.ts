@@ -19,7 +19,7 @@ export const useUploadStore = defineStore('uploadStore', () => {
         return await uploadService
             .uploadObject(formData)
             .then((res) => {
-                console.log('uploadListFull in store',  res)
+                console.log('uploadListFull in store', formData, res)
                 return res
             })
             .catch(e => {

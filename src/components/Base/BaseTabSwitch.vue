@@ -73,9 +73,9 @@ const styleLine = computed(() => {
         />
         <label
             :for="`input-tab-switch-${name}-${item.value}`"
-            :class="{ '--active': activeIndex === index }"
+            :class="{ '--active': activeIndex === index, '--grid': item.details?.count || item.details?.count == 0 }"
         >
-          <span></span>
+          <span v-if="item.details?.count || item.details?.count == 0"></span>
           <span>{{ item.text }}</span>
           <div v-if="item.details?.count || item.details?.count == 0"
                class="base-tab-switch__item-count">
@@ -103,7 +103,9 @@ const styleLine = computed(() => {
       }
       &__item{
         label {
-          grid-template-columns: minmax(auto, 30px) 1fr 30px;
+          .--grid {
+            grid-template-columns: minmax(auto, 30px) 1fr 30px;
+          }
         }
       }
     }
@@ -149,20 +151,24 @@ const styleLine = computed(() => {
       display: none;
     }
     label {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      display: flex;
       gap: 5px;
       justify-content: center;
       width: 100%;
       height: 100%;
       padding: 14px 5px;
       cursor: pointer;
-      @media (max-width: $sm) {
-        grid-template-columns: minmax(auto, 30px) 1fr 30px;
+      .--grid {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        @media (max-width: $sm) {
+          grid-template-columns: minmax(auto, 30px) 1fr 30px;
+        }
+        @media (max-width: $xss) {
+          grid-template-columns: 0px 1fr auto;
+        }
       }
-      @media (max-width: $xss) {
-        grid-template-columns: 0px 1fr auto;
-      }
+
       span {
         text-wrap: nowrap;
       }

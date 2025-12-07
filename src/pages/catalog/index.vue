@@ -109,7 +109,6 @@ useHead({
         </div>
         <div class="page-catalog__main-block">
           <div ref="adListHtmlBlock" class="page-catalog__main-listing">
-            {{adListHtmlBlock}}
             <AdWrapperList has-filter :empty="!adList?.length">
               <CardAdItem
                   v-for="(item, index) in adList"
@@ -124,7 +123,6 @@ useHead({
         </div>
       </div>
       <br />
-      <BaseButton type="primary" @click="getCreateReq()"  text="Обновить"/>
     </LayoutWrapperPage>
 
   </div>
@@ -147,7 +145,9 @@ useHead({
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-height: 800px;
     &-block {
+      flex: 1;
       position: relative;
       display: flex;
       gap: 10px;
@@ -161,6 +161,7 @@ useHead({
       scroll-margin-top: 80px;
     }
     &-filter {
+      flex: 1;
       position: sticky;
       top: 100px;
       @media (max-width: $sm) {

@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const statusMessage = 'Ошибка избранных объявлений, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
+    const UploadedFile = event.context.UploadedFile;
 
     if (!AdList || !FavoritesAd || !sequelize) {
         console.error('Model or sequelize is not available in the context');
@@ -75,7 +76,14 @@ export default defineEventHandler(async (event) => {
                     {
                         model: Users,
                         as: 'Owner',
-                    }
+                    },
+                    {
+                        model: UploadedFile,
+                        as: 'PhotosObject',
+                        where: {
+                            purpose: 'ad'
+                        },
+                    },
                 ],
                 required: true
             });

@@ -1,29 +1,24 @@
 <script setup lang="ts">
 import {useUsersStore} from "~/stores/users.store";
 import {computed, type PropType, ref} from "vue";
-import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {useAdStore} from "~/stores/ad.store";
-import CardAdItem from "~/components/Card/CardAdItem.vue";
-import {Autoplay, EffectCoverflow} from "swiper/modules";
 import BreedersSiteHead from "~/components/Breeders/BreedersSite/BreedersSiteHead.vue";
 import BaseIconPaws from "~/components/Base/BaseIcon/BaseIconPaws.vue";
-import { useBreederStore} from "~/stores/breeder.store";
+import {useBreederStore} from "~/stores/breeder.store";
 import UserPageAds from "~/components/User/UserPage/UserPageAds.vue";
 import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import UserPageCommentsGallery from "~/components/User/UserPage/UserPageCommentsGallery.vue";
 import UserContactMethodsView from "~/components/User/UserContactMethodsView.vue";
 import type {UserPageSectionType} from "~/struct/User/UserPageStruct";
 import {useCommonStore} from "~/stores/common.store";
-import CardDogsItem from "~/components/Card/CardDogsItem.vue";
 import type {
   BreederSiteChangeStruct,
   BreederSiteItemStruct,
-  BreederSiteSaveStruct
+  BreederSiteManageStruct
 } from "~/struct/Breeder/BreederSiteStruct";
-import BreederSitePets from "~/components/Breeders/BreedersSite/BreederSitePets.vue";
-import BreederSiteGallery from "~/components/Breeders/BreedersSite/BreederSiteGallery.vue";
-import type {DogShortItemStruct} from "~/struct/Dog/DogItemStruct";
-import dynamicRef from "ajv/lib/vocabularies/dynamic/dynamicRef";
+import BreedersSitePets from "~/components/Breeders/BreedersSite/BreedersSitePets.vue";
+import BreedersSiteGallery from "~/components/Breeders/BreedersSite/BreedersSiteGallery.vue";
+import type {ICommonUpload, IUploadImageInBase} from "~/struct/Common/ICommonUpload";
 
 const props = defineProps({
   user: {
@@ -49,13 +44,17 @@ const breedsStore = useBreedsStore()
 const adStore = useAdStore()
 const commonStore = useCommonStore()
 
-const newData = ref<BreederSiteChangeStruct>({
+const newData = ref<BreederSiteManageStruct>({
   my_dogs: null,
   photo_banner: null,
-  photos_gallery: null,
+  photos_gallery: [],
   name: '',
-  id: props.user?.id || 0
+  photo_preview: '',
+  breed_specialisation: [],
+  about_text: '',
 })
+const photoBannerList = ref(null);
+
 const newName = ''
 
 const pawsCount = ref(1)
@@ -160,10 +159,24 @@ const save = () => {
   if(props.typeAction === 'create') createBreeder()
 }
 const createBreeder = () => {
-  const newDogs = breederSitePetsRef.value?.sendData()
-  newData.value.my_dogs = newDogs
-  if(!newData.value.id && props.user?.id) newData.value.id = props.user?.id
-  breederStore.createBreeder(newData)
+  console.log('newData.value', newData.value)
+  newData.value.my_dogs = breederSitePetsRef.value?.sendData()
+  breederStore.createBreeder({
+    ...newData.value,
+    photo_banner: getInApiPhotos(newData.value.photo_banner, true),
+    photos_gallery: newData.value.photos_gallery.map(item => getInApiPhotos(item))
+  })
+}
+const getInApiPhotos = (photosData: ICommonUpload, isBanner = false): IUploadImageInBase => {
+  if(!photosData?.imageUrl) return null
+  const res: IUploadImageInBase = {
+    url: photosData.imageUrl,
+  }
+  if(isBanner) res.positionBanner = photosData.positionBanner
+  return res
+}
+const notationAboutText = (aboutText: string) => {
+  newData.value.about_text = aboutText
 }
 onMounted(() => {
 
@@ -191,16 +204,26 @@ onUnmounted(() => {
         @scroll-to-block="goToBlock"
         v-model:section="idActiveSection"
         v-model:name-breeder="newData.name"
+        v-model:banner-images="newData.photo_banner"
     />
     <LayoutWrapperPage :isPaddingY="false" :isPaddingX="false" class="breeder-site__wrapper" >
       <div ref="aboutHtmlBlock" id="about" class="breeder-site__section --no-padding">
         <h3 class="breeder-site__section-title">О нас</h3>
-        <UserPageAbout class="breeder-site__section-block" />
-        <BreederSiteGallery class="breeder-site__section-block" />
+        <UserPageAbout
+            v-model="newData.breed_specialisation"
+            :typeAction="typeAction"
+            :text="newData.about_text"
+            @save-about-text="notationAboutText"
+            class="breeder-site__section-block"
+        />
+        <BreedersSiteGallery
+            class="breeder-site__section-block"
+            v-model="newData.photos_gallery"
+        />
       </div>
       <div ref="myDogsHtmlBlock" id="my-dogs" class="breeder-site__section">
         <h3 class="breeder-site__section-title">Наши питомцы</h3>
-        <BreederSitePets :dogs="breeder?.my_dogs" :typeAction="typeAction" ref="breederSitePetsRef"/>
+        <BreedersSitePets :dogs="breeder?.my_dogs" :typeAction="typeAction" ref="breederSitePetsRef"/>
       </div>
 
       <div ref="adsHtmlBlock" id="ads" class="breeder-site__section">
@@ -281,7 +304,7 @@ onUnmounted(() => {
   &__save {
     position: fixed;
     bottom: 50px;
-    z-index: 20;
+    z-index: 10;
   }
   &__paws {
     top: 0px;

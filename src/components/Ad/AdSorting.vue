@@ -14,14 +14,14 @@ const sortingList = reactive([
   },
   {
     text: 'Сначала старые',
-    value: 'createdAtDown'
+    value: 'createdAtUp'
   },
   {
     text: 'Сначала новые',
-    value: 'createdAtUp'
+    value: 'createdAtDown'
   },
 ])
-const selectedSort = ref(route.query.sorting as string || 'createdAtUp')
+const selectedSort = ref(route.query.sorting as string || 'createdAtDown')
 
 const sortingAd = (value: string) => {
   console.log('click', value)

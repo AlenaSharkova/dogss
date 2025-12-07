@@ -92,8 +92,6 @@ const emptyBlock = computed(() => {
 <template>
   <div class="personal-ad">
     <div class="personal-ad__row">
-      {{selectTabTypeAd}}
-      {{personalAdModerationList}}
 
       <BaseTabSwitch :items="tabTypeAdList" name="personal-publications" v-model="selectTabTypeAd" />
       <BaseButton

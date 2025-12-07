@@ -10,6 +10,7 @@ import otpModel from '../models/Otp.js';
 import favoritesAdModel from '../models/FavoritesAd.js';
 import breedersModel from '../models/Breeder.js';
 import dogsModel from '../models/Dog.js';
+import uploadedFileModel from '../models/UploadedFile.js';
 import {initEventTgBot} from "~/server/services/telegram.service.js";
 import {tokenTgBot} from "~/server/data/access-data.js";
 import TelegramBot from "node-telegram-bot-api";
@@ -53,6 +54,7 @@ export default defineNitroPlugin(async  (nitroApp) => {
     const FavoritesAd = favoritesAdModel(sequelize);
     const Breeders = breedersModel(sequelize);
     const Dogs = dogsModel(sequelize);
+    const UploadedFile = uploadedFileModel(sequelize);
 
     const TelegramBotMain = new TelegramBot(tokenTgBot, { polling: true })
     initEventTgBot(TelegramBotMain)
@@ -124,9 +126,24 @@ export default defineNitroPlugin(async  (nitroApp) => {
         foreignKey: 'owner',
         as: 'MyDogs'
     });
+    AdList.hasMany(UploadedFile, {
+        foreignKey: 'source_id',
+        as: 'PhotosObject',
+        onDelete: 'CASCADE',
+    });
     Dogs.belongsTo(Breeds, {
         foreignKey: 'breed_id',
         as: 'Breed'
+    });
+    Users.hasOne(Breeders, {
+        foreignKey: 'user_id', // Внешний ключ в модели Breeder
+        as: 'MyBreeder',        // Alias для включения
+        onDelete: 'CASCADE'   // Опционально: при удалении пользователя удалять и его питомник
+    });
+    Breeders.belongsTo(Users, {
+        foreignKey: 'user_id',
+        as: 'OwnerBreeder',
+        onDelete: 'CASCADE'
     });
 
     Otp.belongsTo(Users, { foreignKey: 'userId', onDelete: 'CASCADE',  as: 'User' });
@@ -145,6 +162,7 @@ export default defineNitroPlugin(async  (nitroApp) => {
         event.context.FavoritesAd = FavoritesAd;
         event.context.Breeders = Breeders;
         event.context.Dogs = Dogs;
+        event.context.UploadedFile = UploadedFile;
 
         event.context.TelegramBotMain = TelegramBotMain;
         console.log('model and sequelize added to context');
@@ -161,6 +179,7 @@ export default defineNitroPlugin(async  (nitroApp) => {
             FavoritesAd,
             Breeders,
             Dogs,
+            UploadedFile,
             TelegramBotMain
         },
     };

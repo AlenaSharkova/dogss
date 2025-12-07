@@ -9,7 +9,7 @@ import type {
   ISelectGender,
   ISelectTypeAd
 } from "~/struct/Ad/AdItemStruct";
-import type {ICommonUpload} from "~/struct/Common/ICommonUpload";
+import type {ICommonUpload, IUploadImageInBase} from "~/struct/Common/ICommonUpload";
 import FormWindow from "./FormWindow.vue";
 import BaseInput from "../Base/BaseInput.vue";
 import {useBreedsStore} from "~/stores/breeds.store";
@@ -87,6 +87,7 @@ const isNavigationWithoutConfirmation  = ref(false)
 const currentStep = ref(1)
 const formDefault = ref<AdChangeItemStruct>({})
 const isShowLeaveConfirmationModal = ref(false)
+const isShowUploadImageModal = ref(false)
 const leavingRoute = ref('')
 
 const isErrorSelectedRegion = ref(false)
@@ -219,7 +220,12 @@ const fillPersonalData = async () => {
 const getBody = (typeSaved: 'active' | 'moderation' | 'draft'): AdCreateItemStruct | false => {
   console.log('dayjs(form.name)', dayjs(form.name))
   console.log('dayjs(form.date_birth, \'DD.MM.YYYY\')', dayjs(form.date_birth, 'DD.MM.YYYY').format())
-  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => item.imageUrl) as string[]
+  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => {
+    return {
+      url: item.imageUrl,
+      coordinates: item.coordinates
+    }
+  }) as IUploadImageInBase[]
 
   if(
       (/*!dayjs(form.date_birth).isValid()
@@ -332,6 +338,12 @@ const nextLeave = () => {
   isNavigationWithoutConfirmation.value = true
   router.push(leavingRoute.value)
 }
+const showUploadImageModal = () => {
+  isShowUploadImageModal.value = true
+}
+const closeUploadImageModal = () => {
+  isShowUploadImageModal.value = false
+}
 
 onBeforeRouteLeave((to, from, next) => { // Хук навигации Vue Router
   if(!props.itemChangeDateAd?.id && selectAdType.value.value && !isNavigationWithoutConfirmation.value) {
@@ -427,7 +439,23 @@ if(authStore.statusUser === 'active') {
               <BaseInput total-number :max-length="2" title="Количество девочек" v-model="form.number_dogs.female" />
               <BaseInput total-number :max-length="2" title="Количество мальчиков" v-model="form.number_dogs.male"  />
             </div>
-          <CommonUploadImage :isShow="true" v-model="imageList" :limit="10"/>
+
+          <CommonUploadImage
+              v-model="imageList"
+              text-btn="Перейти к выбору изображений"
+              is-customer-click :isShow="true"
+              :limit="10"
+              @click-main-btn="showUploadImageModal"
+          />
+          <CommonUploadImageModal
+              v-model="imageList"
+              text-btn="Выберите изображения"
+              is-advanced-cropper
+              :isShow="isShowUploadImageModal"
+              :limit="10"
+              @close="closeUploadImageModal"
+          />
+
 
         </template>
         <template v-if="currentStep == 3">

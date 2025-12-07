@@ -1,6 +1,7 @@
 import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
 import type {IStatusAd} from "~/struct/Common/IValueType";
 import type {UserItemPublicPreviewStruct} from "~/struct/User/UserItemStruct";
+import type {IUploadImageInBase} from "~/struct/Common/ICommonUpload";
 
 
 export interface AdListApiDetails {
@@ -23,7 +24,7 @@ export interface AdListApi {
 export interface AdItemStruct {
     breed: ISelectNumber;
     name: string;
-    photos: string[];
+    photos: IUploadImageInBase[];
     id: number;
     price: number | null;
     status: IStatusAd;
@@ -84,7 +85,7 @@ export interface AdQueryFilterStruct {
     maxAgeMonth?: number | 'infinite';
 }
 export interface AdCreateItemStruct {
-    photos: string[];
+    photos: IUploadImageInBase[];
     name: string;
     owner: number;
     price: number | null;

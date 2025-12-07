@@ -10,6 +10,9 @@ import items from "ajv/lib/vocabularies/applicator/items";
 import {usePersonalAdStore} from "~/stores/personal-ad.store";
 import AdFavoriteHeart from "~/components/Ad/AdFavoriteHeart.vue";
 import CommonZoomPhotoGallery from "~/components/Common/CommonZoomPhotosGallery.vue";
+import type {ICommonUpload, IUploadImageInBase} from "~/struct/Common/ICommonUpload";
+import useScreen from "~/utils/useScreen";
+import {coordinatesStyleSingle} from "~/utils/croppedImage";
 
 const props = defineProps({
   item: {
@@ -25,11 +28,11 @@ const props = defineProps({
     default: false
   }
 })
-
 const personalStore = usePersonalStore()
 const personalAdStore = usePersonalAdStore()
 const adCommentStore = useAdCommentStore()
 const router = useRouter()
+const { width } = useScreen();
 
 const swiperInstance = ref()
 const isLoadDelete = ref(false)
@@ -64,12 +67,36 @@ const textRegionsExport = computed(() => {
 const isActive = computed(() => props.item.status === 'active')
 const countDogs = computed(() => (props.item.number_male || 0) + (props.item.number_female || 0));
 const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs.value) * 100)
+const cardItemHTML = ref<HTMLElement | null>(null)
+const displayContainerWidth = ref(0)
 
+const imageStylesMap = ref<Record<string | number, Record<string, string>>>({})
+const coordinatesStyleUpdate = async () => {
+  for (const dataImg of props.item.photos) {
+    const index = props.item.photos.indexOf(dataImg);
+    imageStylesMap.value[index] = await coordinatesStyleSingle(dataImg, index, displayContainerWidth.value, cardItemHTML.value);
+  }
+}
+const getImageStyle = (id: string | number) => {
+  return imageStylesMap.value[id] || {}; // Возвращаем стили по ID или пустой объект, если их нет
+}
+watch(() => width.value,
+    async () => {
+      displayContainerWidth.value = cardItemHTML.value?.clientWidth || 0
+      await coordinatesStyleUpdate()
+    }
+)
+onMounted(async () => {
+  await nextTick()
+  displayContainerWidth.value = cardItemHTML.value?.clientWidth || 0
+  await coordinatesStyleUpdate()
+})
 </script>
 
 <template>
   <div
       class="card-item"
+      ref="cardItemHTML"
       :class="{disabled: isLoadDelete }"
       @click="router.push(`/catalog/${item.id}`)"
   >
@@ -155,10 +182,14 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
           {{`${item.photos}1.jpg`}}
           <swiper-slide
               class="card-item__swiper-slide"
-              v-for="(img, indexImg) in item.photos"
+              v-for="(dataImg, indexImg) in item.photos"
               :key="indexImg"
           >
-            <img class="card-item__swiper-img" :src="img" :alt="`dog-${item.id}-${indexImg}`">
+            <img class="card-item__swiper-img"
+                 :src="dataImg.url"
+                 :alt="`dog-${item.id}-${indexImg}`"
+                 :style="getImageStyle(indexImg)"
+            >
           </swiper-slide>
           <div v-if="!item.photos.length"
                class="card-item__swiper-slide --empty">
@@ -183,7 +214,6 @@ const malePercentage = computed(() => ((props.item.number_male || 0) / countDogs
 </template>
 
 <style scoped lang="scss">
-@use 'sass:map';
 :root {
   --male-percentage: 50%; /* Пример значения.  Замените на нужное вам значение. */
 }

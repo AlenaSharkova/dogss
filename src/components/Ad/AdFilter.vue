@@ -189,7 +189,7 @@ const showPriceRange = ref(false)
 <style scoped lang="scss">
 .ad-filter {
   min-width: 400px;
-  max-height: calc(100vh - 100px);
+  height: calc(100vh - 100px);
   overflow: auto;
   padding: 0 0 20px 0;
   @media (max-width: $sm) {

@@ -21,6 +21,7 @@ export default defineEventHandler(async (event) => {
     const Breeds = event.context.Breeds;
     const GeoCity = event.context.GeoCity;
     const GeoRegions = event.context.GeoRegions;
+    const UploadedFile = event.context.UploadedFile;
     const Users = event.context.Users;
     const AdExportRegions = event.context.AdExportRegions;
     const sequelize = event.context.sequelize;
@@ -131,7 +132,14 @@ export default defineEventHandler(async (event) => {
                         }
                     ]
 
-                }
+                },
+                {
+                    model: UploadedFile,
+                    as: 'PhotosObject',
+                    where: {
+                        purpose: 'ad'
+                    },
+                },
             ],
             required: true
         });
@@ -176,7 +184,14 @@ export default defineEventHandler(async (event) => {
                 {
                     model: Users,
                     as: 'Owner',
-                }
+                },
+                {
+                    model: UploadedFile,
+                    as: 'PhotosObject',
+                    where: {
+                        purpose: 'ad'
+                    },
+                },
             ],
             required: true
         });

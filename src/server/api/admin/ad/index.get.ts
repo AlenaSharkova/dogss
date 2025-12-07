@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
     const statusMessage = 'Ошибка входа, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
+    const UploadedFile = event.context.UploadedFile;
 
     let user = ref<UserBDItemStruct | null>(null)
 
@@ -115,6 +116,13 @@ export default defineEventHandler(async (event) => {
                     as: 'LocationRegion',
                 },
                 {
+                    model: UploadedFile,
+                    as: 'PhotosObject',
+                    where: {
+                        purpose: 'ad',
+                    },
+                },
+                {
                     model: GeoRegions,
                     as: 'ExportRegions',
                     through: {attributes: []}
@@ -162,6 +170,13 @@ export default defineEventHandler(async (event) => {
                 {
                     model: Breeds,
                     as: 'Breed',
+                },
+                {
+                    model: UploadedFile,
+                    as: 'PhotosObject',
+                    where: {
+                        purpose: 'ad'
+                    },
                 },
                 {
                     model: GeoCity,

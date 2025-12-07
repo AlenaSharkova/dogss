@@ -15,6 +15,7 @@ export default function useScreen() {
     const isMobileXss = computed(() => width.value < 601);
     const isMobileXs = computed(() => width.value < 770);
     const isMobile = computed(() => width.value < 1025);
+    const isRangeTablet = computed(() => width.value >= 921 && width.value < 1221);
     const isMaxTablet = computed(() => width.value < 1221);
     const isMaxLaptop = computed(() => width.value < 1441);
 
@@ -27,5 +28,5 @@ export default function useScreen() {
         window.removeEventListener('resize', setScreenSizes);
     });
 
-    return { width, height, isMobile, isMaxTablet, isMaxLaptop, isMobileXs, isMobileXss, isMobileXsss, isMobileX4s };
+    return { width, height, isMobile, isMaxTablet, isRangeTablet, isMaxLaptop, isMobileXs, isMobileXss, isMobileXsss, isMobileX4s };
 }

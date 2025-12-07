@@ -5,7 +5,7 @@ import {computed, type PropType} from "vue";
 import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
 import type {DogCreateItemStruct, DogFormCreateItemStruct, DogShortItemStruct} from "~/struct/Dog/DogItemStruct";
-import BreederSitePetsAdd from "~/components/Breeders/BreedersSite/BreederSitePetsAdd.vue";
+import BreedersSitePetsAdd from "~/components/Breeders/BreedersSite/BreedersSitePetsAdd.vue";
 import {useAuthStore} from "~/stores/auth.store";
 
 const props = defineProps({
@@ -61,7 +61,7 @@ defineExpose({
 <template>
   <div class="breeder-site__pets">
 
-    <div v-if="dogs || (typeAction === 'create' && newDogsList.length)" class="breeder-site__pets-list">
+    <div v-if="dogs || typeAction === 'create'" class="breeder-site__pets-list">
       <CardDogsItem
           class="breeder-site__pets-item"
           v-for="(item, index) in dogs"
@@ -72,9 +72,10 @@ defineExpose({
           v-for="(itemNew, indexNew) in newDogsList"
           :key="indexNew"
           :item="itemNew" />
+      <BreedersSitePetsAdd v-if="typeAction !== 'view'" @create="createDog"/>
+
     </div>
     <CommonEmptyBlock v-else-if="typeAction === 'view'" text="Питомцы не найдены" mini-style/>
-    <BreederSitePetsAdd v-if="typeAction !== 'view'" @create="createDog"/>
   </div>
 </template>
 
@@ -94,15 +95,6 @@ defineExpose({
       &:nth-child(2n-1) {
         //margin-bottom: 50%;
       }
-    }
-  }
-  &-add {
-    width: 200px;
-    height: 50px;
-    background: $grey-lite;
-    &__wrapper {
-      padding: 20px;
-
     }
   }
 }
