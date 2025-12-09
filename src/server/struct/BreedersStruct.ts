@@ -1,6 +1,9 @@
 import {UserBDItemStruct, UserGlobalItemStruct} from "~/server/struct/UserStruct";
-import {DogsBDItemStruct, DogsFormatShortItemStruct} from "~/server/struct/DogsStruct";
+import {DogBodyCreateItemStruct, DogsBDItemStruct, DogsFormatShortItemStruct} from "~/server/struct/DogsStruct";
 import type {UserItemPublicPreviewStruct} from "~/struct/User/UserItemStruct";
+import type {IUploadImageInBase} from "~/struct/Common/ICommonUpload";
+import type {DogCreateItemStruct} from "~/struct/Dog/DogItemStruct";
+import {IUploadImageBody} from "~/server/struct/UploadFileStruct";
 
 export interface BreederBDItemStruct {
     id: number;
@@ -9,6 +12,7 @@ export interface BreederBDItemStruct {
     photos_gallery: string[];
     my_dogs: number[];
     created_ad: string;
+    user_id: number;
 
     MyDogs: DogsBDItemStruct[];
     OwnerBreeder?: UserBDItemStruct;
@@ -23,4 +27,14 @@ export interface BreederItemStruct {
     my_dogs: DogsFormatShortItemStruct[];
     created_ad: string;
     ownerDetails: UserGlobalItemStruct | null;
+}
+export interface BreederBodyCreateStruct {
+    id: number;
+    name: string;
+    photo_banner: IUploadImageBody | null;
+    photos_gallery: IUploadImageBody[];
+    my_dogs: DogBodyCreateItemStruct[];
+    photo_preview: IUploadImageBody;
+    breed_specialisation: number[];
+    about_text: string | null;
 }

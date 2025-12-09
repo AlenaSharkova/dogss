@@ -143,7 +143,6 @@ export default defineNitroPlugin(async  (nitroApp) => {
     Breeders.belongsTo(Users, {
         foreignKey: 'user_id',
         as: 'OwnerBreeder',
-        onDelete: 'CASCADE'
     });
 
     Otp.belongsTo(Users, { foreignKey: 'userId', onDelete: 'CASCADE',  as: 'User' });

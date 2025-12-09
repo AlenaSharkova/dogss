@@ -27,18 +27,18 @@ export interface BreederSiteManageStruct {
     name: string | null;
     photo_banner: ICommonUpload | null;
     photos_gallery: ICommonUpload[] | [];
-    my_dogs: DogCreateItemStruct | null;
-    photo_preview: string;
+    my_dogs: DogCreateItemStruct[] | null;
+    photo_preview: ICommonUpload | null;
     breed_specialisation: ISelectComponent[];
     about_text: string | null;
 }
 export interface BreederSiteSaveStruct {
     name: string;
-    photo_banner: IUploadImageInBase;
+    photo_banner: IUploadImageInBase | null;
     photos_gallery: IUploadImageInBase[];
     my_dogs: DogCreateItemStruct;
     photo_preview: IUploadImageInBase;
-    breed_specialisation: number[] | null;
+    breed_specialisation: number[];
     about_text: string | null;
 }
 export interface BreederSiteChangeStruct {

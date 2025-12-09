@@ -161,14 +161,15 @@ const coordinatesStyle = (image: ICommonUpload) => {
   }
 }
 watch(() => imageList.value, (newList) => {
-  console.log('newList', newList)
+  console.log('newList coomon', newList)
 
   if(!imageEditedSize.value) return
   const isHasEditedInList = !!newList.find(item => item.imageUrl === imageEditedSize.value?.imageUrl)
   if(!isHasEditedInList) {
     imageEditedSize.value = null
   }
-
+}, {
+  deep: true,
 })
 </script>
 

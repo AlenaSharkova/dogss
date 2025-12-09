@@ -1,10 +1,10 @@
-import {formattedBreeders, formattedDogsShort} from "~/server/utils/formattedRequest";
 import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct";
 import {getUserAuth} from "~/server/services/auth.service";
+import {BreederBodyCreateStruct} from "~/server/struct/BreedersStruct";
 
 export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
-    const body = await readBody(event)
+    const body: BreederBodyCreateStruct  = await readBody(event)
 
     const statusMessage = 'Ошибка входа, попробуйте ещё раз'
     const statusMessageServer = 'Ошибка сервера, попробуйте позже'
@@ -37,29 +37,34 @@ export default defineEventHandler(async (event) => {
             })
 
         if (!user) {
-            console.error(`Пользователь с ID ${body.owner} не найден!`);
+            console.error(`Пользователь с не найден!`);
             throw createError({
-                statusCode: 500,
-                message: `Пользователь с ID ${body.owner} не найден!`,
+                statusCode: 401,
+                message: `Пользователь не найден!`,
             });
         }
         //Dogs.create(body.my_dogs);
 
-        let photoBasePhotoGallery: IUploadImageBD[] = []
-        if(body.photo_banner) {
-            await sendPhoto( body.photo_banner, 'breeder_banner')
-        }
-        for (const photo of body.photos_gallery) {
-            photoBasePhotoGallery.push(await sendPhoto(photo, 'breeder_gallery'))
-        }
+
         const res = await Breeders.create({
             name: body.name,
-            text_about: body.text_about,
-            my_dogs: body.my_dogs.map(item => item.id),
-            user_id: user.id
+            about_text: body.about_text,
+            //breed_specialisation: body.breed_specialisation,
+            user_id: user.id,
         })
-        return res
+        let photoBasePhotoGallery: IUploadImageBD[] = []
+        if(body.photo_banner) {
+            await sendPhoto( body.photo_banner, 'breeder_banner', res.id)
+        }
+        for (const photo of body.photos_gallery) {
+            if(photo) photoBasePhotoGallery.push(await sendPhoto(photo, 'breeder_gallery', res.id))
+        }
+        if(body.photo_preview) {
+            await sendPhoto(body.photo_preview, 'photo_preview', res?.id)
+        }
+        return res;
     } catch (error) {
+        console.log('Ошибка при создании объявления', error)
         throw createError({
             statusCode: 400,
             message: JSON.stringify(error),
@@ -68,14 +73,15 @@ export default defineEventHandler(async (event) => {
         throw error;
     }
 
-    async function sendPhoto(photo: IUploadImageBody, purpose: string) {
+    async function sendPhoto(photo: IUploadImageBody, purpose: string, source_id: number) {
         return await UploadedFile.create({
             url: photo.url,
             typeFile: 'image',
             purpose: purpose,
             owner: user.id,
             coordinates: photo.coordinates,
-            positionBanner: photo.positionBanner
+            positionBanner: photo.positionBanner,
+            source_id: source_id,
         });
     }
 

@@ -4,7 +4,7 @@ import type {ISelectComponent} from "~/struct/Common/ISelectComponent";
 
 const props = defineProps({
   text: {
-    type: String,
+    type: [String, null] as PropType<String | null>,
     default: ''
   },
   breed: {

@@ -11,7 +11,7 @@ import {useAuthStore} from "~/stores/auth.store";
 const props = defineProps({
   dogs: {
     type: Object as PropType<DogShortItemStruct[] | null>,
-    default: null
+    default: null,
   },
   typeAction: {
     type: String as PropType<'view' | 'create' | 'change'>,
@@ -22,7 +22,7 @@ const emits = defineEmits(['sendDogs'])
 
 const authStore = useAuthStore()
 
-const newDogsList = ref<DogShortItemStruct[]>([])
+const newDogsList = ref<DogFormCreateItemStruct[]>([])
 const userFullData = computed(() => authStore.userFullData )
 
 const createDog = (data: DogFormCreateItemStruct) => {
@@ -30,7 +30,6 @@ const createDog = (data: DogFormCreateItemStruct) => {
     name: data.name,
     breed: data.breed,
     date_birth: data.date_birth,
-    id: userFullData.value?.id as number,
     //owner: 0,
     approximate_age: data.approximate_age,
     //date_birth: data.date_birth,
@@ -39,16 +38,14 @@ const createDog = (data: DogFormCreateItemStruct) => {
   })
 }
 const sendData = () => {
-  const resultDogsList: DogCreateItemStruct = newDogsList.value.map(data => {
+  const resultDogsList: DogCreateItemStruct[] = newDogsList.value?.map(data => {
     return {
       name: data.name,
       breed_id: data.breed.value,
       date_birth: data.date_birth,
-      //owner: 0,
       approximate_age: data.approximate_age,
-      //date_birth: data.date_birth,
       gender: data.gender,
-      photos: data.photos
+      photos: data.photos,
     }
   })
   return resultDogsList

@@ -28,3 +28,13 @@ export interface DogsFormatShortItemStruct {
 //    ownerDetails: object;
 
 }
+export interface DogBodyCreateItemStruct {
+    photos: string[];
+    name: string;
+    //owner: number;
+
+    date_birth: string | null;
+    breed_id: number;
+    gender: 'female' | 'male' | 'any';
+    approximate_age: string | null;
+}

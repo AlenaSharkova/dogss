@@ -13,3 +13,7 @@ export interface ISelectNumber {
     text?: string,
     value?: number
 }
+export interface ISelectNumberRequired {
+    text: string,
+    value: number
+}

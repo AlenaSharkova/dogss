@@ -40,11 +40,12 @@ export default defineEventHandler(async (event)=>
             });
         }
         let photoBase: IUploadImageBD[] = []
+
+        adItemCreateResult = await AdList.create(body);
         for (const photo of body.photos) {
-            photoBase.push(await sendPhoto(photo))
+            photoBase.push(await sendPhoto(photo, adItemCreateResult.id))
         }
         body.photos = photoBase.map(item => item.id);
-        adItemCreateResult = await AdList.create(body);
         if (body.is_export && body.regionsExport && body.regionsExport.length ) {
             for (const regionId of body.regionsExport) {
                 await AdExportRegions.create({
@@ -67,14 +68,15 @@ export default defineEventHandler(async (event)=>
         })
     }
 
-    async function sendPhoto (photo: IUploadImageBody) {
+    async function sendPhoto (photo: IUploadImageBody, source_id: number) {
         return await UploadedFile.create({
             url: photo.url,
             typeFile: 'image',
             purpose: 'ad',
             owner: body.owner,
             coordinates: photo.coordinates,
-            positionBanner: photo.positionBanner
+            positionBanner: photo.positionBanner,
+            source_id: source_id,
         });
     }
 })

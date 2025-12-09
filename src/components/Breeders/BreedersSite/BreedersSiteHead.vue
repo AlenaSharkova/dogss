@@ -23,9 +23,10 @@ const props = defineProps({
 })
 const emits = defineEmits(['scroll-to-block'])
 
-const newNameFinal = defineModel('name-breeder', {default: ''})
-const photoBannerItem = defineModel<ICommonUpload | null>('banner-images', {default: null})
+const newNameFinal = defineModel('nameBreeder', {default: ''})
+const photoBannerItem = defineModel<ICommonUpload | null>('bannerImages', {default: null})
 const idActiveSection = defineModel<UserPageSectionType | null>('section', {default: null})
+const photoPreviewItem = defineModel<ICommonUpload | null>('photoPreview', {default: null})
 
 const commonStore = useCommonStore()
 const { isRangeTablet, isMobile } = useScreen();
@@ -54,6 +55,7 @@ const tabNavList = reactive<{name: string, id: BreederSiteSectionType}[]>([
 ])
 
 const photoBannerList = ref<ICommonUpload[]>([])
+const photoPreviewList = ref<ICommonUpload[]>([])
 const newNameInput = ref('')
 const isShowNameInput = ref(false)
 const classAdded = ref(false)
@@ -61,6 +63,7 @@ const startValue = ref('+=130px')
 const targetElement = useTemplateRef<HTMLElement>('target-element')
 const scrollTriggerInstance = ref<globalThis.ScrollTrigger | null>(null);
 const animationInstance = ref<gsap.core.Tween | null>(null);
+const isShowUploadPreviewModal = ref(false)
 
 const isActiveIndex = computed(() => tabNavList.findIndex(tab => tab.id === idActiveSection.value))
 const lineWidthTabNum = computed(() => 100 / tabNavList.length )
@@ -69,9 +72,9 @@ const lineLeftTab = computed(() => isActiveIndex.value * lineWidthTabNum.value +
 const styleBanner = computed(() => {
   if(photoBannerItem.value) {
     let positionStyle = 'center center'
-    if(isRangeTablet.value) positionStyle = photoBannerItem.value?.positionBanner.table
-    else if(isMobile.value) positionStyle = photoBannerItem.value?.positionBanner.mobile
-    else positionStyle = photoBannerItem.value?.positionBanner.desktop
+    if(isRangeTablet.value) positionStyle = photoBannerItem.value?.positionBanner?.table || ""
+    else if(isMobile.value) positionStyle = photoBannerItem.value?.positionBanner?.mobile || ""
+    else positionStyle = photoBannerItem.value?.positionBanner?.desktop || ""
     return {
       'background-image': `url(${photoBannerItem.value.imageUrl})`,
       'background-position': positionStyle
@@ -130,17 +133,38 @@ const applyNewName = () => {
   console.log('applay', newNameFinal.value)
   isShowNameInput.value = false
 }
+const closeUploadModalPreviewModal = () => {
+  isShowUploadPreviewModal.value = false
+}
+const showUploadPreviewModal = () => {
+  isShowUploadPreviewModal.value = true
+}
 watch(() => commonStore.isScrolled,
     () => updateStart()
 )
 watch(() => photoBannerList.value,
     (newList) => {
+      console.log('newList photoBannerList', newList, newList?.length, photoPreviewList.value)
+
       if(!newList?.length) photoBannerItem.value = null
       photoBannerItem.value = newList[0]
+    }, {
+      deep: true,
+    }
+)
+watch(() => photoPreviewList.value,
+    (newList) => {
+      console.log('newList photoPreviewList', newList, newList?.length, photoPreviewList.value)
+      if(!newList?.length) photoPreviewItem.value = null
+      photoPreviewItem.value = newList[0]
+    }, {
+      deep: true,
     }
 )
 
 onMounted(async () => {
+  photoBannerItem.value? photoBannerList.value[0] = {...photoBannerItem.value}: photoBannerList.value = []
+  photoPreviewItem.value? photoPreviewList.value[0] = {...photoPreviewItem.value}: photoPreviewList.value = []
   gsap.registerPlugin(ScrollTrigger); // Убедитесь, что ScrollTrigger зарегистрирован
   console.log('targetElement.value 1', targetElement.value)
   await createTrigger()
@@ -201,10 +225,20 @@ onBeforeUnmount(() => {
             <Transition name="fade">
               <div v-if="classAdded" class="breeder-site-header__bottom-nav__personal">
                 <BaseProfileCircle
-                    :name="name"
+                    @click="showUploadPreviewModal"
+                    :name="name || 'Фото Превью'"
                     size="small"
                     unfull
-                    img="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp" />
+                    :img="photoPreviewItem?.imageUrl" />
+
+                <CommonUploadImageModal
+                    :isShow="isShowUploadPreviewModal"
+                    titleModal="Загрузите баннер"
+                    text-next-btn="Перейти к объявлению"
+                    v-model="photoPreviewList"
+                    @close="closeUploadModalPreviewModal"
+                />
+
                 <div class="breeder-site-header__bottom-nav__personal-content">
                   <div class="breeder-site-header__bottom-nav__personal-content__title">
                     <p v-if="typeAction === 'create'">{{newNameFinal || 'Введите название питомника'}}</p>

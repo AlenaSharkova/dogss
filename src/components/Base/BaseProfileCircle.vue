@@ -8,7 +8,7 @@ const props = withDefaults(defineProps<
     {
       name?: string,
       size?: 'big' | 'medium' | "small" | "inherit",
-      img?: string,
+      img?: string | null,
       isChange: boolean
 }>(),
     {
@@ -32,7 +32,7 @@ const classes = computed(() => {
        :style="!img? `background: ${getColorCircle( name )}`: ''"
        :class="{...classes}"
   >
-    <img class="base-profile__circle-image" v-if="img" :src="img" />
+    <img v-if="img" class="base-profile__circle-image"  :src="img" />
     <span v-else class="base-profile__circle-text">{{ abbreviationName(name) }}</span>
     <div v-if="isChange" @click="$emit('change')" class="base-profile__circle-change">
       <BaseIconChange class="base-profile__circle-change__icon" />

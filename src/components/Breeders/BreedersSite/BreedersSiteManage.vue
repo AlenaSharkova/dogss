@@ -14,7 +14,7 @@ import {useCommonStore} from "~/stores/common.store";
 import type {
   BreederSiteChangeStruct,
   BreederSiteItemStruct,
-  BreederSiteManageStruct
+  BreederSiteManageStruct, BreederSiteSaveStruct
 } from "~/struct/Breeder/BreederSiteStruct";
 import BreedersSitePets from "~/components/Breeders/BreedersSite/BreedersSitePets.vue";
 import BreedersSiteGallery from "~/components/Breeders/BreedersSite/BreedersSiteGallery.vue";
@@ -49,10 +49,11 @@ const newData = ref<BreederSiteManageStruct>({
   photo_banner: null,
   photos_gallery: [],
   name: '',
-  photo_preview: '',
+  photo_preview: null,
   breed_specialisation: [],
   about_text: '',
 })
+//const sendData = ref<BreederSiteSaveStruct | null>(null)
 const photoBannerList = ref(null);
 
 const newName = ''
@@ -63,7 +64,7 @@ const selectBreed = ref({
   text: ''
 })
 const sectionRouteScroll = ref(route.query['section-default'] as string)
-const breederSitePetsRef = ref<HTMLElement | null>(null);
+const breederSitePetsRef = ref<InstanceType<typeof BreedersSitePets>  | null>(null);
 const aboutHtmlBlock = ref<HTMLElement | null>(null);
 const adsHtmlBlock = ref<HTMLElement | null>(null);
 const contactsHtmlBlock = ref<HTMLElement | null>(null);
@@ -71,7 +72,8 @@ const commentsHtmlBlock = ref<HTMLElement | null>(null);
 const myDogsHtmlBlock = ref<HTMLElement | null>(null);
 const idActiveSection = ref<UserPageSectionType | null>(null)
 const sectionsElemList = ref<(HTMLElement | null)[] | null>([])
-
+const listIncomplete = ref<string[]>([])
+const isShowIncompleteModal = ref(false)
 
 const adList = computed(() => adStore.adCatalogList )
 const breederView = computed(() => breederStore.breederView )
@@ -148,7 +150,7 @@ watch(() => commonStore.scrollTopCurrent,
           // проверка полной видимости
           const fullyVisible = position.top >= 0 && position.bottom <= window.innerHeight
           const lastElemFullyVisibleEnd = index === arr.length - 1 && fullyVisible
-          console.log('difference', differenceTop, differenceBottom, item.getBoundingClientRect(), document.body.offsetHeight, window.innerHeight )
+         // console.log('difference', differenceTop, differenceBottom, item.getBoundingClientRect(), document.body.offsetHeight, window.innerHeight )
           return differenceTop > 0 && differenceBottom < 0
         })
         idActiveSection.value = activeSection?.id || null
@@ -160,14 +162,63 @@ const save = () => {
 }
 const createBreeder = () => {
   console.log('newData.value', newData.value)
-  newData.value.my_dogs = breederSitePetsRef.value?.sendData()
-  breederStore.createBreeder({
-    ...newData.value,
-    photo_banner: getInApiPhotos(newData.value.photo_banner, true),
-    photos_gallery: newData.value.photos_gallery.map(item => getInApiPhotos(item))
-  })
+  const body = getBody()
+  console.log('body00', body)
+  if(body) breederStore.createBreeder(body)
 }
-const getInApiPhotos = (photosData: ICommonUpload, isBanner = false): IUploadImageInBase => {
+const isValidData = computed(() => {
+  return (
+      newData.value.name
+      //&& newData.value.photo_banner
+      && newData.value.photos_gallery
+      && newData.value.my_dogs?.length
+      && newData.value.photo_preview
+      && newData.value.breed_specialisation
+  )
+})
+const getBody = (): BreederSiteSaveStruct | null => {
+  listIncomplete.value = []
+  newData.value.my_dogs = breederSitePetsRef.value?.sendData() || null
+  if(!newData.value.my_dogs?.length) listIncomplete.value.push('my_dogs')
+
+  const photoBanner = getInApiPhotos(newData.value.photo_banner as ICommonUpload, true)
+  if(!photoBanner) listIncomplete.value.push('photo_banner')
+  const photoPreview = getInApiPhotos(newData.value.photo_preview as ICommonUpload, true)
+  if(!photoPreview) listIncomplete.value.push('photo_preview')
+
+  const photoGallery: IUploadImageInBase[] = newData.value.photos_gallery.reduce(
+      (list: IUploadImageInBase[], item) => {
+        if(item) {
+          const imageObject = getInApiPhotos(item)
+          if(imageObject) list.push(imageObject)
+        }
+        return list
+      }, [])
+
+  if(!photoGallery?.length) listIncomplete.value.push('photos_gallery')
+  if(!newData.value.name) listIncomplete.value.push('name')
+  if(!photoPreview) listIncomplete.value.push('photo_preview')
+  if(!newData.value.breed_specialisation) listIncomplete.value.push('breed_specialisation')
+  if(!newData.value.about_text) listIncomplete.value.push('about_text')
+  if(listIncomplete.value?.length) isShowIncompleteModal.value = true
+  if(
+      newData.value.my_dogs?.length
+      && photoGallery?.length
+      && newData.value.name
+      && newData.value.photo_preview
+      && newData.value.about_text
+      && newData.value.breed_specialisation
+      && photoPreview
+  ) {
+    return {
+      ...newData.value,
+      photo_banner: photoBanner,
+      photo_preview: photoPreview,
+      photos_gallery: photoGallery,
+    }
+  } return null
+}
+const getInApiPhotos = (photosData: ICommonUpload, isBanner = false): IUploadImageInBase | null => {
   if(!photosData?.imageUrl) return null
   const res: IUploadImageInBase = {
     url: photosData.imageUrl,
@@ -177,6 +228,9 @@ const getInApiPhotos = (photosData: ICommonUpload, isBanner = false): IUploadIma
 }
 const notationAboutText = (aboutText: string) => {
   newData.value.about_text = aboutText
+}
+const closeIncompleteModal = () => {
+  isShowIncompleteModal.value = false
 }
 onMounted(() => {
 
@@ -200,14 +254,15 @@ onUnmounted(() => {
   <div v-if="user" class="breeder-site --manage">
     <BreedersSiteHead
         :typeAction="typeAction"
-        :name="breeder?.name"
+        name=""
         @scroll-to-block="goToBlock"
         v-model:section="idActiveSection"
         v-model:name-breeder="newData.name"
         v-model:banner-images="newData.photo_banner"
+        v-model:photo-preview="newData.photo_preview"
     />
     <LayoutWrapperPage :isPaddingY="false" :isPaddingX="false" class="breeder-site__wrapper" >
-      <div ref="aboutHtmlBlock" id="about" class="breeder-site__section --no-padding">
+      <div ref="aboutHtmlBlock" id="about" class="breeder-site__section --about --no-padding">
         <h3 class="breeder-site__section-title">О нас</h3>
         <UserPageAbout
             v-model="newData.breed_specialisation"
@@ -223,7 +278,11 @@ onUnmounted(() => {
       </div>
       <div ref="myDogsHtmlBlock" id="my-dogs" class="breeder-site__section">
         <h3 class="breeder-site__section-title">Наши питомцы</h3>
-        <BreedersSitePets :dogs="breeder?.my_dogs" :typeAction="typeAction" ref="breederSitePetsRef"/>
+        <BreedersSitePets
+            :dogs="breeder?.my_dogs"
+            :typeAction="typeAction"
+            ref="breederSitePetsRef"
+        />
       </div>
 
       <div ref="adsHtmlBlock" id="ads" class="breeder-site__section">
@@ -243,9 +302,14 @@ onUnmounted(() => {
         <h3 class="breeder-site__section-title">Отзывы</h3>
         <UserPageCommentsGallery :comments="user.comments"/>
       </div>
-      <BaseButton class="breeder-site__save" text="Сохранить изменения" @click="save"/>
+      <BaseButton class="breeder-site__save" text="Перейти к сохранению изменений" @click="save"/>
     </LayoutWrapperPage>
-
+    <BreedersSiteManageIncomplete
+        v-if="isShowIncompleteModal"
+        :listIncomplete="listIncomplete"
+        :is-show="isShowIncompleteModal"
+        @close="closeIncompleteModal"
+    />
     <div class="breeder-site__paws">
       <TransitionGroup name="fade">
 
@@ -273,14 +337,17 @@ onUnmounted(() => {
     z-index: 2;
     position: relative;
     padding: 0 55px 0 50px;
+    margin-top: 40px;
+    scroll-margin-top: 130px;
     @media (max-width: $md) {
       padding: 0 35px 0 30px;
     }
     @media (max-width: $xs) {
       padding: 0 25px 0 20px;
     }
-    margin-top: 40px;
-    scroll-margin-top: 130px;
+    &.--about {
+      z-index: 8;
+    }
     &-title {
       text-align: center;
       @include h3();

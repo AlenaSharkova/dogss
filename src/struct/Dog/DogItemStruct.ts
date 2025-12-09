@@ -1,10 +1,15 @@
-import type {ISelectComponent, ISelectComponentWithChildren, ISelectNumber} from "~/struct/Common/ISelectComponent";
+import type {
+    ISelectComponent,
+    ISelectComponentWithChildren,
+    ISelectNumber,
+    ISelectNumberRequired
+} from "~/struct/Common/ISelectComponent";
 import type {IStatusAd} from "~/struct/Common/IValueType";
 import type {UserItemPublicPreviewStruct} from "~/struct/User/UserItemStruct";
 
 
 export interface DogShortItemStruct {
-    breed: ISelectNumber;
+    breed: ISelectNumberRequired;
     name: string;
     photos: string[];
     id: number;
@@ -18,13 +23,13 @@ export interface DogShortItemStruct {
 }
 
 export interface DogFormCreateItemStruct {
-    breed: ISelectNumber;
+    breed: ISelectNumberRequired;
 
     photos: string[];
     name: string;
 
     date_birth: string | null;
-    gender: 'female' | 'male' | 'any' | null;
+    gender: 'female' | 'male';
     approximate_age: string | null;
     //прочее
 }
@@ -32,11 +37,11 @@ export interface DogFormCreateItemStruct {
 export interface DogCreateItemStruct {
     photos: string[];
     name: string;
-    owner: number;
+    //owner: number;
 
     date_birth: string | null;
     breed_id: number;
-    gender: 'female' | 'male' | 'any' | null;
+    gender: 'female' | 'male' | 'any';
     approximate_age: string | null;
 }
 export interface DodChangeItemStruct {

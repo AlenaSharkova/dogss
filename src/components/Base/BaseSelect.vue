@@ -51,110 +51,111 @@
         </div>
       </button>
     </div>
+    <Teleport to="body" :disabled="!isMobile" >
+      <Transition name="fade">
+        <div v-if="open"
+             class="base-select__mask"
+             @click="closeMobile"
+        >
+        </div>
+      </Transition>
+      <Transition name="slide-dropdown">
+        <div v-if="open"
+             class="base-select__dropdown"
+        >
 
-    <Transition name="fade">
-      <div v-if="open"
-           class="base-select__mask"
-           @click="closeMobile"
-      >
-      </div>
-    </Transition>
-    <Transition name="slide-dropdown">
-      <div v-if="open"
-           class="base-select__dropdown"
-      >
-
-        <div class="base-select__dropdown-wrapper">
-          <div v-if="props.showSearch"
-               @click="open = true"
-               class="base-select__search --mobile" >
-            <input
-                class="base-select__search-input"
-                type="text"
-                v-model="search"
-                @blur="closeDropdown"
-                :placeholder="valueSelectSearch"
-                :class="[props.rounded, props.class]"
-                :disabled="!props.showSearch"
-                :style="{ width: '100%' }"
-            />
-          </div>
-          <div v-if="filteredOptions.length"
-               class="base-select__dropdown-list"
-          >
-            <div
-              v-for="(option, i) in filteredOptions"
-              :key="i"
-              @click.stop="selectOption(option)"
-              class="base-select__dropdown-list__point"
+          <div class="base-select__dropdown-wrapper">
+            <div v-if="props.showSearch"
+                 @click="open = true"
+                 class="base-select__search --mobile" >
+              <input
+                  class="base-select__search-input"
+                  type="text"
+                  v-model="search"
+                  @blur="closeDropdown"
+                  :placeholder="valueSelectSearch"
+                  :class="[props.rounded, props.class]"
+                  :disabled="!props.showSearch"
+                  :style="{ width: '100%' }"
+              />
+            </div>
+            <div v-if="filteredOptions.length"
+                 class="base-select__dropdown-list"
             >
-             <!-- <input
-                class="base-select__dropdown-list__point-input"
-                v-if="props.multiple"
-                type="checkbox"
-                :checked="isSelected(option)"
-              />-->
-              <input
-                v-if="multiple"
-                class="base-select__dropdown-list__point-input"
-                :name="`input-check-${name}`"
-                type="checkbox"
-                v-model="selectedOptions"
-                @change="toggleSelection(option)"
-                :id="`input-check-${name}-${i}`"
-                :value="option"
-              />
-
-              <input
-                v-else
-                v-show="isMobile"
-                class="base-select__dropdown-list__point-input"
-                :name="`input-check-${name}`"
-                type="radio"
-                v-model="selectedOptions"
-                @change="toggleSelection(option)"
-                :id="`input-check-${name}-${i}`"
-                :value="option"
-              />
-
               <div
-                  v-if="isEnclosure"
-                  class="base-select__dropdown-list__point-enclosure"
+                v-for="(option, i) in filteredOptions"
+                :key="i"
+                @click.stop="selectOption(option)"
+                class="base-select__dropdown-list__point"
               >
-                  <RegionsItem
-                      :region-item="option"
-                      :regions-item-start="itemsFormat"
-                      :name="`${name}-${i}`"
-                      :search="search"
-                      :selected="activeItemEnclosure(option)"
-                      @select="selectEnclosure"
-                  />
-              </div>
-              <label v-else class="base-select__dropdown-list__point-text">
-                <span>{{ option.text }}</span>
-              </label>
+               <!-- <input
+                  class="base-select__dropdown-list__point-input"
+                  v-if="props.multiple"
+                  type="checkbox"
+                  :checked="isSelected(option)"
+                />-->
+                <input
+                  v-if="multiple"
+                  class="base-select__dropdown-list__point-input"
+                  :name="`input-check-${name}`"
+                  type="checkbox"
+                  v-model="selectedOptions"
+                  @change="toggleSelection(option)"
+                  :id="`input-check-${name}-${i}`"
+                  :value="option"
+                />
 
+                <input
+                  v-else
+                  v-show="isMobile"
+                  class="base-select__dropdown-list__point-input"
+                  :name="`input-check-${name}`"
+                  type="radio"
+                  v-model="selectedOptions"
+                  @change="toggleSelection(option)"
+                  :id="`input-check-${name}-${i}`"
+                  :value="option"
+                />
+
+                <div
+                    v-if="isEnclosure"
+                    class="base-select__dropdown-list__point-enclosure"
+                >
+                    <RegionsItem
+                        :region-item="option"
+                        :regions-item-start="itemsFormat"
+                        :name="`${name}-${i}`"
+                        :search="search"
+                        :selected="activeItemEnclosure(option)"
+                        @select="selectEnclosure"
+                    />
+                </div>
+                <label v-else class="base-select__dropdown-list__point-text">
+                  <span>{{ option.text }}</span>
+                </label>
+
+              </div>
+            </div>
+            <div v-else>
+              <span>Элементы не найдены</span>
+            </div>
+            <div v-if="props.multiple"
+                 class="base-select__dropdown-buttons">
+              <BaseButton @click.stop="resetSections()"
+                          text="Сбросить"
+                          type="secondary"
+                          size="small"
+              />
+              <BaseButton @click.stop="applyChanges()"
+                          text="Применить"
+                          size="small"
+                          :disabled="isDisabledApply"
+              />
             </div>
           </div>
-          <div v-else>
-            <span>Элементы не найдены</span>
-          </div>
-          <div v-if="props.multiple"
-               class="base-select__dropdown-buttons">
-            <BaseButton @click.stop="resetSections()"
-                        text="Сбросить"
-                        type="secondary"
-                        size="small"
-            />
-            <BaseButton @click.stop="applyChanges()"
-                        text="Применить"
-                        size="small"
-                        :disabled="isDisabledApply"
-            />
-          </div>
         </div>
-      </div>
-    </Transition>
+      </Transition>
+    </Teleport>
     <div v-if="error">{{ error }}</div>
   </div>
 </template>
