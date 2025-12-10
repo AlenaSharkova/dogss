@@ -1,6 +1,7 @@
 import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct";
 import {getUserAuth} from "~/server/services/auth.service";
 import {BreederBodyCreateStruct} from "~/server/struct/BreedersStruct";
+import {DogBodyCreateItemStruct, DogFieldsCreateItemStruct, DogsBDItemStruct} from "~/server/struct/DogsStruct";
 
 export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
@@ -43,7 +44,6 @@ export default defineEventHandler(async (event) => {
                 message: `Пользователь не найден!`,
             });
         }
-        //Dogs.create(body.my_dogs);
 
 
         const res = await Breeders.create({
@@ -52,16 +52,17 @@ export default defineEventHandler(async (event) => {
             //breed_specialisation: body.breed_specialisation,
             user_id: user.id,
         })
-        let photoBasePhotoGallery: IUploadImageBD[] = []
+
+        for (const dog of body.my_dogs) {
+            await createDog(dog, res.id)
+        }
         if(body.photo_banner) {
             await sendPhoto( body.photo_banner, 'breeder_banner', res.id)
         }
         for (const photo of body.photos_gallery) {
-            if(photo) photoBasePhotoGallery.push(await sendPhoto(photo, 'breeder_gallery', res.id))
+            if(photo) await sendPhoto(photo, 'breeder_gallery', res.id)
         }
-        if(body.photo_preview) {
-            await sendPhoto(body.photo_preview, 'photo_preview', res?.id)
-        }
+        await sendPhoto(body.photo_preview, 'breeder_preview', res?.id)
         return res;
     } catch (error) {
         console.log('Ошибка при создании объявления', error)
@@ -83,6 +84,19 @@ export default defineEventHandler(async (event) => {
             positionBanner: photo.positionBanner,
             source_id: source_id,
         });
+    }
+
+    async function createDog(dogs: DogBodyCreateItemStruct, breederId: number) {
+        const fields: DogFieldsCreateItemStruct = {
+            name: dogs.name,
+            owner: user.id,
+            date_birth: dogs.date_birth,
+            breed_id: dogs.breed_id,
+            breeder_id: breederId,
+            gender: dogs.gender,
+            approximate_age: dogs.approximate_age
+        }
+        Dogs.create(fields);
     }
 
 })

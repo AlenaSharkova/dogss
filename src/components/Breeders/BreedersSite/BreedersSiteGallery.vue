@@ -1,18 +1,10 @@
 <script setup lang="ts">
 
-import CardDogsItem from "~/components/Card/CardDogsItem.vue";
 import {type PropType, ref} from "vue";
-import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
-import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
-import type {DogShortItemStruct} from "~/struct/Dog/DogItemStruct";
 import {Autoplay, EffectCoverflow} from "swiper/modules";
 import type {ICommonUpload} from "~/struct/Common/ICommonUpload";
 
 const props = defineProps({
-  dogs: {
-    type: Object as PropType<DogShortItemStruct[] | null>,
-    default: null
-  },
   typeAction: {
     type: String as PropType<'view' | 'create' | 'change'>,
     default: 'view'

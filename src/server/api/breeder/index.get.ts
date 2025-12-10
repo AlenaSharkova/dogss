@@ -63,6 +63,18 @@ export default defineEventHandler(async (event) => {
                     ],
                 },
                 {
+                    model: UploadedFile,
+                    as: 'BreedersPhotoBanner',
+                },
+                {
+                    model: UploadedFile,
+                    as: 'BreedersPhotoPreview',
+                },
+                {
+                    model: UploadedFile,
+                    as: 'BreedersPhotoGallery',
+                },
+                {
                     model: Users,
                     as: 'OwnerBreeder',
                     include: [

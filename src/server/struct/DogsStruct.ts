@@ -5,10 +5,10 @@ export interface DogsBDItemStruct {
     name: string;
     owner: number;
     photos: string[];
-    date_birth: string;
-    breed_id: string;
-    gender: 'female' | 'male' | 'any' | null;
-    approximate_age: string;
+    date_birth: string | null;
+    breed_id: number;
+    gender: 'female' | 'male';
+    approximate_age: string | null;
 //    created_at: string;
 
 
@@ -20,7 +20,7 @@ export interface DogsFormatShortItemStruct {
     name: string;
     photos: string[];
     date_birth: string;
-    gender: 'female' | 'male' | 'any' | null;
+    gender: 'female' | 'male';
     approximate_age: string;
 //    created_at: string;
 
@@ -31,10 +31,17 @@ export interface DogsFormatShortItemStruct {
 export interface DogBodyCreateItemStruct {
     photos: string[];
     name: string;
-    //owner: number;
 
     date_birth: string | null;
     breed_id: number;
-    gender: 'female' | 'male' | 'any';
+    gender: 'female' | 'male';
+    approximate_age: string | null;
+}
+export interface DogFieldsCreateItemStruct {
+    name: string;
+    date_birth: string | null;
+    breed_id: number;
+    gender: 'female' | 'male';
+    breeder_id: number;
     approximate_age: string | null;
 }

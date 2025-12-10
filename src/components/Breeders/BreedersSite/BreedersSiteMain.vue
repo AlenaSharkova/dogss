@@ -47,6 +47,7 @@ const commentsHtmlBlock = ref<HTMLElement | null>(null);
 const myDogsHtmlBlock = ref<HTMLElement | null>(null);
 const idActiveSection = ref<UserPageSectionType | null>(null)
 const sectionsElemList = ref<(HTMLElement | null)[] | null>([])
+const breederViewCurrent = ref<BreederSiteItemStruct | null>(null)
 
 
 const adList = computed(() => adStore.adCatalogList )
@@ -145,7 +146,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="user" class="breeder-site">
+  <div v-if="user && breederView" class="breeder-site">
     <BreedersSiteHead
         type-action="view"
         :name="`Питомник ${breeder?.name || ''}`"
@@ -156,7 +157,7 @@ onUnmounted(() => {
       <div ref="aboutHtmlBlock" id="about" class="breeder-site__section --no-padding">
         <h3 class="breeder-site__section-title">О нас</h3>
         <UserPageAbout class="breeder-site__section-block" />
-        <BreedersSiteGallery />
+        <BreedersSiteGallery v-model="breederView.photos_gallery" />
       </div>
       <div ref="myDogsHtmlBlock" id="my-dogs" class="breeder-site__section">
         <h3 class="breeder-site__section-title">Наши питомцы</h3>

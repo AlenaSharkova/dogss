@@ -53,7 +53,9 @@ onUnmounted(() => {
 
 <template>
   <div class="page-breeder">
-    <BreedersSiteMain :user="breederView.ownerDetails" :breeder="breederView" />
+    <BreedersSiteMain
+        :user="breederView.ownerDetails"
+        :breeder="breederView" />
   </div>
 </template>
 

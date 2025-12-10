@@ -233,16 +233,20 @@ export const formattedBreeders = async (item: BreederBDItemStruct, UsersModel: a
         id: item.id,
         //created_at: item.created_at,
         name: item.name,
-        photos_gallery: item.photos_gallery,
-        photo_banner: item.photo_banner,
+        photos_gallery: item.BreedersPhotoGallery.map(item => formattedPhoto(item)),
+        photo_banner: formattedPhoto(item.BreedersPhotoBanner, false, true),
+        photo_preview: formattedPhoto(item.BreedersPhotoPreview, true),
         created_ad: item.created_ad,
         my_dogs: item.MyDogs.map((item: DogsBDItemStruct) => formattedDogsShort(item)),
         ownerDetails: item.OwnerBreeder ? await formattedUserGlobal(item.OwnerBreeder, UsersModel) : null,
-        //временнно
-        //
-
-        //breed: item.breeds,
-
-//        ownerDetails: formattedUserGlobalShort(item.Owner),
     }
+}
+
+export const formattedPhoto = (item: IUploadImageBD, isCoordinates = false, isPositionBanner = false): IUploadImageBody => {
+    const data: IUploadImageBody = {
+        url: item.url,
+    }
+    if(isCoordinates) data.coordinates = item.coordinates;
+    if(isPositionBanner) data.positionBanner = item.positionBanner;
+    return data
 }

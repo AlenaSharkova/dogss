@@ -12,7 +12,7 @@ module.exports = (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: false,
         },
-        owner: {
+        breeder_id: {
             type: DataTypes.INTEGER,
         },
         photos: {

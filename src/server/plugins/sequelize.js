@@ -123,13 +123,38 @@ export default defineNitroPlugin(async  (nitroApp) => {
         as: 'UserAdList'
     });
     Breeders.hasMany(Dogs, {
-        foreignKey: 'owner',
-        as: 'MyDogs'
+        foreignKey: 'breeder_id',
+        as: 'MyDogs',
+        onDelete: 'CASCADE' // при удалении питомника удалять питомнцв
     });
     AdList.hasMany(UploadedFile, {
         foreignKey: 'source_id',
         as: 'PhotosObject',
         onDelete: 'CASCADE',
+    });
+    Breeders.hasOne(UploadedFile, {
+        foreignKey: 'source_id',
+        as: 'BreedersPhotoBanner',
+        onDelete: 'CASCADE',
+        scope: {
+            purpose: 'breeder_banner',
+        },
+    });
+    Breeders.hasOne(UploadedFile, {
+        foreignKey: 'source_id',
+        as: 'BreedersPhotoPreview',
+        onDelete: 'CASCADE',
+        scope: {
+            purpose: 'breeder_preview',
+        },
+    });
+    Breeders.hasMany(UploadedFile, {
+        foreignKey: 'source_id',
+        as: 'BreedersPhotoGallery',
+        onDelete: 'CASCADE',
+        scope: {
+            purpose: 'breeder_gallery',
+        },
     });
     Dogs.belongsTo(Breeds, {
         foreignKey: 'breed_id',
