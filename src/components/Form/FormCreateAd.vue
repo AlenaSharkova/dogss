@@ -193,7 +193,7 @@ const setDefaultData = () => {
   }
   if(photos) imageList.value = photos.map(url => {
     return {
-      imageUrl: url,
+      url: url,
       status: 'success'
     }
   })
@@ -220,9 +220,9 @@ const fillPersonalData = async () => {
 const getBody = (typeSaved: 'active' | 'moderation' | 'draft'): AdCreateItemStruct | false => {
   console.log('dayjs(form.name)', dayjs(form.name))
   console.log('dayjs(form.date_birth, \'DD.MM.YYYY\')', dayjs(form.date_birth, 'DD.MM.YYYY').format())
-  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => {
+  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.url).map(item => {
     return {
-      url: item.imageUrl,
+      url: item.url,
       coordinates: item.coordinates
     }
   }) as IUploadImageInBase[]

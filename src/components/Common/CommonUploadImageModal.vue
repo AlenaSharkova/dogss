@@ -47,9 +47,9 @@ const showModalBannerSize = () => {
 
 
 
-watch(() => ((props.isBanner && imageList.value[0]?.status === 'success')), (isNewShowModalBannerSize) => {
+/*watch(() => ((props.isBanner && imageList.value[0]?.status === 'success')), (isNewShowModalBannerSize) => {
   isShowModalBannerSize.value = isNewShowModalBannerSize
-})
+})*/
 </script>
 
 <template>

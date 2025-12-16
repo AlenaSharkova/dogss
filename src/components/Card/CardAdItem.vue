@@ -191,7 +191,7 @@ onMounted(async () => {
                  :style="getImageStyle(indexImg)"
             >
           </swiper-slide>
-          <div v-if="!item.photos.length"
+          <div v-if="!item.photos?.length"
                class="card-item__swiper-slide --empty">
             <img class="card-item__swiper-img" src="@/assets/image/default_card.png" loading="lazy" :alt="`dog-${item.id}-${item.indexImg}`">
           </div>

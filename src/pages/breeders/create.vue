@@ -7,7 +7,7 @@ import {useAuthStore} from "~/stores/auth.store";
 import BreedersSiteManage from "~/components/Breeders/BreedersSite/BreedersSiteManage.vue";
 
 definePageMeta({
-  requirementUser : null
+  requirementUser : 'authorized'
 })
 const route = useRoute();
 const idBreeder = ref<string | null>(null)
@@ -18,6 +18,7 @@ const breedsStore = useBreedsStore()
 const commonStore = useCommonStore()
 const adStore = useAdStore()
 const authStore = useAuthStore()
+const router = useRouter();
 
 const pawsCount = ref(1)
 const isHasBreeder = ref(false)
@@ -32,17 +33,6 @@ const breedsList = computed(() => breedsStore.breedsList )
 const userFullData = computed(() => authStore.userFullData)
 const idMyBreeder = computed(() => breederStore.idMyBreeder)
 
-
-const actionScrollPaws = () => {
-  window.addEventListener('scroll', () => {
-    const pageClientHeight = document.querySelector('.page-breeder-create')?.clientHeight
-    if(pageClientHeight) {
-      pawsCount.value = Math.round((window.scrollY) / 48 * (1 + (window.innerHeight + 93) / pageClientHeight)) || 1
-      //console.log(window.scrollY, pageClientHeight, pawsCount.value)
-    }
-    //pawsCount.value = Math.ceil((window.pageYOffset +window.innerHeight/2 )/ 50)
-  })
-}
 const getData = async (userId: number) => {
   if(idMyBreeder.value) {
     isHasBreeder.value = true
@@ -50,6 +40,7 @@ const getData = async (userId: number) => {
       status: 'error',
       title: "У Вас уже есть питомник"
     }
+    router.back()
   } else {
     await nextTick()
     await usersStore.getUserViewData(userId, true)
@@ -64,11 +55,6 @@ watch(() => userFullData.value?.id,
       if(!newIdCurrentUser) return
       getData(newIdCurrentUser)
     })
-onMounted(() => {
-
-
-  actionScrollPaws()
-})
 onUnmounted(() => {
   usersStore.userForBreederViewData = null
 })
@@ -86,5 +72,6 @@ onUnmounted(() => {
 <style lang="scss">
 .page-breeder-create {
   width: 100%;
+  overflow: hidden;
 }
 </style>

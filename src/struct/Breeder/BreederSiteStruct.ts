@@ -14,13 +14,13 @@ export interface BreederShortsItemStruct {
 export interface BreederSiteItemStruct {
     id: number;
     name: string;
-    photo_banner: string;
-    photos_gallery: string[];
+    photo_banner: IUploadImageInBase;
+    photos_gallery: IUploadImageInBase[];
     my_dogs: DogShortItemStruct[];
     created_ad: string;
     ownerDetails: UserGlobalItemStruct | null;
-    photo_preview: string;
-    breed_specialisation: ISelectComponent[]  | null;
+    photo_preview: IUploadImageInBase;
+    breed_specialisation: ISelectComponent[];
     about_text: string | null;
 }
 export interface BreederSiteManageStruct {
@@ -31,6 +31,7 @@ export interface BreederSiteManageStruct {
     photo_preview: ICommonUpload | null;
     breed_specialisation: ISelectComponent[];
     about_text: string | null;
+    id?: number;
 }
 export interface BreederSiteSaveStruct {
     name: string;

@@ -2,7 +2,11 @@ import {defineStore} from "pinia";
 import {computed, ref} from "vue";
 import BreederService from "~/service/breeder.service";
 import {useCommonStore} from "~/stores/common.store";
-import type {BreederSiteItemStruct, BreederSiteSaveStruct} from "~/struct/Breeder/BreederSiteStruct";
+import type {
+    BreederSiteChangeStruct,
+    BreederSiteItemStruct,
+    BreederSiteSaveStruct
+} from "~/struct/Breeder/BreederSiteStruct";
 
 export const useBreederStore = defineStore('breederStore', () => {
     const config = useRuntimeConfig();
@@ -13,11 +17,10 @@ export const useBreederStore = defineStore('breederStore', () => {
 
     const commonStore = useCommonStore()
 
-
     const breederView = ref<BreederSiteItemStruct | null>(null)
     const breederSetting = ref<BreederSiteItemStruct | null>(null)
     const breederChange = ref<BreederSiteItemStruct | null>(null)
-    const idMyBreeder = ref<number | null>(null)
+    const idMyBreeder = computed(() => authStore.userFullData?.id_breeder)
 
     const idRequestBreederView = ref<string | number | null>(null)
 
@@ -35,6 +38,7 @@ export const useBreederStore = defineStore('breederStore', () => {
                 }
             })
             .catch(e => {
+                if(e.statusCode === 403) return
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
                 commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
@@ -51,12 +55,24 @@ export const useBreederStore = defineStore('breederStore', () => {
                 throw e.data
             });
     }
+    async function editBreeder(body: BreederSiteChangeStruct, id: number){
+        breederService.patchBreeder(body, id).then((res) => {
+            console.log('res change', body)
+        })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
 
     return {
         idRequestBreederView,
         getViewBreeder,
         breederView,
         createBreeder,
-        idMyBreeder
+        idMyBreeder,
+        breederSetting,
+        editBreeder
     }
 })

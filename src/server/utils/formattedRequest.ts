@@ -5,6 +5,7 @@ import {getCommentsListUsers} from "~/server/services/comment.service";
 import {DogsBDItemStruct, DogsFormatShortItemStruct} from "~/server/struct/DogsStruct";
 import {BreederBDItemStruct, BreederItemStruct} from "~/server/struct/BreedersStruct";
 import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct";
+import {ISelectNumber} from "~/server/struct/CommonStruct";
 
 export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: any): Promise<UserGlobalItemStruct> => {
     return {
@@ -37,6 +38,7 @@ export const formattedUserGlobal = async (user: UserBDItemStruct, UsersModel: an
                 ad_archive_close: [],
             },
         comments: await getCommentsListUsers(user, UsersModel),
+        breeder: user.MyBreeder
     };
 }
 export const formattedUserGlobalForAdItem = (user: UserBDItemStruct) => {
@@ -218,7 +220,8 @@ export const formattedDogsShort = (item: DogsBDItemStruct): DogsFormatShortItemS
         gender: item.gender,
         name: item.name,
         approximate_age: item.approximate_age,
-        photos: item.photos,
+        photos: item.DogsPhoto,
+        //photos: item.photos,
         //временнно
         //
 
@@ -229,6 +232,7 @@ export const formattedDogsShort = (item: DogsBDItemStruct): DogsFormatShortItemS
 }
 
 export const formattedBreeders = async (item: BreederBDItemStruct, UsersModel: any): BreederItemStruct => {
+    console.log('item BreedersPhotoBanner', item.BreedersPhotoBanner, item.BreedersPhotoGallery, item.BreedersPhotoPreview)
     return {
         id: item.id,
         //created_at: item.created_at,
@@ -237,12 +241,21 @@ export const formattedBreeders = async (item: BreederBDItemStruct, UsersModel: a
         photo_banner: formattedPhoto(item.BreedersPhotoBanner, false, true),
         photo_preview: formattedPhoto(item.BreedersPhotoPreview, true),
         created_ad: item.created_ad,
+        about_text: item.about_text,
+        breed_specialisation: item.BreedSpecialiseBreeders?.map(item => {
+            return {
+                text: item.text,
+                value: item.value
+            }
+        }),
         my_dogs: item.MyDogs.map((item: DogsBDItemStruct) => formattedDogsShort(item)),
         ownerDetails: item.OwnerBreeder ? await formattedUserGlobal(item.OwnerBreeder, UsersModel) : null,
+        MyDogs: item.MyDogs
     }
 }
 
 export const formattedPhoto = (item: IUploadImageBD, isCoordinates = false, isPositionBanner = false): IUploadImageBody => {
+    console.log('item formattedPhoto', item)
     const data: IUploadImageBody = {
         url: item.url,
     }

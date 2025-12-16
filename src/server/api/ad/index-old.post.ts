@@ -84,7 +84,7 @@ export default defineEventHandler(async (event)=>
 
     // 3. Добавление изображений в таблицу ad_images (если они есть)
     if (images && images.length > 0) {
-      const imageValues = images.map((imageUrl) => [adId, imageUrl]);  // Формируем массив значений для вставки
+      const imageValues = images.map((imageUrl) => [adId, url]);  // Формируем массив значений для вставки
 
       db.query('INSERT INTO ad_images (ad_id, image_url) VALUES ?', [imageValues], (err, result) => {
         if (err) {

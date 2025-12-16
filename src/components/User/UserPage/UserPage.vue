@@ -113,8 +113,6 @@ onMounted(  () => {
         v-model="idActiveSection"
         :user="user"
         @scroll-to-block="goToBlock" />
-    {{sectionRouteScroll}}
-    {{idActiveSection}}
     <LayoutWrapperPage :isPaddingY="false" class="user-page__wrapper" >
       <div ref="aboutHtmlBlock" id="about" class="user-page__section">
         <h3 class="user-page__section-title">О нас</h3>

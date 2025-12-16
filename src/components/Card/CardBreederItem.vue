@@ -14,8 +14,12 @@ const props = defineProps({
 
 const swiperInstance = ref()
 
-const userFullName = computed(() => `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`)
 const hasBreeder = computed(() => !!props.user.breeder)
+const userFullName = computed(() =>
+    hasBreeder.value
+        ? `${props.user.breeder?.name}`
+        : `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`
+)
 
 
 const onSwiper = (swiper: Swiper) => {

@@ -5,9 +5,10 @@ import {computed, type PropType, ref} from "vue";
 import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
 import type {
-  DodChangeItemStruct,
+  DogChangeItemStruct,
   DogFormCreateItemStruct,
-  DogShortItemStruct
+  DogShortItemStruct,
+  DogItemStruct
 } from "~/struct/Dog/DogItemStruct";
 import {useBreedsStore} from "~/stores/breeds.store";
 import type {ISelectComponent, ISelectNumber} from "~/struct/Common/ISelectComponent";
@@ -26,6 +27,10 @@ const props = defineProps({
     type: String as PropType< 'create' | 'change'>,
     default: 'create'
   },
+  defaultData: {
+    type: Object as PropType<DogFormCreateItemStruct | DogItemStruct | null>,
+    default: null
+  }
 })
 const emits = defineEmits(['create', 'change', 'close'])
 
@@ -34,9 +39,7 @@ const filterStore = useFilterStore()
 
 const form = reactive({
   name: '',
-  breeder: '',
   date_birth: '',
-
 })
 const selectBreed = ref<ISelectNumber>({})
 const approximateAgeList = computed(() =>  filterStore.approximateAgeList)
@@ -49,23 +52,35 @@ const selectApproximateAge = ref<ISelectComponent>({})
 const imageList = ref<ICommonUpload[]>([])
 const selectGender = ref<ISelectGender>( {} )
 const currentStep = ref(1)
-const formDefault = ref<DodChangeItemStruct>({})
+const formDefault = ref<DogItemStruct>({})
 
+const isValid = computed(() =>{
+  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.url)
 
+  return (
+      imageUploadList.length
+      && selectGender.value?.value
+      && isUnknownDateOfBirth.value
+          ? selectApproximateAge.value?.value
+          : dayjs(form.date_birth).isValid()
+      && selectBreed.value
+      && form.name
+  )
+})
 const getBody = (): DogFormCreateItemStruct | false => {
   console.log('dayjs(form.name)', dayjs(form.name))
   console.log('dayjs(form.date_birth, \'DD.MM.YYYY\')', dayjs(form.date_birth, 'DD.MM.YYYY').format())
-  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.imageUrl).map(item => item.imageUrl) as string[]
+  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.url)
 
-  if(
+/*  if(
       (/*!dayjs(form.date_birth).isValid()
-      || */
+      ||
           !imageUploadList.length
           || !selectGender.value?.value
           || !selectBreed.value
       )
-  ) return false
-
+  ) return false*/
+  if(!isValid.value && !props.defaultData) return false
 
   return {
     breed: selectBreed.value,
@@ -80,21 +95,23 @@ const getBody = (): DogFormCreateItemStruct | false => {
 }
 
 const likeChange = (form: DogFormCreateItemStruct) => {
-  const fieldChange = {} as DogFormCreateItemStruct
-  if(props.typeAction === 'create') return
+  const fieldChange = {} as DogChangeItemStruct
+  if(!props.defaultData) return
   for(let id in form) {
     let item = form[id as keyof DogFormCreateItemStruct]
-    let itemDefault = formDefault.value[id as keyof DogFormCreateItemStruct]
+    let itemDefault = formDefault.value[id as keyof DogItemStruct]
+    console.log(' changeDataDog 123456', id, item, JSON.stringify(itemDefault))
+
     if(JSON.stringify(item) !== JSON.stringify(itemDefault) && itemDefault !== undefined) {
-      fieldChange[id as keyof DogFormCreateItemStruct] = item
+      fieldChange[id as keyof DogChangeItemStruct] = item
     }
   }
   return fieldChange
 }
 const sendDogForm = async () => {
-  if(props.typeAction === 'change' ) {
-    changeDataAd()
-    //await changeDataAd('moderation', 'moderation')
+  if(props.defaultData) {
+    changeDataDog()
+    //await changeDataDog('moderation', 'moderation')
     return
   }
   const body = getBody();
@@ -103,17 +120,48 @@ const sendDogForm = async () => {
 
 }
 
-const changeDataAd = async () => {
+const setDefaultData = () => {
+  console.log(2, JSON.stringify(genderList.value))
 
+  console.log('defaultData', props.defaultData)
+  if(!props.defaultData) return
+  const {breed, photos, date_birth,
+    name, approximate_age}
+      = props.defaultData
+  if(breed) selectBreed.value = breed
+  console.log(3, JSON.stringify(genderList.value))
+  if(approximate_age) {
+    isUnknownDateOfBirth.value = true
+    selectApproximateAge.value.value = approximate_age
+  }
+  if(photos) imageList.value = photos.map(url => {
+    return {
+      url: url,
+      status: 'success'
+    }
+  })
+  if(name) form.name = name
+  if(date_birth) form.date_birth = date_birth
+
+  formDefault.value = getBody()
+}
+const changeDataDog = async () => {
   const body = getBody();
-  const changeData = body? likeChange(body): {}
-  if(changeData && Object.keys(changeData).length) {
-    emits('change', changeData)
+  console.log('changeDataDog body', body)
 
+  const changeData = body? likeChange(body): {}
+  console.log('changeDataDog', changeData)
+
+  if(changeData && Object.keys(changeData).length && props.defaultData) {
+    emits('change', changeData, (props.defaultData as DogItemStruct).id)
   } else {
     console.error('отсутствует номер объявления или данные изменения пустые')
   }
 }
+
+onMounted(() => {
+  setDefaultData()
+})
 </script>
 
 <template>
@@ -122,9 +170,10 @@ const changeDataAd = async () => {
       <BaseModal :is-show-modal="isShow" @close="emits('close')">
         <FormWindow modal class="breeder-site__pets-manage__modal-form">
           <template #title>
-            Добавить Питомца
+            {{defaultData? 'Редактировать Питомца' : 'Добавить Питомца'}}
           </template>
           <template #default>
+            {{defaultData}}
             <template v-if="true">
               <BaseInput
                   v-model="form.name"
@@ -163,7 +212,6 @@ const changeDataAd = async () => {
                     name="approximate-age"
                     placeholder="Выберите примерный возраст"
                 />
-
               </div>
               <BaseTabSwitch :items="genderList" v-model="selectGender" name="gender" is-small/>
               <CommonUploadImage :isShow="true" v-model="imageList" :limit="10"/>
@@ -171,7 +219,7 @@ const changeDataAd = async () => {
             </template>
           </template>
           <template #action-buttons>
-            <BaseButton text="Send" @click="sendDogForm"/>
+            <BaseButton text="Сохранить" @click="sendDogForm" :disabled="!isValid"/>
           </template>
         </FormWindow>
       </BaseModal>

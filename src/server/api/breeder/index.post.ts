@@ -1,6 +1,6 @@
 import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct";
 import {getUserAuth} from "~/server/services/auth.service";
-import {BreederBodyCreateStruct} from "~/server/struct/BreedersStruct";
+import {BreederBDItemStruct, BreederBodyCreateStruct} from "~/server/struct/BreedersStruct";
 import {DogBodyCreateItemStruct, DogFieldsCreateItemStruct, DogsBDItemStruct} from "~/server/struct/DogsStruct";
 
 export default defineEventHandler(async (event) => {
@@ -16,14 +16,16 @@ export default defineEventHandler(async (event) => {
     const Breeds = event.context.Breeds;
     const UploadedFile = event.context.UploadedFile;
     const Users = event.context.Users;
+    const BreedSpecialise = event.context.BreedSpecialise;
 
     const authHeader = getHeader(event, 'authorization')
     const token = authHeader && authHeader.split(' ')[1];// Bearer <token>
     let user: any
+    let breederCreated: BreederBDItemStruct = null
 
 
     try {
-        if (!AdList || !Breeders || !Dogs || !Breeds || !Users || !UploadedFile || !sequelize) {
+        if (!AdList || !Breeders || !Dogs || !Breeds || !Users || !UploadedFile || !BreedSpecialise || !sequelize) {
             console.error('Model or sequelize is not available in the context');
             throw createError({
                 statusCode: 500,
@@ -31,7 +33,11 @@ export default defineEventHandler(async (event) => {
                 statusMessage: statusMessageServer
             });
         }
-        await getUserAuth(token, Users)
+        const includeUserList = [{
+            model: Breeders,
+            as: 'MyBreeder',
+        }]
+        await getUserAuth(token, Users, includeUserList)
             .then(res => user = res)
             .catch(err => {
                 throw err
@@ -44,15 +50,26 @@ export default defineEventHandler(async (event) => {
                 message: `Пользователь не найден!`,
             });
         }
-
+        if (user.MyBreeder) {
+            throw createError({
+                statusCode: 403,
+                message: `У Пользователя уже есть Питомник`,
+                statusMessage: `У Пользователя уже есть Питомника`,
+            });
+        }
 
         const res = await Breeders.create({
             name: body.name,
             about_text: body.about_text,
             //breed_specialisation: body.breed_specialisation,
             user_id: user.id,
+            status: 'active'
         })
+        breederCreated = res
 
+        for (const breed_specialisation of body.breed_specialisation) {
+            await createSpecialiseBreeders(res.id, breed_specialisation)
+        }
         for (const dog of body.my_dogs) {
             await createDog(dog, res.id)
         }
@@ -65,15 +82,28 @@ export default defineEventHandler(async (event) => {
         await sendPhoto(body.photo_preview, 'breeder_preview', res?.id)
         return res;
     } catch (error) {
-        console.log('Ошибка при создании объявления', error)
+        if(breederCreated) {
+            Breeders.destroy({
+                where: {
+                    id: breederCreated.id
+                }
+            })
+        }
+        console.log('Ошибка при создании Питомника', error)
         throw createError({
             statusCode: 400,
             message: JSON.stringify(error),
-            statusMessage: 'Ошибка при создании объявления',
+            statusMessage: 'Ошибка при создании Питомника',
         })
         throw error;
     }
 
+    async function createSpecialiseBreeders(breeder_id: number, breed_specialise_id: number) {
+        return await BreedSpecialise.create({
+            breeder_id: breeder_id,
+            breed_specialise_id: breed_specialise_id,
+        });
+    }
     async function sendPhoto(photo: IUploadImageBody, purpose: string, source_id: number) {
         return await UploadedFile.create({
             url: photo.url,
@@ -96,7 +126,10 @@ export default defineEventHandler(async (event) => {
             gender: dogs.gender,
             approximate_age: dogs.approximate_age
         }
-        Dogs.create(fields);
+        const dogBd = Dogs.create(fields);
+        for (const photo of dogs.photos) {
+            await sendPhoto(photo, 'dogs', dogBd.id)
+        }
     }
 
 })

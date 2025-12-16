@@ -19,8 +19,8 @@ const close = () => {
       </template>
       <template #default>
         <div class="common-modal__result-main">
-          <div class="base-window-result__wrapper">
-            <div class="base-window-result__icon">
+          <div class="common-modal__result-main__wrapper">
+            <div class="common-modal__result-main__icon">
               <BaseIconResult :name="infoModal?.status" />
             </div>
             <div class="base-window-result__header">
@@ -44,8 +44,8 @@ const close = () => {
     display: flex;
     gap: 50px;
     flex-direction: column;
-
+    align-items: center;
+    justify-content: center;
   }
-
 }
 </style>

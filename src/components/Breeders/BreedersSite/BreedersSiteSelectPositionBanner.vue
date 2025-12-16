@@ -63,7 +63,7 @@ const send = () => {
             <CommonSelectPositionImage v-model="positionMobile"/>
             <!--<BaseTabSwitch :items="positionsImage" v-model="positionMobile" name="positions-banner-mobile" is-small/>-->
             <div class="breeder-site-size-banner__item-image --mobile" >
-              <img :src="imageList[0].imageUrl || ''" alt="Вид баннера на мобильном экране" :style="{'object-position': positionMobile }">
+              <img :src="imageList[0].url || ''" alt="Вид баннера на мобильном экране" :style="{'object-position': positionMobile }">
             </div>
           </div>
           <div class="breeder-site-size-banner__item --table">
@@ -74,7 +74,7 @@ const send = () => {
 
             <!--<BaseTabSwitch :items="positionsImage" v-model="positionTable" name="positions-banner-table" />-->
             <div class="breeder-site-size-banner__item-image --table">
-              <img :src="imageList[0].imageUrl || ''" alt="Вид баннера на планшетном экране" :style="{'object-position': positionTable }">
+              <img :src="imageList[0].url || ''" alt="Вид баннера на планшетном экране" :style="{'object-position': positionTable }">
             </div>
           </div>
           <div class="breeder-site-size-banner__item --desktop">
@@ -85,7 +85,7 @@ const send = () => {
 
             <!--<BaseTabSwitch :items="positionsImage" v-model="positionDesktop" name="positions-banner-desktop" />-->
             <div class="breeder-site-size-banner__item-image --desktop">
-              <img :src="imageList[0].imageUrl || ''" alt="Вид баннера на экране компьютера" :style="{'object-position': positionDesktop }">
+              <img :src="imageList[0].url || ''" alt="Вид баннера на экране компьютера" :style="{'object-position': positionDesktop }">
             </div>
           </div>
         </div>

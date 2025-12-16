@@ -48,9 +48,9 @@ await breedsStore.updateBreedsList()
   min-height: 100vh;
   background-color: $back;
 
-
   .main {
     //background: rgb(178, 225, 218);
+    overflow: clip;
     min-height: 100vh;
 
     &-container {

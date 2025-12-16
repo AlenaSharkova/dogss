@@ -10,7 +10,6 @@ const emits = defineEmits([
   'blur',
   'paste',
   'chooseAutocomplete',
-
   'onError'
 ]);
 interface Props {

@@ -4,7 +4,7 @@
 import BaseIconFile from "~/components/Base/BaseIcon/BaseIconFile.vue";
 import {useUploadStore} from "~/stores/upload.store";
 import DynamicRef from "ajv/lib/vocabularies/dynamic/dynamicRef";
-import type {ICommonUpload, IUploadApi, IUploadCoordinates} from "~/struct/Common/ICommonUpload";
+import type {ICommonUpload, IUploadApi, IUploadCoordinates, IUploadImageInBase} from "~/struct/Common/ICommonUpload";
 import type {Drop} from "esbuild";
 import CommonAdvancedCropperModal from "~/components/Common/CommonAdvancedCropperModal.vue";
 import {ref} from "vue";
@@ -73,7 +73,7 @@ async function readBeforeUpload(file: File) {
 
 const uploadFiles = async (formData: any) => {
   imageList.value.push({
-    imageUrl: null,
+    url: null,
     status: 'processing'
   })
   console.log('imageList: ', imageList.value)
@@ -81,7 +81,7 @@ const uploadFiles = async (formData: any) => {
   const lastIndex = imageList.value.length - 1
   await uploadStore.uploadImage(formData).then(res => {
     if(res?.success) {
-      imageList.value[lastIndex].imageUrl = res.url
+      imageList.value[lastIndex].url = res.url
       imageList.value[lastIndex].status = 'success'
     } else {
       imageList.value[lastIndex].status = 'error'
@@ -91,9 +91,12 @@ const uploadFiles = async (formData: any) => {
   })
 }
 const deleteImageStorage = async (fileUploadInfo: ICommonUpload) => {
-  if(!fileUploadInfo.imageUrl) return
+  if(!fileUploadInfo.url) return
+  if(fileUploadInfo.status === 'in-base') {
+    imageList.value = imageList.value.filter(item => item !== fileUploadInfo)
+  }
   fileUploadInfo.status = 'disabled'
-  await uploadStore.deleteFileStorage(fileUploadInfo.imageUrl).then(res => {
+  await uploadStore.deleteFileStorage(fileUploadInfo.url).then(res => {
     imageList.value = imageList.value.filter(item => item !== fileUploadInfo)
   }).catch(err => {
     fileUploadInfo.status = 'success'
@@ -103,7 +106,7 @@ const deleteImageFail = (fileUploadInfo: ICommonUpload) => {
   imageList.value = imageList.value.filter(item => item !== fileUploadInfo)
 }
 
-const isShowImageStore = (fileUploadInfo: ICommonUpload) => ['success', 'disabled'].includes(fileUploadInfo.status) && fileUploadInfo.imageUrl
+const isShowImageStore = (fileUploadInfo: ICommonUpload) => ['success', 'disabled', 'in-base'].includes(fileUploadInfo.status) && fileUploadInfo.url
 
 const openFileExplorer = () => {
   if(isLimitExceeded.value) return
@@ -127,7 +130,7 @@ const handleDrop = (event: DragEvent) => {
   if(files?.length) readBeforeUpload(files[0]);
 };
 const showAdvancedCropper = () => {
-  isShowAdvancedCropper.value = !!(props.isNeedEditSize && imageEditedSize.value?.imageUrl)
+  isShowAdvancedCropper.value = !!(props.isNeedEditSize && imageEditedSize.value?.url)
 };
 const cropper = ref<InstanceType<typeof Cropper> | null>(null) // Типизируем референс
 
@@ -143,7 +146,7 @@ const coordinatesStyle = (image: ICommonUpload) => {
   if(!image.coordinates) return
   console.log('image', image)
   const img = new Image();
-  img.src = image.imageUrl
+  img.src = image.url
   img.onload = () => {
     console.log("Ширина:", img.naturalWidth);
     console.log("Высота:", img.naturalHeight);
@@ -164,12 +167,24 @@ watch(() => imageList.value, (newList) => {
   console.log('newList coomon', newList)
 
   if(!imageEditedSize.value) return
-  const isHasEditedInList = !!newList.find(item => item.imageUrl === imageEditedSize.value?.imageUrl)
+  const isHasEditedInList = !!newList.find(item => item.url === imageEditedSize.value?.url)
   if(!isHasEditedInList) {
     imageEditedSize.value = null
   }
 }, {
   deep: true,
+})
+onMounted(() => {
+  imageList.value = imageList.value.map(image => {
+    if(!image.status) {
+      return {
+        ...image,
+        status: "in-base"
+      }
+    } else {
+      return image
+    }
+  })
 })
 </script>
 
@@ -227,7 +242,7 @@ watch(() => imageList.value, (newList) => {
              class="common-upload__file-photos__item-image"
              :class="{'--status-disabled': item.status === 'disabled'}"
         >
-          <img :src="item.imageUrl as string" :style="coordinatesStyle(item)">
+          <img :src="item.url as string" :style="coordinatesStyle(item)">
         </div>
         <div v-else class="common-upload__file-photos__item-default">
           <img v-if="item.status === 'processing'"
@@ -257,7 +272,7 @@ watch(() => imageList.value, (newList) => {
     <CommonAdvancedCropperModal
         v-if="isShowAdvancedCropper"
         :is-show="isShowAdvancedCropper"
-        :img-src="imageEditedSize?.imageUrl"
+        :img-src="imageEditedSize?.url"
         @crop-and-upload="cropAndUpload"
     />
 

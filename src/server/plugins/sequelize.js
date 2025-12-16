@@ -11,6 +11,7 @@ import favoritesAdModel from '../models/FavoritesAd.js';
 import breedersModel from '../models/Breeder.js';
 import dogsModel from '../models/Dog.js';
 import uploadedFileModel from '../models/UploadedFile.js';
+import breedSpecialiseModel from '../models/BreedSpecialise.js';
 import {initEventTgBot} from "~/server/services/telegram.service.js";
 import {tokenTgBot} from "~/server/data/access-data.js";
 import TelegramBot from "node-telegram-bot-api";
@@ -53,6 +54,7 @@ export default defineNitroPlugin(async  (nitroApp) => {
     const Otp = otpModel(sequelize);
     const FavoritesAd = favoritesAdModel(sequelize);
     const Breeders = breedersModel(sequelize);
+    const BreedSpecialise = breedSpecialiseModel(sequelize);
     const Dogs = dogsModel(sequelize);
     const UploadedFile = uploadedFileModel(sequelize);
 
@@ -71,6 +73,18 @@ export default defineNitroPlugin(async  (nitroApp) => {
         foreignKey: 'region_id',     // Внешний ключ в AdExportRegions, ссылающийся на GeoRegions
         otherKey: 'ad_id',      // Внешний ключ в AdExportRegions, ссылающийся на AdList
         as: 'AdListExport'              // Алиас для связи
+    });
+    Breeders.belongsToMany(Breeds, {
+        through: BreedSpecialise,
+        foreignKey: 'breeder_id',      // Внешний ключ в AdExportRegions, ссылающийся на AdList
+        otherKey: 'breed_specialise_id',     // Внешний ключ в AdExportRegions, ссылающийся на GeoRegions
+        as: 'BreedSpecialiseBreeders'          // Алиас для связи
+    });
+    Breeds.belongsToMany(Breeders, {
+        through: BreedSpecialise, // Используем связующую таблицу
+        foreignKey: 'breed_specialise_id',     // Внешний ключ в AdExportRegions, ссылающийся на GeoRegions
+        otherKey: 'breeder_id',      // Внешний ключ в AdExportRegions, ссылающийся на AdList
+        as: 'BreedersSpecialise'              // Алиас для связи
     });
     // Определение связей Many-to-Many FavoritesAd
     AdList.belongsToMany(Users, {
@@ -131,6 +145,17 @@ export default defineNitroPlugin(async  (nitroApp) => {
         foreignKey: 'source_id',
         as: 'PhotosObject',
         onDelete: 'CASCADE',
+        scope: {
+            purpose: 'ad',
+        },
+    });
+    Dogs.hasMany(UploadedFile, {
+        foreignKey: 'source_id',
+        as: 'DogsPhoto',
+        onDelete: 'CASCADE',
+        scope: {
+            purpose: 'dogs',
+        },
     });
     Breeders.hasOne(UploadedFile, {
         foreignKey: 'source_id',
@@ -187,6 +212,7 @@ export default defineNitroPlugin(async  (nitroApp) => {
         event.context.Breeders = Breeders;
         event.context.Dogs = Dogs;
         event.context.UploadedFile = UploadedFile;
+        event.context.BreedSpecialise = BreedSpecialise;
 
         event.context.TelegramBotMain = TelegramBotMain;
         console.log('model and sequelize added to context');
@@ -204,6 +230,7 @@ export default defineNitroPlugin(async  (nitroApp) => {
             Breeders,
             Dogs,
             UploadedFile,
+            BreedSpecialise,
             TelegramBotMain
         },
     };

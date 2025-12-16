@@ -15,9 +15,10 @@ export default defineEventHandler(async (event) => {
     const GeoRegions = event.context.GeoRegions;
     const GeoCity = event.context.GeoCity;
     const UploadedFile = event.context.UploadedFile;
+    const BreedSpecialise = event.context.BreedSpecialise;
 
     try {
-        if (!AdList || !Breeders || !Dogs || !Breeds || !Users || !GeoCity || !GeoRegions || !sequelize) {
+        if (!AdList || !Breeders || !Dogs || !Breeds || !Users || !GeoCity || !GeoRegions || !BreedSpecialise || !sequelize) {
             console.error('Model or sequelize is not available in the context');
             throw createError({
                 statusCode: 500,
@@ -60,6 +61,10 @@ export default defineEventHandler(async (event) => {
                             model: Breeds,
                             as: 'Breed',
                         },
+                        {
+                            model: UploadedFile,
+                            as: 'DogsPhoto',
+                        },
                     ],
                 },
                 {
@@ -73,6 +78,10 @@ export default defineEventHandler(async (event) => {
                 {
                     model: UploadedFile,
                     as: 'BreedersPhotoGallery',
+                },
+                {
+                    model: Breeds,
+                    as: 'BreedSpecialiseBreeders',
                 },
                 {
                     model: Users,
@@ -121,7 +130,7 @@ export default defineEventHandler(async (event) => {
                             ],
                         }
                     ]
-                }
+                },
             ]
         })
     }

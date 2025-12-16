@@ -138,8 +138,12 @@ onUnmounted(() => {
     background-color: white;
     .form-window__list {
       @if(var(--additional-margin)) {
-        padding-bottom: 20px;
-        margin-bottom: calc(var(--additional-margin) - 55px);
+        padding-bottom: clamp(
+            0px,
+            calc((var(--additional-margin, 0px) - 1px) * 1000),
+            20px
+        );
+        margin-bottom: clamp(0px, calc(var(--additional-margin, 0px) - 55px), 999px);
       }
     }
     .form-window__action {

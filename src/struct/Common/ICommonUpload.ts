@@ -1,15 +1,15 @@
 
 export interface ICommonUpload {
-    imageUrl: string | null,
+    url: string | null,
     coordinates?: IUploadCoordinates | null,
     positionBanner?: IUploadPositionBanner | null,
-    croppedImgUrl?: string | null,
-    status: "success" | "error" | 'processing' | 'disabled'
+    status?: "success" | "error" | 'processing' | 'disabled' | 'in-base'
 }
 export interface IUploadImageInBase {
     url: string,
     coordinates?: IUploadCoordinates | null,
-    positionBanner?: IUploadPositionBanner | null
+    positionBanner?: IUploadPositionBanner | null,
+    status?: "success"
     //coordinates?: IUploadCoordinates | null
 }
 export interface IUploadApi {

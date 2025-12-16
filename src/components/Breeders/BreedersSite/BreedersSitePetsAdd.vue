@@ -4,10 +4,9 @@ import type { DogFormCreateItemStruct } from "~/struct/Dog/DogItemStruct";
 import BreedersSitePetsManageModal from "~/components/Breeders/BreedersSite/BreedersSitePetsManageModal.vue";
 
 const props = defineProps({
-
 })
 
-const emits = defineEmits(['create'])
+const emits = defineEmits(['create', 'cancelEdit', ])
 
 const isShowModal = ref(false)
 const closeModal = () => {
@@ -20,12 +19,14 @@ const createDog = (data: DogFormCreateItemStruct) => {
   emits('create', data)
   isShowModal.value = false
 }
-
+onMounted(() => {
+  isShowModal.value = true
+})
 </script>
 
 <template>
-  <div class="breeder-site__pets-add">
-    <div @click="addPet" class="breeder-site__pets-add__block">
+  <div class="breeder-site__pets-add" @click="addPet">
+    <div class="breeder-site__pets-add__block">
       <div class="breeder-site__pets-add__block-wrapper">
         <div class="breeder-site__pets-add__block-text">
           <span>Добавить питомца</span>

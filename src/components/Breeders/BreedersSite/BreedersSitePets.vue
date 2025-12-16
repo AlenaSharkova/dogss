@@ -4,13 +4,19 @@ import CardDogsItem from "~/components/Card/CardDogsItem.vue";
 import {computed, type PropType} from "vue";
 import type {UserItemPublicStruct} from "~/struct/User/UserItemStruct";
 import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
-import type {DogCreateItemStruct, DogFormCreateItemStruct, DogShortItemStruct} from "~/struct/Dog/DogItemStruct";
+import type {
+  DogChangeItemStruct,
+  DogCreateItemStruct,
+  DogFormCreateItemStruct, DogItemStruct,
+  DogShortItemStruct
+} from "~/struct/Dog/DogItemStruct";
 import BreedersSitePetsAdd from "~/components/Breeders/BreedersSite/BreedersSitePetsAdd.vue";
 import {useAuthStore} from "~/stores/auth.store";
+import BreedersSitePetsManageModal from "~/components/Breeders/BreedersSite/BreedersSitePetsManageModal.vue";
 
 const props = defineProps({
   dogs: {
-    type: Object as PropType<DogShortItemStruct[] | null>,
+    type: Object as PropType<DogItemStruct[] | null>,
     default: null,
   },
   typeAction: {
@@ -19,11 +25,15 @@ const props = defineProps({
   },
 })
 const emits = defineEmits(['sendDogs'])
+//const dogs = defineModel<(DogCreateItemStruct | DogItemStruct)[] | null>({default: null})
+//const dogsChanged = defineModel<(DogChangeItemStruct | undefined)[] | null>('changed', { default: null})
 
 const authStore = useAuthStore()
 
 const newDogsList = ref<DogFormCreateItemStruct[]>([])
 const userFullData = computed(() => authStore.userFullData )
+const isShowModalAdd = ref(false)
+const editionDog = ref<DogFormCreateItemStruct | null>(null)
 
 const createDog = (data: DogFormCreateItemStruct) => {
   newDogsList.value.push({
@@ -36,6 +46,21 @@ const createDog = (data: DogFormCreateItemStruct) => {
     gender: data.gender,
     photos: data.photos
   })
+}
+const saveEditedDog = (data: DogChangeItemStruct, id = null as number | null) => {
+  if(id && newDogsList.value) {
+    newDogsList.value = newDogsList.value.map(item => {
+      if ((item as DogItemStruct)?.id === id) {
+        return {
+          ...item,
+          ...data
+        }
+      } else {
+        return item
+      }
+    })
+    editionDog.value = null
+  }
 }
 const sendData = () => {
   const resultDogsList: DogCreateItemStruct[] = newDogsList.value?.map(data => {
@@ -50,6 +75,24 @@ const sendData = () => {
   })
   return resultDogsList
 }
+const closeModalAdd = () => {
+  isShowModalAdd.value = false
+}
+const showModalAdd = () => {
+  isShowModalAdd.value = true
+}
+const editDog = (data: DogFormCreateItemStruct) => {
+  editionDog.value = data
+}
+const cancelEditDog = () => {
+  editionDog.value = null
+}
+onMounted(() => {
+  console.log('onMounted dogs', newDogsList.value, props.dogs)
+  if(props.dogs) newDogsList.value = props.dogs
+  console.log('onMounted dogs 2', newDogsList.value, props.dogs)
+
+})
 defineExpose({
   sendData,
 });
@@ -57,19 +100,46 @@ defineExpose({
 
 <template>
   <div class="breeder-site__pets">
+    <CommonEmptyBlock
+        v-if="typeAction == 'view' && !dogs?.length"
+        text="Питомцы пока не добавлены"
+        mini-style/>
 
-    <div v-if="dogs || typeAction === 'create'" class="breeder-site__pets-list">
+    <div
+        v-if="dogs || (typeAction === 'create'|| typeAction === 'change')"
+        class="breeder-site__pets-list"
+    >
       <CardDogsItem
+          v-if="typeAction === 'view'"
           class="breeder-site__pets-item"
           v-for="(item, index) in dogs"
+          :typeAction="typeAction"
           :key="index"
-          :item="item" />
+          :item="item"
+      />
       <CardDogsItem
+          v-else
           class="breeder-site__pets-item"
           v-for="(itemNew, indexNew) in newDogsList"
+          :typeAction="typeAction"
+          @editDog="editDog"
           :key="indexNew"
-          :item="itemNew" />
-      <BreedersSitePetsAdd v-if="typeAction !== 'view'" @create="createDog"/>
+          :item="itemNew"
+      />
+      <BreedersSitePetsAdd
+          v-if="typeAction !== 'view'"
+          :defaultData="editionDog"
+          @cancel-edit="cancelEditDog"
+          @create="createDog"
+      />
+      <BreedersSitePetsManageModal
+          v-if="!!editionDog"
+          @close="cancelEditDog"
+          @change="saveEditedDog"
+          :is-show="!!editionDog"
+          :defaultData="editionDog"
+          type-action="create"
+      />
 
     </div>
     <CommonEmptyBlock v-else-if="typeAction === 'view'" text="Питомцы не найдены" mini-style/>

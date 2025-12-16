@@ -28,23 +28,10 @@ const adList = computed(() => adStore.adCatalogList )
 const breederView = computed(() => breederStore.breederView )
 const breedsList = computed(() => breedsStore.breedsList )
 
-const actionScrollPaws = () => {
-  window.addEventListener('scroll', () => {
-    const pageClientHeight = document.querySelector('.page-breeder')?.clientHeight
-    if(pageClientHeight) {
-      pawsCount.value = Math.round((window.scrollY) / 48 * (1 + (window.innerHeight + 93) / pageClientHeight)) || 1
-      //console.log(window.scrollY, pageClientHeight, pawsCount.value)
-    }
-    //pawsCount.value = Math.ceil((window.pageYOffset +window.innerHeight/2 )/ 50)
-  })
-}
 
 breederStore.idRequestBreederView = route.params.id as string
 await breederStore.getViewBreeder('view')
 //await usersStore.getUserViewData(breederStore.idRequestBreederView)
-onMounted(async () => {
-  actionScrollPaws()
-})
 onUnmounted(() => {
   //usersStore.userViewData = null
   breederStore.breederView = null
@@ -53,9 +40,7 @@ onUnmounted(() => {
 
 <template>
   <div class="page-breeder">
-    <BreedersSiteMain
-        :user="breederView.ownerDetails"
-        :breeder="breederView" />
+    <BreedersSiteMain />
   </div>
 </template>
 

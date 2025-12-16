@@ -11,27 +11,11 @@ const props = defineProps({
     type: Object as PropType<ISelectComponent[]>,
     default: []
   },
-  typeAction: {
-    type: String as PropType< 'create' | 'change' | 'view'>,
-    default: 'create'
-  },
 })
 const emits = defineEmits(['save-about-text'])
 const selectBreeds = defineModel<ISelectComponent[]>({default: []})
 
 const breedsStore = useBreedsStore()
-
-const textAboutInput = ref('')
-const textAboutAccept = ref('')
-const isShowInput = ref(false)
-
-const breedsList = computed(() =>  breedsStore.breedsList)
-
-const applyNewAbout = () => {
-  //textAboutAccept.value = textAboutInput.value
-  isShowInput.value = false
-  emits('save-about-text', textAboutInput.value)
-}
 
 </script>
 
@@ -53,47 +37,7 @@ const applyNewAbout = () => {
           />
         </div>
       </div>
-
     </div>
-    <div v-if="typeAction !== 'view'" class="user-page__about-manage">
-      <div class="user-page__about-manage__breed">
-        <BaseSelect
-            v-if="breedsList?.length"
-            :items="breedsList"
-            v-model="selectBreeds"
-            show-search
-            full-value
-            multiple
-            name="breed"
-            placeholder="Выберите породу специализации"
-        />
-      </div>
-      <div class="user-page__about-manage__content">
-        <BaseTextarea
-            v-if="isShowInput"
-            v-model="textAboutInput"
-            :max-length="600"
-            title="Текст о нас" />
-        <BaseButton
-            v-if="isShowInput"
-            text="Применить"
-            @click="applyNewAbout"
-            type="teriary"
-            unfull
-        />
-        <BaseButton
-            v-else
-            type="teriary"
-            unfull
-            :text="textAboutInput? 'Изменить': 'Ввести'"
-            @click="isShowInput = true"
-        />
-      </div>
-
-    </div>
-
-
-
     <!--породы какие-->
   </div>
 </template>

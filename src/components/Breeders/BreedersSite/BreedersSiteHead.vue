@@ -76,7 +76,7 @@ const styleBanner = computed(() => {
     else if(isMobile.value) positionStyle = photoBannerItem.value?.positionBanner?.mobile || ""
     else positionStyle = photoBannerItem.value?.positionBanner?.desktop || ""
     return {
-      'background-image': `url(${photoBannerItem.value.imageUrl})`,
+      'background-image': `url(${photoBannerItem.value.url})`,
       'background-position': positionStyle
     }
   }
@@ -178,7 +178,7 @@ onBeforeUnmount(() => {
   <div class="breeder-site-header">
     <div class="breeder-site-header__block">
       <div class="breeder-site-header__image" :style="styleBanner">
-        <img v-if="photoBannerItem?.imageUrl" :src="photoBannerItem?.imageUrl"/>
+        <img v-if="photoBannerItem?.url" :src="photoBannerItem?.url"/>
         <img v-else src="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp"/>
         <div class="breeder-site-header__image-mask" />
       </div>
@@ -191,12 +191,12 @@ onBeforeUnmount(() => {
         <div class="breeder-site-header__content-name">
           <h1 v-if="props.typeAction === 'view'"
               class="breeder-site-header__content-name__text">
-            {{name}}
+            Питомник "{{name || ''}}"
           </h1>
-          <div v-if="typeAction === 'create'" class="breeder-site-header__content-name__select">
+          <div v-else class="breeder-site-header__content-name__select">
             <h1
                 class="breeder-site-header__content-name__text">
-              {{newNameFinal || 'Введите название питомника'}}
+              {{newNameFinal? `Питомник "${newNameFinal}"`: 'Введите название питомника'}}
             </h1>
             <div class="breeder-site-header__content-name__select-row">
               <BaseInput v-if="isShowNameInput" v-model="newNameInput" title="Название питомника" />
@@ -229,9 +229,10 @@ onBeforeUnmount(() => {
                     :name="name || 'Фото Превью'"
                     size="small"
                     unfull
-                    :img="photoPreviewItem?.imageUrl" />
+                    :img="photoPreviewItem?.url" />
 
                 <CommonUploadImageModal
+                    v-if="typeAction !== 'view'"
                     :isShow="isShowUploadPreviewModal"
                     titleModal="Загрузите баннер"
                     text-next-btn="Перейти к объявлению"
@@ -324,6 +325,8 @@ onBeforeUnmount(() => {
         &-row {
           display: flex;
           gap: 10px;
+          z-index: 2;
+          position: relative;
         }
       }
     }

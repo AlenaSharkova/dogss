@@ -1,7 +1,7 @@
 import {promisify} from "node:util";
 import jwt from "jsonwebtoken";
 
-export async function getUserAuth(token, Users) {
+export async function getUserAuth(token, Users, includeUserList) {
     try {
         const secretKey = process.env.JWT_SECRET_KEY;
         if (!secretKey) {
@@ -24,7 +24,7 @@ export async function getUserAuth(token, Users) {
         if(!dataToken?.userId) {
             throw createError({ statusCode: 401, message: 'Неавторизованный пользователь: нет информации о пользователе в токене' }); // Исправлено: Выбрасываем ошибку
         }
-        const user = await Users.findOne({where: {id: dataToken.userId}});
+        const user = await Users.findOne({where: {id: dataToken.userId}, include: includeUserList});
 
         if(!user) {
             throw createError({ statusCode: 401, message: 'Неавторизованный пользователь: пользователь не найден' }); // Исправлено: Выбрасываем ошибку

@@ -5,6 +5,6 @@ export interface ICommonZoomPhotosGallery {
 export interface ICommonInfoResultModal {
     //info ??, пока нет attention
     status: 'success' | 'error' | 'attention' | 'info',
-    title: string
-    subtitle?: string
+    title: string,
+    subtitle?: string,
 }

@@ -1,27 +1,28 @@
 import {UserBDItemStruct} from "~/server/struct/UserStruct";
+import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct";
 
 export interface DogsBDItemStruct {
     id: number;
     name: string;
     owner: number;
-    photos: string[];
+    photos: IUploadImageBD[];
     date_birth: string | null;
     breed_id: number;
     gender: 'female' | 'male';
     approximate_age: string | null;
 //    created_at: string;
 
-
+    DogsPhoto: IUploadImageBD[]
     Breed: object;
 //    Owner: UserBDItemStruct;
 }
 export interface DogsFormatShortItemStruct {
     id: number;
     name: string;
-    photos: string[];
-    date_birth: string;
+    photos: IUploadImageBD[];
+    date_birth: string | null;
     gender: 'female' | 'male';
-    approximate_age: string;
+    approximate_age: string | null;
 //    created_at: string;
 
     breed: object;
@@ -29,7 +30,7 @@ export interface DogsFormatShortItemStruct {
 
 }
 export interface DogBodyCreateItemStruct {
-    photos: string[];
+    photos: IUploadImageBody[];
     name: string;
 
     date_birth: string | null;
@@ -43,5 +44,6 @@ export interface DogFieldsCreateItemStruct {
     breed_id: number;
     gender: 'female' | 'male';
     breeder_id: number;
+    owner: number;
     approximate_age: string | null;
 }

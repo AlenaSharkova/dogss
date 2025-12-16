@@ -10,14 +10,19 @@ import items from "ajv/lib/vocabularies/applicator/items";
 import {usePersonalAdStore} from "~/stores/personal-ad.store";
 import AdFavoriteHeart from "~/components/Ad/AdFavoriteHeart.vue";
 import CommonZoomPhotoGallery from "~/components/Common/CommonZoomPhotosGallery.vue";
-import type {DogShortItemStruct} from "~/struct/Dog/DogItemStruct";
+import type {DogShortItemStruct, DogItemStruct} from "~/struct/Dog/DogItemStruct";
 
 const props = defineProps({
   item: {
     type: Object as PropType<DogShortItemStruct>,
     default: []
   },
+  typeAction: {
+    type: String as PropType<'view' | 'create' | 'change'>,
+    default: 'view'
+  },
 })
+const emit = defineEmits(['editDog'])
 
 const personalStore = usePersonalStore()
 const personalAdStore = usePersonalAdStore()
@@ -40,8 +45,9 @@ const removeFromDraft = async () => {
   await personalAdStore.deletePersonalAd('draft', props.item.id)
   isLoadDelete.value = false
 }
-const toEditAdAPage = () => {
-  router.push(`/personal/publications/change/${props.item.id}?type=active`)
+const editDog = () => {
+  emit('editDog', props.item)
+  //router.push(`/personal/publications/change/${props.item.id}?type=active`)
 }
 const toggleMorePersonal = () => {
   isShowMore.value = !isShowMore.value
@@ -77,7 +83,7 @@ const showModalCommentToAd = () => {
               <img v-else-if="item.gender == 'female'" src="@/assets/image/svg/dog-girl-white2.svg" alt="">
             </div>
           </div>
-          <!--<div v-if="type == 'personal' && ['active', 'moderation'].includes(item.status)"
+          <div v-if="typeAction !== 'view'"
                @click.stop="toggleMorePersonal"
                class="card-item__info-circle --top-right">
             <div class="card-item__info-circle__content" >
@@ -85,12 +91,12 @@ const showModalCommentToAd = () => {
                 <div v-for="i in 3" class="card-item__info-circle__content-more__point"></div>
               </div>
             </div>
-            <CardAdItemMore
+            <CardBreederItemMore
                 :id="item.id"
                 :is-show-more="isShowMore"
-                @toEditAdPage="toEditAdAPage()"
+                @editDog="editDog"
                 @toArchiveAd="" />
-          </div>-->
+          </div>
         </div>
         <swiper :space-between="0"
                 class="card-item__swiper"
@@ -107,9 +113,9 @@ const showModalCommentToAd = () => {
               v-for="(img, indexImg) in item.photos"
               :key="indexImg"
           >
-            <img class="card-item__swiper-img" :src="img" :alt="`dog-${item.id}-${indexImg}`">
+            <img class="card-item__swiper-img" :src="img.url" alt="Фото питомца">
           </swiper-slide>
-          <div v-if="!item.photos.length"
+          <div v-if="!item.photos?.length"
                class="card-item__swiper-slide --empty">
             <img class="card-item__swiper-img" src="@/assets/image/default_card.png" loading="lazy" :alt="`dog-${item.id}-${item.indexImg}`">
           </div>

@@ -25,8 +25,8 @@ const changePhoto = () => {
   isShowChangePhoto.value = true
 }
 const updatePhoto = () => {
-  if(!imageList.value.length || !imageList.value[0]?.imageUrl ) return
-  personalStore.changeUserData({photo: imageList.value[0].imageUrl})
+  if(!imageList.value.length || !imageList.value[0]?.url ) return
+  personalStore.changeUserData({photo: imageList.value[0].url})
       .then(() => {
         imageList.value = []
         deleteImageStorage(oldPhoto.value)
@@ -36,7 +36,7 @@ const updatePhoto = () => {
 }
 const hiddenChangePhoto = () => {
   //
-  if(imageList.value?.length) deleteImageStorage(imageList.value[0].imageUrl)
+  if(imageList.value?.length) deleteImageStorage(imageList.value[0].url)
   imageList.value = []
   isShowChangePhoto.value = false
 }

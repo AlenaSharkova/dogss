@@ -28,7 +28,7 @@ const closeUploadModal = () => {
         :effect="'coverflow'"
         :grabCursor="true"
         :loopPreventsSliding="true"
-        :loop="true"
+        :loop="imageList.length > 5"
         :loopedSlides ="3"
         :loopAdditionalSlides ="true"
         :centered-slides="true"
@@ -56,12 +56,13 @@ const closeUploadModal = () => {
           class="breeder-site__gallery-swiper__slide"
           v-for="(itemImg, index) in imageList"
       >
-        <img :src="itemImg.imageUrl">
+        <img :src="itemImg.url">
         <!--<img :src="`/server/image/users/1/${i}.jpg`">-->
       </swiper-slide>
     </swiper>
     <div class="breeder-site__gallery-manage">
       <BaseButton
+          v-if="typeAction !== 'view'"
           class="breeder-site__gallery-manage__button"
           text="Перейти к добавлению фото"
           type="teriary"

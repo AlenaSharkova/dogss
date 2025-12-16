@@ -29,6 +29,7 @@ usersStore.updateUsersList()
 <style scoped lang="scss">
 .page-breeders-group {
   width: 100%;
+  margin-top: 30px;
   &__list {
     display: flex;
     flex-direction: column;

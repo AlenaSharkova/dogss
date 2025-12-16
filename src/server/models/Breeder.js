@@ -8,10 +8,6 @@ module.exports = (sequelize) => {
             autoIncrement: true,
             allowNull: false,
         },
-        photo_banner: {
-            type: DataTypes.TEXT,
-            allowNull: true,
-        },
         address: {
             type: DataTypes.TEXT,
             allowNull: true,
@@ -24,8 +20,8 @@ module.exports = (sequelize) => {
             type: DataTypes.TEXT,
             allowNull: true,
         },
-        photos_gallery: {
-            type: DataTypes.ARRAY(DataTypes.TEXT),
+        about_text: {
+            type: DataTypes.TEXT,
             allowNull: true,
         },
         user_id: {

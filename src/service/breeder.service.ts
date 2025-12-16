@@ -1,6 +1,10 @@
 import BaseApiService from "~/service/baseApi.service";
 
-import type {BreederSiteItemStruct, BreederSiteSaveStruct} from "~/struct/Breeder/BreederSiteStruct";
+import type {
+  BreederSiteChangeStruct,
+  BreederSiteItemStruct,
+  BreederSiteSaveStruct
+} from "~/struct/Breeder/BreederSiteStruct";
 
 export default class BreederService extends BaseApiService {
   private readonly RESOURCE = '/api/breeder';
@@ -27,6 +31,21 @@ export default class BreederService extends BaseApiService {
       method: "post",
       baseURL: this.baseURL,
       body: body,
+      headers: {
+        ...this.headers,
+      },
+    })
+    if(error.value ) throw {...error.value};
+    else return data.value;
+  }
+  async patchBreeder(body: BreederSiteChangeStruct, id: number) {
+    const {data, error} = await useFetch<BreederSiteItemStruct>(this.RESOURCE, {
+      method: "patch",
+      baseURL: this.baseURL,
+      body: {
+        id: id,
+        ...body
+      },
       headers: {
         ...this.headers,
       },

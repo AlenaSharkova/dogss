@@ -14,24 +14,12 @@ import {useUsersStore} from "~/stores/users.store";
 import type {BreederSiteItemStruct} from "~/struct/Breeder/BreederSiteStruct";
 import BreedersSitePets from "~/components/Breeders/BreedersSite/BreedersSitePets.vue";
 import BreedersSiteGallery from "~/components/Breeders/BreedersSite/BreedersSiteGallery.vue";
+import BreedersSiteAbout from "~/components/Breeders/BreedersSite/BreedersSiteAbout.vue";
 
-const props = defineProps({
-  user: {
-    type: Object as PropType<UserItemPublicStruct | null>,
-    default: null
-  },
-  breeder: {
-    type: Object as PropType<BreederSiteItemStruct | null>,
-    default: null,
-  }
-})
 const route = useRoute();
-const idBreeder = ref<string | null>(null)
 
-const usersStore = useUsersStore()
 const breederStore = useBreederStore()
 const breedsStore = useBreedsStore()
-const adStore = useAdStore()
 const commonStore = useCommonStore()
 
 const pawsCount = ref(1)
@@ -47,15 +35,10 @@ const commentsHtmlBlock = ref<HTMLElement | null>(null);
 const myDogsHtmlBlock = ref<HTMLElement | null>(null);
 const idActiveSection = ref<UserPageSectionType | null>(null)
 const sectionsElemList = ref<(HTMLElement | null)[] | null>([])
-const breederViewCurrent = ref<BreederSiteItemStruct | null>(null)
+const clientHeight = ref(0)
 
-
-const adList = computed(() => adStore.adCatalogList )
 const breederView = computed(() => breederStore.breederView )
-const breedsList = computed(() => breedsStore.breedsList )
-
-let observer: IntersectionObserver | null = null
-
+const user = computed(() => breederView.value?.ownerDetails )
 
 const getBlockHtml = (id: string) => {
   switch (id) {
@@ -68,15 +51,11 @@ const getBlockHtml = (id: string) => {
   }
 }
 
-
 const goToBlock = (id: UserPageSectionType | null) => {
   const blockHtml = id && getBlockHtml(id)
-
-  console.log('blockHtml', blockHtml, blockHtml?.offsetTop)
   scrollToBlock(blockHtml)
 }
 const scrollToBlock = (block: HTMLElement | null) => {
-  console.log('block', block)
   if(!block) {
     window.scrollTo({
       top: 0,
@@ -97,17 +76,17 @@ const scrollBlockFromRoute = () => {
 }
 
 const actionScrollPaws = () => {
-  window.addEventListener('scroll', () => {
-    const pageClientHeight = document.querySelector('.page-breeder')?.clientHeight
-    if(pageClientHeight) {
-      pawsCount.value = Math.round((window.scrollY) / 48 * (1 + (window.innerHeight + 93) / pageClientHeight)) || 1
-      //console.log(window.scrollY, pageClientHeight, pawsCount.value)
-    }
-    //pawsCount.value = Math.ceil((window.pageYOffset +window.innerHeight/2 )/ 50)
-  })
+  const pageClientHeight = clientHeight.value
+  if(pageClientHeight && document.body.clientHeight > (window.scrollY + window.innerHeight) ) {
+    console.log('window.innerHeight',document.body.clientHeight, pageClientHeight, window.innerHeight + window.scrollY)
+    pawsCount.value = Math.round((window.scrollY) / 48 * (1 + (window.innerHeight + 93) / pageClientHeight)) || 1
+    const heightPaws = Math.round(Math.sqrt(pageClientHeight ** 2 + window.innerWidth ** 2) / 48) || 1
+    //pawsCount.value = 1
+  }
 }
 watch(() => commonStore.scrollTopCurrent,
     newTop => {
+      actionScrollPaws()
       const marginTop = 125 + 40
       console.log('newTop', newTop)
       console.log(sectionsElemList.value)
@@ -130,18 +109,15 @@ watch(() => commonStore.scrollTopCurrent,
 )
 onMounted(() => {
   actionScrollPaws()
-
+  clientHeight.value = Number(document.querySelector('.breeder-site')?.clientHeight) || 0;
   sectionsElemList.value = [aboutHtmlBlock.value, adsHtmlBlock.value, contactsHtmlBlock.value, commentsHtmlBlock.value, myDogsHtmlBlock.value]
   const t = setTimeout(() => {
     scrollBlockFromRoute()
-    //commonStore.changeIsLoadingPage(false)
-
-
     clearTimeout(t)
   }, 50)
 })
 onUnmounted(() => {
-  //usersStore.userViewData = null
+  breederStore.breederView = null
 })
 </script>
 
@@ -149,24 +125,31 @@ onUnmounted(() => {
   <div v-if="user && breederView" class="breeder-site">
     <BreedersSiteHead
         type-action="view"
-        :name="`Питомник ${breeder?.name || ''}`"
+        :name="breederView?.name"
         @scroll-to-block="goToBlock"
         v-model:section="idActiveSection"
+        v-model:banner-images="breederView.photo_banner"
+        v-model:photo-preview="breederView.photo_preview"
     />
     <LayoutWrapperPage :isPaddingY="false" :isPaddingX="false" class="breeder-site__wrapper" >
       <div ref="aboutHtmlBlock" id="about" class="breeder-site__section --no-padding">
         <h3 class="breeder-site__section-title">О нас</h3>
-        <UserPageAbout class="breeder-site__section-block" />
-        <BreedersSiteGallery v-model="breederView.photos_gallery" />
+        <BreedersSiteAbout
+            class="breeder-site__section-block"
+            typeAction="view"
+            :text="breederView.about_text"
+            v-model="breederView.breed_specialisation"
+        />
+        <BreedersSiteGallery v-model="breederView.photos_gallery" typeAction="view" />
       </div>
       <div ref="myDogsHtmlBlock" id="my-dogs" class="breeder-site__section">
         <h3 class="breeder-site__section-title">Наши питомцы</h3>
-        <BreedersSitePets :dogs="breeder?.my_dogs" />
+        <BreedersSitePets :dogs="breederView.my_dogs" />
       </div>
 
       <div ref="adsHtmlBlock" id="ads" class="breeder-site__section">
         <h3 class="breeder-site__section-title">Объявления</h3>
-        <UserPageAds :ads-list="user?.ad_list" class="breeder-site__section-block" />
+        <UserPageAds :ads-list="user.ad_list" class="breeder-site__section-block" />
       </div>
       <div ref="contactsHtmlBlock"  id="contacts" class="breeder-site__section">
         <h3 class="breeder-site__section-title">Контакты</h3>
@@ -201,11 +184,10 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .breeder-site {
-  //display: flex;
   width: 100%;
-  overflow: hidden;
   z-index: 1;
   position: relative;
+  margin-bottom: 100px;
   &__wrapper {
     margin-top: 80px;
   }
