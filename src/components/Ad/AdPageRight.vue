@@ -151,7 +151,12 @@ const goToContacts = () => {
       </div>
     </div>
     <Teleport to="body">
-      <AdShareInContactModal :is-show-modal="isShowModalShare" @close="closeModalShare" />
+      <CommonShareInContactModal
+          :is-show-modal="isShowModalShare"
+          @close="closeModalShare"
+          :path="`/publication/${item.id}`"
+          type-share="ad"
+      />
     </Teleport>
 
   </div>

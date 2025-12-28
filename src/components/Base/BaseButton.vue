@@ -116,7 +116,10 @@ const tag = computed(() => (props.to ? 'router-link' : 'button'));
         background: $second-yellow;
       }
       &.base-button__disabled {
-        opacity: 0.5;
+        //background: $second-yellow;
+        span {
+          opacity: 0.5;
+        }
       }
     }
     &--secondary {

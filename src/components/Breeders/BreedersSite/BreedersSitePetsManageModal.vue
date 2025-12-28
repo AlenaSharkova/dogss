@@ -55,7 +55,7 @@ const currentStep = ref(1)
 const formDefault = ref<DogItemStruct>({})
 
 const isValid = computed(() =>{
-  const imageUploadList = imageList.value.filter(item => item.status == 'success' && item.url)
+  const imageUploadList = imageList.value.filter(item => (item.status == 'in-base' || item.id) && item.url)
 
   return (
       imageUploadList.length
@@ -91,6 +91,7 @@ const getBody = (): DogFormCreateItemStruct | false => {
     date_birth: dayjs(form.date_birth).isValid() && !isUnknownDateOfBirth.value?
         dayjs(form.date_birth, 'DD.MM.YYYY').format('YYYY-MM-DD'): null,
     gender: selectGender.value.value,
+    //status_update: props.defaultData? 'change': 'add'
   }
 }
 
@@ -110,7 +111,7 @@ const likeChange = (form: DogFormCreateItemStruct) => {
 }
 const sendDogForm = async () => {
   if(props.defaultData) {
-    changeDataDog()
+    await changeDataDog()
     //await changeDataDog('moderation', 'moderation')
     return
   }
@@ -134,14 +135,10 @@ const setDefaultData = () => {
     isUnknownDateOfBirth.value = true
     selectApproximateAge.value.value = approximate_age
   }
-  if(photos) imageList.value = photos.map(url => {
-    return {
-      url: url,
-      status: 'success'
-    }
-  })
+  if(photos) imageList.value = photos
   if(name) form.name = name
-  if(date_birth) form.date_birth = date_birth
+  //TODO: проверить с созданием
+  if(date_birth) form.date_birth = dayjs(date_birth, 'YYYY-MM-DD').format('DD.MM.YYYY')
 
   formDefault.value = getBody()
 }
@@ -198,7 +195,8 @@ onMounted(() => {
                 <BaseInput
                     v-if="!isUnknownDateOfBirth"
                     v-model="form.date_birth"
-                    title="Дата рождения (DD.MM.YYYY)"
+                    title="Дата рождения"
+                    placeholder="DD.MM.YYYY"
                     mask="**.**.****"
                     replaceForData
                     total-number-mask

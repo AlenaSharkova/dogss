@@ -1,6 +1,7 @@
 
 export interface ICommonUpload {
     url: string | null,
+    id?: number,
     coordinates?: IUploadCoordinates | null,
     positionBanner?: IUploadPositionBanner | null,
     status?: "success" | "error" | 'processing' | 'disabled' | 'in-base'

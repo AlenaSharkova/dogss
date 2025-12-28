@@ -14,7 +14,7 @@ const props = defineProps({
     default: false
   },
 })
-const emit = defineEmits(['editDog'])
+const emit = defineEmits(['editDog', 'deleteDog'])
 
 const router = useRouter()
 const personalAdStore = usePersonalAdStore()
@@ -27,7 +27,21 @@ const showModalDeleteDog = () => {
   isShowModalDeleteDog.value = true
   commonStore.infoResultModal = {
     title: 'Вы уверены, что хотите удалить запись о питомце',
-    status: 'attention'
+    status: 'attention',
+    actionsBtn: [
+      {
+        text: "Да",
+        typeStyle: 'red',
+        action: function (): void{
+          emit('deleteDog')
+        },
+      },
+      {
+        text: "Назад",
+        typeStyle: 'violet',
+        action: function (): void{},
+      },
+    ]
   }
 }
 const closeModalDeleteDog = () => {
@@ -72,7 +86,7 @@ const toArchiveClose = async () => {
             <span>Просмотреть</span>
           </div>
           <div class="card-breeder__item-more__window-item --red" @click="showModalDeleteDog">
-            <span>Завершить</span>
+            <span>Удалить</span>
           </div>
         </div>
       </div>

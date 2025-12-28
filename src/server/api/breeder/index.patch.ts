@@ -2,6 +2,7 @@ import {IUploadImageBD, IUploadImageBody} from "~/server/struct/UploadFileStruct
 import {getUserAuth} from "~/server/services/auth.service";
 import {BreederBDItemStruct, BreederBodyCreateStruct} from "~/server/struct/BreedersStruct";
 import {DogBodyCreateItemStruct, DogFieldsCreateItemStruct, DogsBDItemStruct} from "~/server/struct/DogsStruct";
+import {deleteBDFiles} from "~/server/services/upload.service";
 
 export default defineEventHandler(async (event) => {
     const sequelize = event.context.sequelize;
@@ -79,8 +80,8 @@ export default defineEventHandler(async (event) => {
                 transaction
             });
         }
+
         if( body.breed_specialisation?.length) {
-             // текущее фото
             await patchSpecialiseBreeders(transaction, breederEdition.BreedSpecialiseBreeders)
         }
 
@@ -133,7 +134,7 @@ export default defineEventHandler(async (event) => {
         throw createError({
             statusCode: 400,
             message: JSON.stringify(error),
-            statusMessage: 'Ошибка при создании объявления',
+            statusMessage: 'Ошибка при редактировании объявления',
         })
         throw error;
     }
@@ -143,16 +144,17 @@ export default defineEventHandler(async (event) => {
         currentSpecializationsBD: any
     ) {
         console.log('currentSpecializationsBD')
-        const currentBreedIds = new Set(currentSpecializationsBD.map(s => s.breed_specialise_id));
+        const currentBreedIds = new Set(currentSpecializationsBD.map(s => s.value));
         const newBreedIds = new Set(body.breed_specialisation);
         const toAdd = [...newBreedIds].filter(id => !currentBreedIds.has(id));
         const toRemove = [...currentBreedIds].filter(id => !newBreedIds.has(id));
         // Добавить новые специализации
         if (toAdd.length > 0) {
             await BreedSpecialise.bulkCreate(toAdd.map(breed_id => ({
-                breeder_id: body.id,
-                breed_specialise_id: breed_id
-            })));
+                    breeder_id: body.id,
+                    breed_specialise_id: breed_id
+                })), {transaction}
+            );
         }
         // Удалить отсутствующие специализации
         if (toRemove.length > 0) {
@@ -160,7 +162,8 @@ export default defineEventHandler(async (event) => {
                 where: {
                     breeder_id: body.id,
                     breed_specialise_id: toRemove
-                }
+                },
+                transaction
             });
         }
     }
@@ -324,6 +327,7 @@ export default defineEventHandler(async (event) => {
                 where: { id: photosToRemove.map(p => p.id) },
                 transaction
             });
+            await deleteBDFiles(user, UploadedFile, null, photosToRemove.map(p => p.id), 'in-base')
         }
 
         // Добавить новые фото
@@ -342,16 +346,9 @@ export default defineEventHandler(async (event) => {
         // Обновить существующие фото (метаданные)
         for (const photo of photosToUpdate) {
             const currentPhoto = currentPhotos.find(p => p.id === photo.id);
-            if (currentPhoto && (currentPhoto.url !== photo.url || currentPhoto.coordinates !== photo.coordinates || currentPhoto.positionBanner !== photo.positionBanner)) {
-                // Если URL изменился, удаляем старое и создаем новое (или просто обновляем запись, если это только метаданные)
-                // Для URL чаще всего безопаснее удалить и создать, так как URL часто уникален для файла.
-                // Если URL тот же, но метаданные другие, то просто обновляем.
-                if (currentPhoto.url !== photo.url) {
-                    await deleteUploadedFile(currentPhoto.id, transaction);
-                    await createUploadedFile(photo, purpose, source_id, owner_id, transaction);
-                } else {
-                    await updateUploadedFileMetadata(photo.id!, photo, transaction);
-                }
+            if (currentPhoto && ( currentPhoto.coordinates !== photo.coordinates || currentPhoto.positionBanner !== photo.positionBanner)) {
+                // URL тот же, метаданные другие - просто обновляем.
+                await updateUploadedFileMetadata(photo.id!, photo, transaction);
             }
         }
     }
@@ -408,13 +405,14 @@ export default defineEventHandler(async (event) => {
             where: { id: dogId },
             transaction
         });
+
     }
 
 // Вспомогательная функция для удаления собаки и ее фото
     async function deleteDogEntry(dogId: number, transaction: any) {
         // Сначала удаляем все фотографии, связанные с собакой
         await UploadedFile.destroy({
-            where: { source_id: dogId, purpose: 'dog_photo' }, // Убедитесь, что purpose совпадает
+            where: { source_id: dogId, purpose: 'dogs' }, // Убедитесь, что purpose совпадает
             transaction
         });
         // Затем удаляем саму собаку
@@ -459,7 +457,7 @@ export default defineEventHandler(async (event) => {
                 await handleGalleryPhotosUpdate( // Переиспользуем логику для галереи
                     dogData.photos,
                     currentDog.DogsPhoto, // Предполагаем, что currentDog.DogsPhoto содержит массив UploadedFile
-                    'dog_photo', // Цель для фото собак
+                    'dogs', // Цель для фото собак
                     dogData.id!, // ID собаки как source_id
                     owner_id,
                     transaction

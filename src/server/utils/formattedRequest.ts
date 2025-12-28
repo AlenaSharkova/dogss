@@ -258,6 +258,7 @@ export const formattedPhoto = (item: IUploadImageBD, isCoordinates = false, isPo
     console.log('item formattedPhoto', item)
     const data: IUploadImageBody = {
         url: item.url,
+        id: item.id,
     }
     if(isCoordinates) data.coordinates = item.coordinates;
     if(isPositionBanner) data.positionBanner = item.positionBanner;

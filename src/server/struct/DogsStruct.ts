@@ -32,7 +32,7 @@ export interface DogsFormatShortItemStruct {
 export interface DogBodyCreateItemStruct {
     photos: IUploadImageBody[];
     name: string;
-
+    id?: number;
     date_birth: string | null;
     breed_id: number;
     gender: 'female' | 'male';

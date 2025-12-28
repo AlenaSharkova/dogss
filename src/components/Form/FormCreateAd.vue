@@ -191,12 +191,7 @@ const setDefaultData = () => {
     isUnknownDateOfBirth.value = true
     selectApproximateAge.value.value = approximate_age
   }
-  if(photos) imageList.value = photos.map(url => {
-    return {
-      url: url,
-      status: 'success'
-    }
-  })
+  if(photos) imageList.value = photos
   if(geo_main.region) selectRegion.value = geo_main.region
   if(geo_main.city) selectCity.value = geo_main.city
   if(name) form.name = name
@@ -418,7 +413,8 @@ if(authStore.statusUser === 'active') {
             <BaseInput
                 v-if="!isUnknownDateOfBirth"
                 v-model="form.date_birth"
-                title="Дата рождения (DD.MM.YYYY)"
+                title="Дата рождения"
+                placeholder="DD.MM.YYYY"
                 mask="**.**.****"
                 replaceForData
                 total-number-mask

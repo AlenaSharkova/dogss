@@ -90,6 +90,7 @@ export default defineEventHandler(async (event) => {
                 for (const item of deletedAdsList) {
                     console.log('item of deletedRows', item)
                     if(item?.photos?.length) {
+                        //TODO: удалять из базы жанные
                         await deleteFiles(item.photos)
                     }
                 }
@@ -126,19 +127,3 @@ export default defineEventHandler(async (event) => {
         throw error
     }
 });
-
-const deleteImage = async (item) => {
-    const data = await fetch("/api/upload/delete", {
-        method: "post",
-        body: {
-            fileUrlList: item.photos
-        },
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    })
-    console.log('data000', data)
-    if (error) {
-        throw createError({statusCode: 400, message: 'Картинки не удалены '});
-    }
-}

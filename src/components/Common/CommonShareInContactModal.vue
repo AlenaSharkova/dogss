@@ -9,15 +9,19 @@ import type {
 import type {PropType} from "vue";
 import type {IContactValue} from "~/struct/Common/IValueType";
 
-defineProps({
-  contacts: {
-    type: Object as PropType<UserContactMethodsOptimalStruct<string>>,
-    required: false
-  },
+const props = defineProps({
   isShowModal: {
     type: Boolean,
     default: false
-  }
+  },
+  path: {
+    type: String,
+    required: true
+  },
+  typeShare: {
+    type: String as PropType<'ad'>,
+    required: true
+  },
 })
 const emit  = defineEmits(['close'])
 const commonStore = useCommonStore()
@@ -29,13 +33,20 @@ const methods = ref<AdShareContactMethods>({
   copy: 'Скопировать',
 })
 
-
-const textMessage = "Здравствуйте!%0A" + encodeURIComponent("Пишу насчёт Вашего объявления с сайта ПёSeek!")
-const adUrl = ref('http://192.168.0.196:3000/publication/20')
-const adTitle = ref('Check out this ad!')
+const domain = 'http://192.168.0.196:3000'
+const shareUrl = computed(() => domain + props.path)
+const shareTitleList = ref(
+    [
+      {
+        type: 'ad',
+        text: 'Присылаю объявление с сайта ПёSeek!'
+      }
+    ]
+)
+const shareTitle = computed(() => shareTitleList.value.find(item => item.type === props.typeShare))
 
 const copyToClipboard = () => {
-  return navigator.clipboard.writeText(adUrl.value).then(
+  return navigator.clipboard.writeText(shareUrl.value).then(
       () => {
         commonStore.addUserInfoAlert('Ссылка скопирована')
         emit('close')
@@ -48,10 +59,10 @@ const copyToClipboard = () => {
 const getHref = (id: IContactValue | 'copy') => {
   switch (id) {
     //case "email": return `mailto:${item}?subject=${encodeURIComponent('Платформа ПёSeek')}&body=${textMessage}`
-    case "whatsapp": return `https://wa.me/?text=${encodeURIComponent(`${adTitle.value} ${adUrl.value}`)}`
+    case "whatsapp": return `https://wa.me/?text=${encodeURIComponent(`${shareTitle.value} ${shareUrl.value}`)}`
     //case "tg": return `https://t.me/${item}?text=${textMessage}`
-    case "tg": return `https://telegram.me/share/url?url=${encodeURIComponent(adUrl.value)}&text=${encodeURIComponent(adTitle.value)}`
-    case "vk": return `https://vk.com/share.php?url=${encodeURIComponent(adUrl.value)}&title=${encodeURIComponent(adTitle.value)}&description=${encodeURIComponent(adTitle.value)}`
+    case "tg": return `https://telegram.me/share/url?url=${encodeURIComponent(shareUrl.value)}&text=${encodeURIComponent(shareTitle.value)}`
+    case "vk": return `https://vk.com/share.php?url=${encodeURIComponent(shareUrl.value)}&title=${encodeURIComponent(shareTitle.value)}&description=${encodeURIComponent(shareTitle.value)}`
   }
 }
 const shareIn = (id: IContactValue | 'copy') => {

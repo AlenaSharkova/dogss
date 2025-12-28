@@ -31,6 +31,7 @@ const emits = defineEmits(['sendDogs'])
 const authStore = useAuthStore()
 
 const newDogsList = ref<DogFormCreateItemStruct[]>([])
+const changeDogsList = ref<DogChangeItemStruct[]>([])
 const userFullData = computed(() => authStore.userFullData )
 const isShowModalAdd = ref(false)
 const editionDog = ref<DogFormCreateItemStruct | null>(null)
@@ -59,6 +60,21 @@ const saveEditedDog = (data: DogChangeItemStruct, id = null as number | null) =>
         return item
       }
     })
+    /*if(!props.dogs) return
+    if(data.status_update == 'change') {
+      changeDogsList.value.find(item => {
+        if(item.id === id) {
+          for(let idField in data) {
+            if(data[idField as keyof DogChangeItemStruct]
+                !== props.dogs[idField as keyof DogChangeItemStruct]) {
+              item[idField as keyof DogChangeItemStruct] = data[idField as keyof DogChangeItemStruct]
+            } else {
+              delete item[idField]
+            }
+          }
+        }
+      })
+    }*/
     editionDog.value = null
   }
 }
@@ -83,6 +99,9 @@ const showModalAdd = () => {
 }
 const editDog = (data: DogFormCreateItemStruct) => {
   editionDog.value = data
+}
+const deleteDog = (index: number) => {
+  newDogsList.value.splice(index, 1)
 }
 const cancelEditDog = () => {
   editionDog.value = null
@@ -123,6 +142,7 @@ defineExpose({
           v-for="(itemNew, indexNew) in newDogsList"
           :typeAction="typeAction"
           @editDog="editDog"
+          @deleteDog="deleteDog(indexNew)"
           :key="indexNew"
           :item="itemNew"
       />

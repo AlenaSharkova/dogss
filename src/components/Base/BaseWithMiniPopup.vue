@@ -57,7 +57,8 @@ const onBlur = () => {
     margin-bottom: 4px;
     &.--left {
       left: 2px;
-    }}
+    }
+  }
   &__wrapper {
     padding: 7px 10px;
   }

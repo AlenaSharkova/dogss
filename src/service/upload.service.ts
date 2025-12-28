@@ -6,8 +6,9 @@ import type {IUploadApi} from "~/struct/Common/ICommonUpload";
 export default class UploadService extends BaseApiService {
     private readonly RESOURCE = '/api/upload';
 
-    constructor(config: string) {
+    constructor(config: string, token:string) {
         super(config);
+        this.setAuthToken(token);
     }
     // TODO: отображать типы в каком-то виде
 

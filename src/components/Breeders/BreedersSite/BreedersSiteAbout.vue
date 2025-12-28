@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {computed, defineProps, type PropType, ref} from "vue";
 import type {ISelectComponent} from "~/struct/Common/ISelectComponent";
+import BaseWrapperIconBlur from "~/components/Base/BaseIcon/BaseWrapperIconBlur.vue";
 
 const props = defineProps({
   text: {
@@ -33,15 +34,12 @@ const applyNewAbout = () => {
 
 <template>
   <div class="breeder-about">
-    <div class="breeder-about-final">
-      <div v-if="text" class="breeder-about-final__text">
-        <span>{{text}}</span>
-      </div>
-      <div v-if="selectBreeds?.length" class="breeder-about-final__breed">
-        <div class="breeder-about-final__breed-text">
+    <div class="breeder-about__breed">
+      <div v-if="selectBreeds?.length" class="breeder-about__breed-final">
+        <div class="breeder-about__breed-final__text">
           <span>Специализация: </span>
         </div>
-        <div class="breeder-about-final__breed-list">
+        <div class="breeder-about__breed-final__list">
           <BaseMiniBlock
               v-for="(item, index) in selectBreeds"
               :key="index"
@@ -49,9 +47,7 @@ const applyNewAbout = () => {
           />
         </div>
       </div>
-    </div>
-    <div v-if="typeAction !== 'view'" class="breeder-about-manage">
-      <div class="breeder-about-manage__breed">
+      <div v-if="typeAction !== 'view'" class="breeder-about__breed-manage">
         <BaseSelect
             v-if="breedsList?.length"
             :items="breedsList"
@@ -60,10 +56,17 @@ const applyNewAbout = () => {
             full-value
             multiple
             name="breed"
-            placeholder="Выберите породу специализации"
+            placeholder="Породы специализации"
         />
       </div>
-      <div class="breeder-about-manage__content">
+
+    </div>
+
+    <div class="breeder-about__text">
+      <div v-if="text && !isShowInput" class="breeder-about__text-final">
+        <span>{{text}}</span>
+      </div>
+      <div v-if="typeAction !== 'view'" class="breeder-about__text-manage">
         <BaseTextarea
             v-if="isShowInput"
             v-model="textAboutInput"
@@ -83,29 +86,39 @@ const applyNewAbout = () => {
             :text="textAboutInput? 'Изменить': 'Ввести'"
             @click="isShowInput = true"
         />
+        <BaseWithMiniPopup text="45"/>
+        <BaseWrapperIconBlur>
+          <BaseIconChange slot="default" />
+        </BaseWrapperIconBlur>
+
       </div>
-
     </div>
-
-
-
-    <!--породы какие-->
   </div>
 </template>
 
 <style scoped lang="scss">
 .breeder-about {
-  &-final {
-    &__breed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  &__breed {
+    &-final {
       display: flex;
       gap: 10px;
-      &-list {
+      align-items: center;
+      &__list {
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
       }
     }
   }
-
+  &__text {
+    display: flex;
+    flex-wrap: wrap;
+    &-manage {
+      flex: 1;
+    }
+  }
 }
 </style>

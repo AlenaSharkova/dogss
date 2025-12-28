@@ -35,8 +35,8 @@ const prev = () => {
   emits('prev')
 }
 const updateActionHeight = () => {
-  if (ActionHtml.value && ActionHtml.value.clientHeight > 0) {
-    heightActionHtml.value = ActionHtml.value.clientHeight;
+  if (ActionHtml.value && ActionHtml.value.clientHeight > 10) {
+    heightActionHtml.value = ActionHtml.value.clientHeight - 10;
   } else {
     heightActionHtml.value = 0;
   }

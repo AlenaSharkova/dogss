@@ -16,6 +16,7 @@ interface Props {
   formName?: string;
   modelValue: string;
   title?: string;
+  placeholder?: string;
   invalidText?: string;
   maxLength?: number;
   totalNumber?: boolean;
@@ -347,7 +348,7 @@ onMounted(() => {
     <div class="base-field__item" :class="{ invalid: invalidText && !isDisabledInvalidText || errorCustomer, focused: focused, '--no-title': !title, disabled: disabled}">
       <input
         :id="formName"
-        placeholder=""
+        :placeholder="placeholder || ''"
         :type="typeInput"
         :value="modelValue"
         :maxlength="maxLength"
@@ -475,10 +476,15 @@ onMounted(() => {
         background: $white-text;
       }
       &::placeholder {
-        color: transparent;
+        color: $grey-lite;
+        transition: color 0.2s;
+        font-family: "Montserrat", sans-serif;
       }
       &:focus-visible {
         outline: none;
+      }
+      &:not(:focus)::placeholder {
+        color: transparent;
       }
       &:focus ~ .prefix,
       &:not(:placeholder-shown) ~ .prefix {

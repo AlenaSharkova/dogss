@@ -242,8 +242,8 @@ onBeforeUnmount(() => {
 
                 <div class="breeder-site-header__bottom-nav__personal-content">
                   <div class="breeder-site-header__bottom-nav__personal-content__title">
-                    <p v-if="typeAction === 'create'">{{newNameFinal || 'Введите название питомника'}}</p>
-                    <p v-if="typeAction === 'view'">{{name}}</p>
+                    <p v-if="['create', 'change'].includes(typeAction)">{{newNameFinal || 'Введите название питомника'}}</p>
+                    <p v-if="typeAction == 'view'">{{name}}</p>
                   </div>
                 </div>
               </div>

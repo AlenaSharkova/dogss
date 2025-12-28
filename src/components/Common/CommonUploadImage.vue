@@ -92,8 +92,9 @@ const uploadFiles = async (formData: any) => {
 }
 const deleteImageStorage = async (fileUploadInfo: ICommonUpload) => {
   if(!fileUploadInfo.url) return
-  if(fileUploadInfo.status === 'in-base') {
+  if(fileUploadInfo.id) {
     imageList.value = imageList.value.filter(item => item !== fileUploadInfo)
+    return
   }
   fileUploadInfo.status = 'disabled'
   await uploadStore.deleteFileStorage(fileUploadInfo.url).then(res => {
@@ -106,7 +107,7 @@ const deleteImageFail = (fileUploadInfo: ICommonUpload) => {
   imageList.value = imageList.value.filter(item => item !== fileUploadInfo)
 }
 
-const isShowImageStore = (fileUploadInfo: ICommonUpload) => ['success', 'disabled', 'in-base'].includes(fileUploadInfo.status) && fileUploadInfo.url
+const isShowImageStore = (fileUploadInfo: ICommonUpload) => (['success', 'disabled'].includes(fileUploadInfo.status) || fileUploadInfo.id ) && fileUploadInfo.url
 
 const openFileExplorer = () => {
   if(isLimitExceeded.value) return
@@ -175,16 +176,6 @@ watch(() => imageList.value, (newList) => {
   deep: true,
 })
 onMounted(() => {
-  imageList.value = imageList.value.map(image => {
-    if(!image.status) {
-      return {
-        ...image,
-        status: "in-base"
-      }
-    } else {
-      return image
-    }
-  })
 })
 </script>
 
@@ -234,7 +225,7 @@ onMounted(() => {
     </div>
     <div class="common-upload__file-photos">
 
-      {{imageList}}
+      {{imageList}}//
       <div class="common-upload__file-photos__item"
            v-for="(item, index) in imageList"
            :key="index">

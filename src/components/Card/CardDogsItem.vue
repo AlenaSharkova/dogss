@@ -22,7 +22,7 @@ const props = defineProps({
     default: 'view'
   },
 })
-const emit = defineEmits(['editDog'])
+const emit = defineEmits(['editDog', 'deleteDog'])
 
 const personalStore = usePersonalStore()
 const personalAdStore = usePersonalAdStore()
@@ -47,6 +47,10 @@ const removeFromDraft = async () => {
 }
 const editDog = () => {
   emit('editDog', props.item)
+  //router.push(`/personal/publications/change/${props.item.id}?type=active`)
+}
+const deleteDog = () => {
+  emit('deleteDog')
   //router.push(`/personal/publications/change/${props.item.id}?type=active`)
 }
 const toggleMorePersonal = () => {
@@ -95,7 +99,7 @@ const showModalCommentToAd = () => {
                 :id="item.id"
                 :is-show-more="isShowMore"
                 @editDog="editDog"
-                @toArchiveAd="" />
+                @deleteDog="deleteDog" />
           </div>
         </div>
         <swiper :space-between="0"

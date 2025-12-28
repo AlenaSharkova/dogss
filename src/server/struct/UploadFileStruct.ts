@@ -5,6 +5,7 @@ export interface IUploadImageBody {
     url: string | null,
     coordinates?: IUploadCoordinates | null,
     positionBanner?: JSON
+    id?: number;
     //coordinates?: IUploadCoordinates | null
 }
 export interface IUploadImageBD {

@@ -100,7 +100,7 @@ watch(() => commonStore.scrollTopCurrent,
           // проверка полной видимости
           const fullyVisible = position.top >= 0 && position.bottom <= window.innerHeight
           const lastElemFullyVisibleEnd = index === arr.length - 1 && fullyVisible
-          console.log('difference', differenceTop, differenceBottom, item.getBoundingClientRect(), document.body.offsetHeight, window.innerHeight )
+          //console.log('difference', differenceTop, differenceBottom, item.getBoundingClientRect(), document.body.offsetHeight, window.innerHeight )
           return differenceTop > 0 && differenceBottom < 0
         })
         idActiveSection.value = activeSection?.id || null

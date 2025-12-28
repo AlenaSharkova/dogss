@@ -10,8 +10,11 @@ import {useCommonStore} from "~/stores/common.store";
 export const useUploadStore = defineStore('uploadStore', () => {
     const config = useRuntimeConfig();
     const commonStore = useCommonStore()
+    const authStore = useAuthStore()
+    authStore.getSessionToken()
+    const token = computed(() => String(authStore.sessionToken))
 
-    const uploadService = new UploadService(config.public.apiBaseUrl);
+    const uploadService = new UploadService(config.public.apiBaseUrl, token.value);
 
     let uploadList = ref<ISelectComponent[] | null>(null)
 
