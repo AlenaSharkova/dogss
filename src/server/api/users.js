@@ -106,6 +106,16 @@ export default defineEventHandler(async (event)=>
                     {
                         model: Breeders,
                         as: 'MyBreeder',
+                        include: [
+                            {
+                                model: UploadedFile,
+                                as: 'BreedersPhotoPreview',
+                            },
+                            {
+                                model: Breeds,
+                                as: 'BreedSpecialiseBreeders',
+                            },
+                        ]
                     },
                 ]}
             );

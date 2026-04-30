@@ -27,6 +27,8 @@ const getUserFullData = () => {
 }
 const userFullData = computed(() => authStore.userFullData )
 const favoritesAdsCount = computed(() => personalStore.FavoritesList?.length || 0 )
+const userFullName = computed(() => userFullData.value? `${userFullData.value?.personal_data.first_name} ${userFullData.value?.personal_data.last_name}`: '')
+const idBreeder = computed(() => userFullData.value?.id_breeder)
 
 onMounted( () => {
   if (authStore.statusUser === 'unknown') {
@@ -34,7 +36,6 @@ onMounted( () => {
   }
 })
 
-const userFullName = computed(() => userFullData.value? `${userFullData.value?.personal_data.first_name} ${userFullData.value?.personal_data.last_name}`: '')
 
 const isShowPersonalMenu = ref(false)
 const togglePersonalMenu = () => {
@@ -48,6 +49,7 @@ const toggleMobileMenu = () => {
   console.log('isShowMobileMenu.value', isShowMobileMenu.value)
 
 }
+
 </script>
 
 <template>
@@ -74,8 +76,17 @@ const toggleMobileMenu = () => {
             size="small"
             to="/create-ad" />
         <BaseButton
+            v-if="idBreeder"
             class="header-nav__actions-ad"
-            text="Создать сайт"
+            text="Перейти к личному сайту"
+            size="small"
+            type="violet"
+            :to="`/breeders/${idBreeder}`"
+        />
+        <BaseButton
+            v-else
+            class="header-nav__actions-ad"
+            text="Создать личный сайт"
             size="small"
             type="violet"
             to="/breeders/create" />

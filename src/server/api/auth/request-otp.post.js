@@ -4,7 +4,10 @@ import {sendOTPByEmail} from '../../services/mail.service'
 
 //const Users = UsersModel(sequelize)
 export default defineEventHandler(async (event) => {
+    return 'не работает'
 
+
+    //пуст
     const sequelize = event.context.sequelize;
     const Users = event.context.Users;
     const Otp = event.context.Otp;
@@ -19,7 +22,7 @@ export default defineEventHandler(async (event) => {
             statusMessage: statusMessageServer,
         });
     }
-    const { email } = await readBody(event) // Принимаем email или номер телефона
+    const { email } = await readBody(event) // Принимаем email
 
     try {
         let user = await Users.findOne({ where: { email } });

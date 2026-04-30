@@ -1,4 +1,5 @@
 import {adminChatTgBot} from "~/server/data/access-data.js";
+import dayjs from "dayjs";
 
 
 export async function initEventTgBot(instanceBot ) {
@@ -19,7 +20,16 @@ export async function initEventTgBot(instanceBot ) {
 
 export async function sendAdModerationToTgAdmin(instanceBot, id) {
     try {
-        const text = `http://192.168.0.196:3000/admin/publications Запрос на модерацию от ${new Date()}, http://192.168.0.196:3000/catalog/${id}`;
+        const text = `http://192.168.0.196:3000/admin/publications Запрос на модерацию от ${dayjs().format('HH:mm DD.MM.YYYY')}, http://192.168.0.196:3000/catalog/${id}`;
+        sendMsgFromTgBot(instanceBot, text)
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+}
+export async function sendChangeEmailToTgAdmin(instanceBot, old_email, new_email, id) {
+    try {
+        const text = `Смена email:  ${old_email} -> ${new_email}. Дата: ${dayjs().format('HH:mm DD.MM.YYYY')}, http://192.168.0.196:3000/user/${id}`;
         sendMsgFromTgBot(instanceBot, text)
     } catch (error) {
         console.error('Error sending email:', error);

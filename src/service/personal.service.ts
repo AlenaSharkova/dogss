@@ -14,44 +14,6 @@ export default class PersonalService extends BaseApiService {
     this.setAuthToken(token);
   }
 
-  async getPersonalAdList() {
-    console.log('getPersonalAdList 00', {...this.headers})
-    try {
-      await nextTick()
-      const {data, error}
-          = await useFetch<PersonalAdListApiStruct>(this.RESOURCE + '/ad', {
-        method: "get",
-        baseURL: this.baseURL,
-        headers: {
-          ...this.headers,
-        },
-      })
-      console.log('getPersonalAdList 01', {...data}, data.value, error.value)
-      if (error.value) throw {...error.value};
-      else return data.value;
-    } catch (err) {
-      console.log('getPersonalAdList. errr', err);
-    }
-  }
-
-  async getPersonalAdItem(id: number | string | null, status: 'draft' | 'active') {
-    try {
-      await nextTick()
-      const {data, error}
-          = await useFetch<AdItemStruct>(this.RESOURCE + '/ad', {
-        method: "get",
-        query: { id, status },
-        baseURL: this.baseURL,
-        headers: {
-          ...this.headers,
-        },
-      })
-      if (error.value) throw {...error.value};
-      else return data.value;
-    } catch (err) {
-      console.log('getPersonalAdList. errr', err);
-    }
-  }
   async deletePersonalAd(status: IStatusAd, adId = null as number | string | null) {
     try {
       const {data, error}
@@ -121,6 +83,8 @@ export default class PersonalService extends BaseApiService {
       else return data.value;
     } catch (err) {
       console.log('getPersonalAdList. errr', err);
+      throw err
+
     }
   }
 
@@ -139,6 +103,46 @@ export default class PersonalService extends BaseApiService {
       else return data.value;
     } catch (err) {
       console.log('getPersonalAdList. errr', err);
+      throw err
+
+    }
+  }
+  async changeEmailUserApi(new_email: string) {
+    try {
+      const {data, error}
+          = await useFetch<ICommonApiSuccess>(this.RESOURCE + '/user/change-email', {
+        method: "post",
+        body: { new_email: new_email },
+        baseURL: this.baseURL,
+        headers: {
+          ...this.headers,
+        },
+      })
+      if (error.value) throw {...error.value};
+      else return data.value;
+    } catch (err) {
+      console.log('changeEmailUser. errr', err);
+      throw err
+
+    }
+  }
+  async changeEmailUserVerifyOtp(otp: string) {
+    try {
+      const {data, error}
+          = await useFetch<ICommonApiSuccess>(this.RESOURCE + '/user/verify-change-email', {
+        method: "get",
+        query: { otp: otp },
+        baseURL: this.baseURL,
+        headers: {
+          ...this.headers,
+        },
+      })
+      if (error.value) throw {...error.value};
+      else return data.value;
+    } catch (err) {
+      console.log('changeEmailUser. errr', err);
+      throw err
+
     }
   }
 

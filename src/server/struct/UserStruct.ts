@@ -5,6 +5,20 @@ import {getCommentsListUsers} from "~/server/services/comment.service";
 import {formattedAd} from "~/server/utils/formattedRequest";
 import {AdCommentView} from "~/server/struct/AdCommentStruct";
 
+export interface UserBDFirstItemStruct {
+
+    id: number;
+    photo: string;
+    address: string;
+    status: string;
+    email: string;
+    city: number;
+    region: number;
+    first_name: string;
+    last_name: string;
+    person_ads: number;
+    contact_methods: UserContactMethodsOptimalStruct;
+}
 export interface UserBDItemStruct {
 
     id: number;
@@ -53,4 +67,11 @@ export interface UserContactMethodsOptimalStruct {
     tg?: string,
     whatsapp?: string,
     vk?: string,
+}
+export interface UserCreateItemStruct {
+    email: string;
+    first_name: string;
+    last_name: string;
+    region: number,
+    city: number,
 }

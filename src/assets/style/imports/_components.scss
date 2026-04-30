@@ -1,0 +1,19 @@
+@mixin blur-block($padding: 15px 40px, $bg-color: rgba(255,255,255,0.06)) {
+  padding: $padding;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: $box-shadow-middle;
+  transition: all .3s;
+  background-color: $bg-color;
+  flex-shrink: 0;
+
+
+  gap: 10px;
+  flex-direction: column;
+
+  border-radius: 24px;
+  backdrop-filter: blur(6px);
+
+  box-shadow: $box-shadow-lite;
+}

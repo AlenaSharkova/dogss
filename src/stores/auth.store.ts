@@ -94,6 +94,7 @@ export const useAuthStore = defineStore('authStore', () => {
                 if (res) return res
             })
             .catch(e => {
+                console.log('eeee', e)
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
                 commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
@@ -123,9 +124,9 @@ export const useAuthStore = defineStore('authStore', () => {
             });
         /*.finally(() => (isLoading.value = false));*/
     }
-    async function getSessionTokenWitchLink(code: string) {
+    async function getSessionTokenWitchLink(tokenLink: string) {
         console.log('getSessionTokenWitchLink 123')
-        await authService.verifyCodeLink(code)
+        await authService.verifyCodeLink(tokenLink)
             .then(async (res) => {
                 console.log('getSessionTokenWitchLink 1234', res)
                 if (res) {

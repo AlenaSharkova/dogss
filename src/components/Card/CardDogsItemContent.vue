@@ -36,8 +36,10 @@ const approximateAgeText = computed(() => {
       </div>
 
       <div class="card-item__content-info">
-        <p>{{item.breed?.text}}</p>
-        <div class="card-item__content-address">
+        <div class="card-item__content-info__breed">
+          <p>{{item.breed?.text}}</p>
+        </div>
+        <div class="card-item__content-age">
           <p v-if="item.approximate_age"> {{approximateAgeText}}</p>
           <p v-if="!item.approximate_age"> {{calculateAge(item.date_birth)}}</p>
         </div>

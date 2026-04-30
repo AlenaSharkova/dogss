@@ -103,26 +103,24 @@ const send = () => {
   &__wrapper {
    display: flex;
    gap: 20px;
-   flex-wrap: wrap; // Позволит элементам переноситься на новую строку, если места мало
+   flex-wrap: wrap; /*Позволит элементам переноситься на новую строку, если места мало*/
    @media (max-width: 545px) {
      flex-direction: column;
      flex-wrap: nowrap;
    }
   }
   &__item {
-
     background-color: #f0f4f7;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
-    padding: 10px; // Уменьшенный padding
+    padding: 10px;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
-    flex: 1; // Занимает доступное пространство
-    min-width: 230px; // Минимальная ширина, чтобы не схлопывалось слишком сильно
+    flex: 1;
+    min-width: 230px;
     display: flex;
     flex-direction: column;
     align-items: center;
-
     &.--mobile {
       width: 100%;
       flex: 1;
@@ -167,7 +165,7 @@ const send = () => {
 
       img {
         height: 100%;
-       // width: 100%;
+        /*width: 100%;*/
         object-fit: cover;
         object-position: center;
 
@@ -175,9 +173,8 @@ const send = () => {
         top: 0;
         left: 0;
         width: 100%;
-        height: 100%;
-        //object-fit: contain;
-        //object-position: center;
+        /*object-fit: contain;
+        object-position: center;*/
         display: block;
       }
 

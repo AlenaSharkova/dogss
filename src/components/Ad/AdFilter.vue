@@ -190,10 +190,12 @@ const showPriceRange = ref(false)
 .ad-filter {
   min-width: 400px;
   height: calc(100vh - 100px);
-  overflow: auto;
+  overflow-x: auto;
   padding: 0 0 20px 0;
   @media (max-width: $sm) {
     min-width: auto;
+    overflow-x: hidden;
+    padding: 0;
   }
   &__title {
     margin-bottom: 8px;

@@ -27,6 +27,10 @@ module.exports = (sequelize) => {
             type: DataTypes.STRING,
             allowNull: false,
         },
+        is_change_email: {
+            type: DataTypes.BOOLEAN,
+            defaultValue: false,
+        },
         expiresAt: {
             type: DataTypes.DATE,
             allowNull: false,

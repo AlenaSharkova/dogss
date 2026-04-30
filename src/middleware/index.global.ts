@@ -49,7 +49,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         if (authStore.statusUser !== "active"
             && to.meta.requirementUser === 'authorized') {
             authStore.lastPageRedirect = to.fullPath
-            return navigateTo('/auth/login', {redirectCode: 301})
+            return navigateTo('/auth/login?reason=need_auth', {redirectCode: 301})
         }
         if (authStore.statusUser === "active"
             && to.meta.requirementUser == 'unauthorized')

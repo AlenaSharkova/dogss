@@ -70,6 +70,7 @@ const actionBtn = (actionCustom: () => void) => {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 5px;
     &__icon {
       height: 300px;
       .modal-result-icon {

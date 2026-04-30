@@ -182,11 +182,12 @@ onMounted(async () => {
       justify-content: center;
       will-change: header;
       background-color: #47456D00;
-      backdrop-filter: blur(6px);
       transition: all 0.2s;
+      backdrop-filter: blur(0px);
 
       &.fixed {
         background-color: $violet-opacity;
+        backdrop-filter: blur(6px);
         z-index: 10;
         position: fixed;
         top: 0px;

@@ -48,7 +48,7 @@ export default defineEventHandler(async (event) => {
         await getUserAuth(token, Users)
             .then(res => user.value = res as UserBDItemStruct)
             .catch(err => {
-                console.log('неавторизованный пользователь', err)
+                throw err
             })
         if(!user.value) {
             throw createError({
@@ -57,6 +57,7 @@ export default defineEventHandler(async (event) => {
                 statusMessage: 'Пользователь не найден'
             });
         }
+        console.log('123456', user.value.email)
         if(user.value.email !== adminEmail) {
             throw createError({
                 statusCode: 401,

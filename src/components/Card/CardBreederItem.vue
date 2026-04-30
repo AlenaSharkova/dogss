@@ -21,6 +21,13 @@ const userFullName = computed(() =>
         : `${props.user.personal_data.first_name} ${props.user.personal_data.last_name}`
 )
 
+const photoView = computed(() =>
+    //добавить кооридныта
+    hasBreeder.value
+        ? `${props.user.breeder?.photo_preview.url}`
+        : `${props.user.personal_data.photo}`
+)
+
 
 const onSwiper = (swiper: Swiper) => {
   swiperInstance.value = swiper
@@ -42,7 +49,7 @@ const goToBreeder = () => {
           :name="userFullName"
           size="medium"
           unfull
-          :img="user.personal_data.photo" />
+          :img="photoView" />
       <div class="card-breeder-item__content">
         <div class="card-breeder-item__content-wrapper">
           <div class="card-breeder-item__content-name">

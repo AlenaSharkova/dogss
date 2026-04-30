@@ -15,6 +15,9 @@ const userFullName = computed(() => `${userFullData.value?.personal_data.last_na
 const showChangeInfo = () => {
   isShowChangeInfo.value = true
 }
+const closeChangeInfo = () => {
+  isShowChangeInfo.value = false
+}
 </script>
 
 <template>
@@ -28,13 +31,14 @@ const showChangeInfo = () => {
       <PersonalOffers class="personal-profile__offers" />
       <PersonalProfileProgress class="personal-profile__progress" />
       <PersonalProfileInfo
-          v-if="userFullData"
+          v-if="userFullData && !isShowChangeInfo"
           :user="userFullData"
           @change="showChangeInfo()"
           class="personal-profile__progress" />
       <PersonalProfileForm
           v-if="userFullData && isShowChangeInfo"
           :user="userFullData"
+          @close="closeChangeInfo"
           class="personal-profile__progress" />
     </div>
   </div>

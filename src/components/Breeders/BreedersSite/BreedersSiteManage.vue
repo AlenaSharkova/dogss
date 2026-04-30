@@ -22,7 +22,6 @@ import type {ICommonUpload, IUploadImageInBase} from "~/struct/Common/ICommonUpl
 import BreedersSiteAbout from "~/components/Breeders/BreedersSite/BreedersSiteAbout.vue";
 import useScreen from "~/utils/useScreen";
 import type {DogChangeItemStruct} from "~/struct/Dog/DogItemStruct";
-import type {AdChangeItemStruct, AdCreateItemStruct} from "~/struct/Ad/AdItemStruct";
 
 const props = defineProps({
   user: {
@@ -322,7 +321,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div v-if="userCurrent" class="breeder-site --manage">
+  <div v-if="user" class="breeder-site --manage">
     <BreedersSiteHead
         :typeAction="typeAction"
         name=""
@@ -332,11 +331,12 @@ onUnmounted(() => {
         v-model:banner-images="newData.photo_banner"
         v-model:photo-preview="newData.photo_preview"
     />
-    newData.name: {{newData.name}}
 
     <LayoutWrapperPage :isPaddingY="false" :isPaddingX="false" class="breeder-site__wrapper" >
       <div ref="aboutHtmlBlock" id="about" class="breeder-site__section --about --no-padding">
-        <h3 class="breeder-site__section-title">О нас</h3>
+        <div class="breeder-site__section-title">
+          <h2>О нас</h2>
+        </div>
         <BreedersSiteAbout
             v-model="newData.breed_specialisation"
             :typeAction="typeAction"
@@ -351,7 +351,9 @@ onUnmounted(() => {
         />
       </div>
       <div ref="myDogsHtmlBlock" id="my-dogs" class="breeder-site__section">
-        <h3 class="breeder-site__section-title">Наши питомцы</h3>
+        <div class="breeder-site__section-title">
+          <h2>Наши питомцы</h2>
+        </div>
         <BreedersSitePets
             :dogs="newData.my_dogs"
             :typeAction="typeAction"
@@ -360,11 +362,15 @@ onUnmounted(() => {
       </div>
 
       <div ref="adsHtmlBlock" id="ads" class="breeder-site__section">
-        <h3 class="breeder-site__section-title">Объявления</h3>
+        <div class="breeder-site__section-title">
+          <h2>Объявления</h2>
+        </div>
         <UserPageAds :ads-list="user?.ad_list" class="breeder-site__section-block" />
       </div>
       <div ref="contactsHtmlBlock"  id="contacts" class="breeder-site__section">
-        <h3 class="breeder-site__section-title">Контакты</h3>
+        <div class="breeder-site__section-title">
+          <h2>Контакты</h2>
+        </div>
         <CommonEmptyBlock
             v-if="!user.personal_data.contact_methods || !(Object?.keys(user.personal_data.contact_methods).length)"
             text="Контакты не предоставлены"
@@ -373,7 +379,9 @@ onUnmounted(() => {
         <UserContactMethodsView :contacts="user.personal_data.contact_methods" />
       </div>
       <div ref="commentsHtmlBlock" id="comments" class="breeder-site__section">
-        <h3 class="breeder-site__section-title">Отзывы</h3>
+        <div class="breeder-site__section-title">
+          <h2>Отзывы</h2>
+        </div>
         <UserPageCommentsGallery :comments="user.comments"/>
       </div>
       <BaseButton class="breeder-site__save" text="Перейти к сохранению изменений" @click="save"/>
@@ -424,9 +432,20 @@ onUnmounted(() => {
       z-index: 8;
     }
     &-title {
-      text-align: center;
-      @include h3();
-      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      h2 {
+        text-align: center;
+        @include h3();
+        margin-bottom: 40px;
+        background: transparent;
+        backdrop-filter: blur(4px);
+        padding: 5px;
+        width: max-content;
+        border-radius: 5px;
+        display: block;
+      }
     }
     &.--no-padding {
       padding: 0;

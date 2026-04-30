@@ -77,6 +77,7 @@ export interface AdFormatShortItemStruct {
     isFavorite: boolean
     ownerDetails: object;
     UsersListFavoriteAd: object;
+    PhotosObject: IUploadImageBD[];
 }
 export interface AdQueryAdminStruct {
     status: string;

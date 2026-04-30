@@ -15,6 +15,7 @@ usersStore.updateUsersList()
 <template>
     <div class="page-breeders-group">
       <LayoutWrapperPage>
+        <h1 class="page-breeders-group__title" >Заводчики</h1>
         <div class="page-breeders-group__list">
           <CardBreederItem
               v-for="(user, index) in usersList"
@@ -30,6 +31,10 @@ usersStore.updateUsersList()
 .page-breeders-group {
   width: 100%;
   margin-top: 30px;
+  &__title {
+    @include h2;
+    margin: 25px 0 20px;
+  }
   &__list {
     display: flex;
     flex-direction: column;

@@ -38,6 +38,32 @@ export interface BreederItemStruct {
     about_text: string;
     ownerDetails: UserGlobalItemStruct | null;
 }
+export interface BreederItemForUserStruct {
+    //то же, что и BreederItemStruct, но без ownerDetails
+    id: number;
+    name: string;
+    photo_banner: IUploadImageBody;
+    photos_gallery: IUploadImageBody[];
+    photo_preview: IUploadImageBody;
+    my_dogs: DogsFormatShortItemStruct[];
+    created_ad: string;
+    breed_specialisation: ISelectNumber[];
+    about_text: string;
+    //ownerDetails: UserGlobalItemStruct | null;
+}
+export interface BreederItemShortForUserStruct {
+    // без ownerDetails, photo_banner, photos_gallery, my_dogs, about_text
+    id: number;
+    name: string;
+    //photo_banner: IUploadImageBody;
+    //photos_gallery: IUploadImageBody[];
+    photo_preview: IUploadImageBody;
+    //my_dogs: DogsFormatShortItemStruct[];
+    created_ad: string;
+    breed_specialisation: ISelectNumber[];
+    //about_text: string;
+    //ownerDetails: UserGlobalItemStruct | null;
+}
 export interface BreederBodyCreateStruct {
     id: number;
     name: string;

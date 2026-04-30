@@ -39,11 +39,11 @@ export default class AuthService extends BaseApiService {
       else return data.value;
   }
 
-  async verifyCodeLink(code: string) {
+  async verifyCodeLink(tokenLink: string) {
     const { data, error }
         = await useFetch<{token: string}>(this.RESOURCE + '/verify', {
         method: "get",
-        query: { code },
+        query: { tokenLink },
         baseURL: this.baseURL,
         headers: {
           ...this.headers,

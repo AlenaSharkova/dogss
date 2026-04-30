@@ -74,7 +74,7 @@ export default defineEventHandler(async (event)=>
             } else {
                 throw createError({
                     statusCode: 400,
-                    message: error || 'Неизвестная ошибка',
+                    message: 'Ошибка статуса',
                     statusMessage: 'Невозможное изменение объявления',
                 })
 

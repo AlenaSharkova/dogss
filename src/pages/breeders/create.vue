@@ -62,6 +62,7 @@ onUnmounted(() => {
 
 <template>
   <div class="page-breeder-create">
+
     <BreedersSiteManage :user="usersStore.userForBreederViewData" type="create" />
   </div>
 </template>

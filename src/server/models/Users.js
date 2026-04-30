@@ -25,6 +25,10 @@ module.exports = (sequelize) => {
             allowNull: true,
             unique: true,
         },
+        new_email: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         city: {
             type: DataTypes.INTEGER,
             allowNull: true,

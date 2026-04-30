@@ -28,8 +28,10 @@ export const usePersonalAdStore = defineStore('personalAdStore', () => {
     const AdPersonalList = ref<PersonalAdListStruct | null>(null)
     const AdPersonalCurrentItemActive = ref<AdItemStruct | null>(null)
     const AdPersonalCurrentItemDraft = ref<AdItemStruct | null>(null)
+    const isLoadingPersonalAdList = ref(false)
 
     async function updatePersonalAdList() {
+        isLoadingPersonalAdList.value = true
         await personalAdService.getPersonalAdList()
             .then((res) => {
                 console.log('ressss', res)
@@ -41,7 +43,10 @@ export const usePersonalAdStore = defineStore('personalAdStore', () => {
                 commonStore.addUserErrorAlert(e.data?.statusMessage)
                 commonStore.addUserErrorAlert(e.data?.message, true)
                 throw e.data
-            });
+            })
+            .finally(() => {
+                isLoadingPersonalAdList.value = false
+            })
     }
     async function getPersonalAdCurrentDraft(id: number | string) {
         await personalAdService.getPersonalAdItem(id, 'draft')
@@ -163,6 +168,7 @@ export const usePersonalAdStore = defineStore('personalAdStore', () => {
         deletePersonalAd,
         createAd,
         changeAd,
+        isLoadingPersonalAdList
     }
 })
 

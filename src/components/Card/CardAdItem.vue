@@ -51,7 +51,8 @@ const removeFromDraft = async () => {
   isLoadDelete.value = false
 }
 const toEditAdAPage = () => {
-  router.push(`/personal/publications/change/${props.item.id}?type=active`)
+  router.push(`/personal/publications/change/${props.item.id}?type=${props.item.status}`)
+  //item
 }
 const toggleMorePersonal = () => {
   isShowMore.value = !isShowMore.value
@@ -179,7 +180,6 @@ onMounted(async () => {
                 @swiper="onSwiper"
                 :modules="[Pagination]"
         >
-          {{`${item.photos}1.jpg`}}
           <swiper-slide
               class="card-item__swiper-slide"
               v-for="(dataImg, indexImg) in item.photos"
@@ -193,7 +193,7 @@ onMounted(async () => {
           </swiper-slide>
           <div v-if="!item.photos?.length"
                class="card-item__swiper-slide --empty">
-            <img class="card-item__swiper-img" src="@/assets/image/default_card.png" loading="lazy" :alt="`dog-${item.id}-${item.indexImg}`">
+            <img class="card-item__swiper-img" src="@/assets/image/default_card.png" loading="lazy" :alt="`dog-${item.id}`">
           </div>
 
           <div class="card-item__swiper-pagination"></div>
@@ -295,7 +295,6 @@ onMounted(async () => {
 
       &.male {
         background-color: rgba(74, 178, 234, 0.6);
-       // background-color: rgba(74, 178, 234, 0.6);
       }
       &.female {
         background-color: rgba(239, 95, 205, 0.6);
@@ -353,6 +352,7 @@ onMounted(async () => {
     &-slide {
       width: 100%;
       height: 100%;
+      overflow: hidden;
       &.--empty {
         //background-color: $light-teal;
         background: linear-gradient(270deg,$light-teal 0%, $violet-opacity 100%, $light-teal 100%);

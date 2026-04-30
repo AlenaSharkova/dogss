@@ -224,7 +224,6 @@ const showModalCommentToAd = () => {
 
       &.male {
         background-color: rgba(74, 178, 234, 0.6);
-       // background-color: rgba(74, 178, 234, 0.6);
       }
       &.female {
         background-color: rgba(239, 95, 205, 0.6);
@@ -282,6 +281,8 @@ const showModalCommentToAd = () => {
     &-slide {
       width: 100%;
       height: 100%;
+      overflow: hidden;
+
       &.--empty {
         //background-color: $light-teal;
         background: linear-gradient(270deg,$light-teal 0%, $violet-opacity 100%, $light-teal 100%);

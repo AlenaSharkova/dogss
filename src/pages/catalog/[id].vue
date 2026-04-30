@@ -44,7 +44,7 @@ const setThumbsSwiper = (swiper: Swiper) => {
 const showZoomPhotos = (photoClick: string) => {
   if(!adView.value) return
   commonStore.addZoomPhotosGallery({
-    list: adView.value.photos,
+    list: adView.value.photos.map(imgObj => imgObj.url),
     active_photo: photoClick
   })
 }
@@ -232,8 +232,8 @@ onUnmounted(() => {
     gap: 20px;
     margin-bottom: 50px;
     @media (max-width: $sm) {
-     // grid-template-columns: 1fr 1fr;
-      //display: grid;
+      /*grid-template-columns: 1fr 1fr;*/
+      /*display: grid;*/
       align-items: stretch;
       margin-bottom: 20px;
     }
@@ -256,10 +256,11 @@ onUnmounted(() => {
           width: auto;
         }
         .page-publication__gallery-swiper {
-
+          height: 100%;
           &__slide {
 
             img {
+              height: 100%;
 
               border-radius: 10px;
               box-shadow: $box-shadow-lite;
@@ -289,13 +290,13 @@ onUnmounted(() => {
 
           flex-shrink: 0;
 
-          //height: auto;
-          //flex-shrink: 0;
+          /*height: auto;
+          //flex-shrink: 0;*/
           width: calc(20% - 20px)
-          //max-width: 100px;
+          /*max-width: 100px;
           //min-width: 50px;
           //max-height: 450px;
-          //min-height: 200px;
+          //min-height: 200px;*/
 
         }
 

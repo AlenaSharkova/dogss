@@ -55,18 +55,22 @@
 }
 @mixin h3 {
   @extend %heading;
-  font-weight: 500;
-  font-size: 32px;
+  /*font-family: "Montserrat", sans-serif;*/
+  font-family: "Bellota", system-ui;
+  font-weight: 600;
+  font-size: 35px;
   @media (max-width: $md) {
-    font-size: 30px;
+    font-size: 34px;
   }
   @media (max-width: $sm) {
-    font-size: 27px;
+    font-size: 30px;
   }
 }
 @mixin h4 {
   @extend %heading;
   font-weight: 500;
+  font-family: "Montserrat", sans-serif;
+
   font-size: 28px;
   @media (max-width: $md) {
     font-size: 27px;
@@ -77,6 +81,7 @@
 }
 @mixin h5 {
   @extend %heading;
+  font-family: "Montserrat", sans-serif;
   font-weight: 500;
   font-size: 22px;
   @media (max-width: $md) {
@@ -88,6 +93,7 @@
 }
 @mixin h6 {
   @extend %heading;
+  font-family: "Montserrat", sans-serif;
   font-size: 21px;
   @media (max-width: $md) {
     font-size: 20px;
@@ -98,6 +104,7 @@
 }
 @mixin subtitle-small($weight: 400) {
   font-style: normal;
+  font-family: "Montserrat", sans-serif;
   font-size: 18px;
   line-height: 24px;
   font-weight: $weight;
@@ -109,6 +116,7 @@
 
 @mixin text-normal($weight: 400) {
   font-style: normal;
+  font-family: "Montserrat", sans-serif;
   font-size: 16px;
   line-height: 20px;
   font-weight: $weight;

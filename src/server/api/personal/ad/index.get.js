@@ -42,10 +42,12 @@ export default defineEventHandler(async (event) => {
         try {
             if(query.id && query.status) {
                 const adItemDB = await requestDBAdPersonalById()
-                return formattedAd(adItemDB);
+                if(adItemDB) return formattedAd(adItemDB);
+                else throw createError({ statusCode: 404, message: 'Объявление не найдено'});
             }
 
             const adListDB = await requestDBAdPersonalList()
+            if(!adListDB) throw createError({ statusCode: 404, message: 'Объявления не найдены'});
 
             const result = adListDB.reduce((acc, ad) => {
                 switch (ad.status) {

@@ -1,11 +1,7 @@
 <script setup lang="ts">
 
-import {formatFromAmount} from "~/utils/formatData";
-import AuthService from "~/service/auth.service";
 import {useAuthStore} from "~/stores/auth.store";
-import {useUsersStore} from "~/stores/users.store";
 import {ruleNotEmpty, ruleRegions, ruleValidEmail} from "~/utils/commonRules";
-import {fa} from "cronstrue/dist/i18n/locales/fa";
 import {computed, ref} from "vue";
 import type {ISelectNumber} from "~/struct/Common/ISelectComponent";
 import BaseModal from "~/components/Base/BaseModal.vue";
@@ -145,6 +141,9 @@ const registrationUser = async () => {
           currentStep.value = 4
         }).catch(err => {
           //textInvalidDescr.value = err.statusMessage
+          if(err.data?.code === 'err-user-has' && err.data?.userStatus === 'unconfirmed') {
+            isUnconfirmedUser.value = true
+          }
         }).finally(() => {
           isLoadSendMail.value = false
         })
@@ -281,7 +280,6 @@ if(!regionsStore.regionsList) {
       <template #action-buttons>
         <BaseButton
             v-if="currentStep !== 4"
-            :disabled="disabledButton"
             text="Дальше"
             type="teriary"
             @click="nextStep"

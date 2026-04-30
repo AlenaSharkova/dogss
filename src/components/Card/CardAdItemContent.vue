@@ -35,7 +35,9 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
       </div>
 
       <div class="card-item__content-info">
-        <p>{{item.breed?.text}}</p>
+        <div class="card-item__content-info__breed">
+          <p>{{item.breed?.text}}</p>
+        </div>
         <BaseWithMiniPopup :text="textMainRegions" position="left">
           <div class="card-item__content-info__city">
             <BaseIconGeo class="card-item__content-info__city-icon" color="dark"/>
@@ -67,7 +69,9 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
         <span>Date: {{formatDate(item.created_at, 'DD.MM.YY HH:mm:ss')}}</span>
       </div>-->
       <div class="card-item__content-owner">
-        <span>Хозяин: {{item.ownerDetails?.personal_data.first_name}} {{item.ownerDetails?.personal_data.last_name}}</span>
+        <!--добавить питомник-->
+        <BaseProfileCircle :img="item.ownerDetails?.personal_data.photo" size="small" :title="item.ownerDetails?.personal_data.photo"/>
+        <span><!--Хозяин: -->{{item.ownerDetails?.personal_data.first_name}} {{item.ownerDetails?.personal_data.last_name}}</span>
       </div>
     </div>
   </div>
@@ -78,11 +82,12 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
 
 .card-item__content {
   padding: 12px 0;
-  height: 220px;
+  height: 270px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: start;
+
   &-type {
 
     padding: 4px;
@@ -108,18 +113,30 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
     height: 100%;
     padding: 0 12px;
     display: grid;
-    grid-template-rows: 2fr 2fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 2fr 6fr 1fr 1fr 1fr 1fr;
   }
   &-name {
     padding-top: 7px;
     @include h6;
   }
   &-info {
-    display: flex;
+    display: grid;
+    grid-template-rows: 2fr 1fr;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: flex-end;
     justify-content: start;
     @include text-normal(400);
+    &__breed {
+
+      p {
+        //TODO: проверить line-clamp в других барузераз
+        line-clamp: 2;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        -webkit-line-clamp: 2
+      }
+    }
     &__city {
       display: flex;
       align-items: center;
@@ -140,7 +157,12 @@ const textMainRegions = computed(() => `Регион: ${props.item.geo_main.regi
     @include h6;
   }
   &-owner {
+    margin-top: 10px;
+    border-top: 1px solid $grey-lite;
     padding-top: 4px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
     @include text-normal;
   }
 }

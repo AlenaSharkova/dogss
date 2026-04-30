@@ -45,7 +45,7 @@ export default defineEventHandler(async (event) => {
         await getUserAuth(token, Users)
             .then(res => user = res)
             .catch(err => {
-                console.log('неавторизованный пользователь', err)
+                console.log('без токена в неавторизованном запросе')
             })
 
 

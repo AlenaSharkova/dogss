@@ -411,6 +411,7 @@ onMounted(() => {
 .base-field {
   width: 100%;
   position: relative;
+  padding-bottom: 20px;
 
   &__item {
     display: flex;
@@ -425,6 +426,8 @@ onMounted(() => {
     transition: border .3s;
     line-height: 22px;
     letter-spacing: -0.27px;
+
+    box-shadow: 3px 4px 8px 0px #0d275040 inset,-4px -3px 10px 0px #fff inset;;
 
     &.--no-title {
       padding: 10px;

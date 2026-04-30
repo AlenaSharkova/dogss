@@ -2,6 +2,9 @@
 import CreateAd from "~/pages/create-ad.vue";
 import FormCreateAd from "~/components/Form/FormCreateAd.vue";
 
+definePageMeta({
+  requirementUser : 'authorized'
+})
 const route = useRoute();
 
 const adId = ref(route.params.id as string)

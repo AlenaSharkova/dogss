@@ -54,7 +54,7 @@ export default defineEventHandler(async (event)=>
         console.log('adItemChangeResult000', adItemChangeResult)
         if(!adItemChangeResult) {
             throw createError({
-                statusCode: 500,
+                statusCode: 404,
                 message: `Объявление не найдено!`,
             });
         }

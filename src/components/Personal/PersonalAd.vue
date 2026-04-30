@@ -100,6 +100,7 @@ const emptyBlock = computed(() => {
           type="secondary"
           size="small"
           to="/create-ad" />
+      <BaseLoading v-if="personalAdStore.isLoadingPersonalAdList" />
       <AdWrapperList :empty="emptyBlock">
         <template v-if="selectTabTypeAd?.value === 'active'">
           <CardAdItem

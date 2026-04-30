@@ -79,6 +79,35 @@ export const usePersonalStore = defineStore('personalStore', () => {
                 throw e.data
             });
     }
+    async function changeEmailUser(new_email: string) {
+        await personalService.changeEmailUserApi(new_email)
+            .then((res) => {
+                console.log('ressss changeEmailUser', res)
+                if (res) {
+                    //authStore.getUserFullData()
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
+
+    async function confirmChangeEmailUserWitchOtp(otp: string) {
+        await personalService.changeEmailUserVerifyOtp(otp)
+            .then((res) => {
+                console.log('ressss confirmChangeEmailUserWitchOtp', res)
+                if (res) {
+                    authStore.getUserFullData()
+                }
+            })
+            .catch(e => {
+                commonStore.addUserErrorAlert(e.data?.statusMessage)
+                commonStore.addUserErrorAlert(e.data?.message, true)
+                throw e.data
+            });
+    }
 
     onMounted(() => {
         if(authStore.statusUser === 'active') {
@@ -100,7 +129,9 @@ export const usePersonalStore = defineStore('personalStore', () => {
         updateFavorites,
         FavoritesList,
         deletePersonalFavorite,
-        changeUserData
+        changeUserData,
+        changeEmailUser,
+        confirmChangeEmailUserWitchOtp
     }
 })
 

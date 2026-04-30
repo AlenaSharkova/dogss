@@ -1,4 +1,4 @@
-@mixin scrollbar-thin($size: 2px, $color: var(--grey-900), $hides: false, $track-color: transparent) {
+@mixin scrollbar-thin($size: 2px, $color: #555, $hides: false, $track-color: transparent) {
   -moz-scrollbar-width: thin;
 
   &::-webkit-scrollbar {

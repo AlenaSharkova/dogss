@@ -57,12 +57,6 @@ const dataComplete = ref([
     status: '',
     required: true,
   },
-  {
-    text: 'Добавление специализации',
-    type: 'breed_specialisation',
-    status: '',
-    required: true,
-  },
 ])
 const initComplete = () => {
   console.log('initComplete', props.listIncomplete)

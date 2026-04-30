@@ -58,7 +58,6 @@ await breedsStore.updateBreedsList()
       width: 100%;
       display: flex;
       justify-content: center;
-      max-width: 1920px;
       padding: 30px 0 0;
     }
   }

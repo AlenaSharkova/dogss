@@ -187,7 +187,7 @@ const open = defineModel<boolean>();
     }
     &-wrapper {
       overflow: hidden;
-      height: fit-content;
+      height: 100%;
     }
   }
 }

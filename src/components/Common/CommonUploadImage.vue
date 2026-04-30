@@ -225,7 +225,6 @@ onMounted(() => {
     </div>
     <div class="common-upload__file-photos">
 
-      {{imageList}}//
       <div class="common-upload__file-photos__item"
            v-for="(item, index) in imageList"
            :key="index">

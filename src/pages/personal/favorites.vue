@@ -6,6 +6,10 @@ import {computed} from "vue";
 import PersonalAd from "~/components/Personal/PersonalAd.vue";
 import PersonalFavorites from "~/components/Personal/PersonalFavorites.vue";
 
+definePageMeta({
+  requirementUser : 'authorized'
+})
+
 const authStore = useAuthStore()
 const personalStore = usePersonalStore()
 
