@@ -16,7 +16,7 @@
     "vue": "latest"
   },
   "dependencies": {
-    "@pinia/nuxt": "^0.5.5",
+    "@pinia/nuxt": "^1.0.2",
     "@vueuse/core": "^13.3.0",
     "@vueuse/nuxt": "^13.3.0",
     "aws-sdk": "^2.1692.0",
