@@ -51,5 +51,8 @@
     "sequelize-cli": "^6.6.3",
     "umzug": "^3.8.2",
     "vitepress": "^1.6.4"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.64.6"
   }
 }
