@@ -13,10 +13,8 @@ export default defineNuxtConfig({
     {
       path: '~/components',
       pathPrefix: false,
-      global: true,
     },
   ],
-
   vite: {
     css: {
       preprocessorOptions: {
@@ -28,6 +26,9 @@ export default defineNuxtConfig({
       },
     },
   },
+  alias: {
+    '@comp': '/src/components'
+  },
   vue: {
     compilerOptions: {
       directiveTransforms: {
@@ -38,7 +39,13 @@ export default defineNuxtConfig({
       }
     }
   },
-  modules: [ '@pinia/nuxt', 'pinia-plugin-persistedstate/nuxt', 'nuxt-swiper', 'dayjs-nuxt'],
+  modules: [
+    '@pinia/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
+    'nuxt-swiper',
+    'dayjs-nuxt',
+    '@nuxt/devtools'
+  ],
   piniaPluginPersistedstate: {
     storage: 'cookies',
     cookieOptions: {

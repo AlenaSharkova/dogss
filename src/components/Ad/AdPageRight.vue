@@ -8,6 +8,7 @@ import {computed} from "vue";
 import type { PropType } from 'vue';
 import AdFavoriteHeart from "~/components/Ad/AdFavoriteHeart.vue";
 import BaseIconShare from "~/components/Base/BaseIcon/BaseIconShare.vue";
+import BaseIconCheck from "~/components/Base/BaseIcon/BaseIconCheck.vue";
 
 const props = defineProps({
   item: {
@@ -379,6 +380,8 @@ const goToContacts = () => {
         }
       }
       &__ads {
+        display: flex;
+        align-items: start;
         &-icon {
           flex-shrink: 0;
         }
@@ -386,6 +389,8 @@ const goToContacts = () => {
           line-height: 140%;
           color: white;
           display: flex;
+          flex-wrap: wrap;
+
           gap: 8px;
           @media (max-width: $xs) {
             flex-direction: column;

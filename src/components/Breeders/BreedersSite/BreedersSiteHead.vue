@@ -76,7 +76,7 @@ const styleBanner = computed(() => {
     else if(isMobile.value) positionStyle = photoBannerItem.value?.positionBanner?.mobile || ""
     else positionStyle = photoBannerItem.value?.positionBanner?.desktop || ""
     return {
-      'background-image': `url(${photoBannerItem.value.url})`,
+      //'background-image': `url(${photoBannerItem.value.url})`,
       'background-position': positionStyle
     }
   }
@@ -178,8 +178,8 @@ onBeforeUnmount(() => {
   <div class="breeder-site-header">
     <div class="breeder-site-header__block">
       <div class="breeder-site-header__image" :style="styleBanner">
-        <img v-if="photoBannerItem?.url" :src="photoBannerItem?.url"/>
-        <img v-else src="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp"/>
+        <!--<img v-if="photoBannerItem?.url" :src="photoBannerItem?.url"/>-->
+        <img src="/image/test-dog/abce4a3bc3a9f343180cc20b81fbbeb4.webp"/>
         <div class="breeder-site-header__image-mask" />
       </div>
       <BreedersSiteHeadUpload

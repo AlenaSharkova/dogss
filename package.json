@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:postman": "newman run ./MyCollection.postman_collection.json",
     "build": "nuxt build",
     "dev": "nuxt dev --host",
     "generate": "nuxt generate",
@@ -46,8 +47,10 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
+    "@vue/language-server": "^3.2.7",
     "sass": "^1.79.4",
     "sequelize-cli": "^6.6.3",
-    "umzug": "^3.8.2"
+    "umzug": "^3.8.2",
+    "vitepress": "^1.6.4"
   }
 }

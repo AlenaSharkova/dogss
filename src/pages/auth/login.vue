@@ -1,4 +1,7 @@
 <script setup lang="ts">
+defineOptions({
+  name: 'AuthLogin'
+})
 definePageMeta({
   requirementUser : 'unauthorized'
 })

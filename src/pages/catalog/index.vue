@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
+import AdFilter from "~/components/Ad/AdFilter.vue";
 import {useAdStore} from "~/stores/ad.store";
 import {computed, ref} from "vue";
 import CardAdItem from "~/components/Card/CardAdItem.vue";

@@ -4,6 +4,10 @@ import { ref} from 'vue'
 import CommonAlertsList from "~/components/Common/CommonAlertsList.vue";
 import LayoutHeader from "~/components/Layout/LayoutHeader.vue";
 import AdOfferLeaveComment from "~/components/Ad/AdOfferLeaveComment.vue";
+import CommonUpButton from "~/components/Common/CommonUpButton.vue";
+import PersonalMenu from "~/components/Personal/PersonalMenu.vue";
+import CommonZoomPhotosGallery from "~/components/Common/CommonZoomPhotosGallery.vue";
+import CommonModalResult from "~/components/Common/CommonModalResult.vue";
 
 const route = useRoute()
 

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
 import {useUsersStore} from "~/stores/users.store";
-import AdWrapperList from "~/components/Ad/AdWrapperList.vue";
 import {computed} from "vue";
 import LayoutWrapperPage from "~/components/Layout/LayoutWrapperPage.vue";
 definePageMeta({

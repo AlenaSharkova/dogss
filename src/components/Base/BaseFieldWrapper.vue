@@ -178,6 +178,7 @@ const open = defineModel<boolean>();
     z-index: 10;
     min-width: max-content;
     padding-top: 4px;
+
     @media (max-width: $sm) {
       position: fixed;
       z-index: 14;

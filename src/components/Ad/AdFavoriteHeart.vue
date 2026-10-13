@@ -2,7 +2,6 @@
 
 import BaseIconHeart from "~/components/Base/BaseIcon/BaseIconHeart.vue";
 import type {PropType} from "vue";
-import type {AdItemStruct} from "~/struct/Ad/AdItemStruct";
 
 
 const props = defineProps({

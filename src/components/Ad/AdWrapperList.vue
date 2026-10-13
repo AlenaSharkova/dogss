@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import CommonEmptyBlock from "~/components/Common/CommonEmptyBlock.vue";
 
+defineOptions({ name: 'AdWrapperList' })
 defineProps({
   hasFilter: {
     type: Boolean,

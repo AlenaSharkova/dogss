@@ -1,11 +1,7 @@
 <script setup lang="ts">
 
-import {formatFromAmount} from "~/utils/formatData";
-import AuthService from "~/service/auth.service";
 import {useAuthStore} from "~/stores/auth.store";
-import {useUsersStore} from "~/stores/users.store";
 import {ruleValidEmail} from "~/utils/commonRules";
-import {fa} from "cronstrue/dist/i18n/locales/fa";
 
 const router = useRouter();
 

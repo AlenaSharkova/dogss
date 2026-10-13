@@ -4,6 +4,10 @@ import {computed} from "vue";
 import {usePersonalStore} from "~/stores/personal.store";
 import {usePersonalAdStore} from "~/stores/personal-ad.store";
 import {useCommonStore} from "~/stores/common.store";
+import BaseModal from "~/components/Base/BaseModal.vue";
+import FormWindow from "~/components/Form/FormWindow.vue";
+import BaseButton from "~/components/Base/BaseButton.vue";
+import CardAdItem from "~/components/Card/CardAdItem.vue";
 
 const router = useRouter();
 const route = useRoute();

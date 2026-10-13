@@ -1,6 +1,10 @@
 <script setup lang="ts">
 
 import BaseModal from "~/components/Base/BaseModal.vue";
+import FormWindow from "~/components/Form/FormWindow.vue";
+import BaseButton from "~/components/Base/BaseButton.vue";
+import BaseIconResult from "~/components/Base/BaseIcon/BaseIconResult.vue";
+import CommonCopy from "~/components/Common/CommonCopy.vue";
 
 const adCommentStore = useAdCommentStore()
 const route = useRoute()

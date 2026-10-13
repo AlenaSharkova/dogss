@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import BaseIconStar from "~/components/Base/BaseIcon/BaseIconStar.vue";
+
 const hoverStar = ref(0)
 const activeStar = defineModel({default: 0})
 

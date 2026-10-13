@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import {computed, ref} from "vue";
 import type {ISelectComponent, ISelectComponentWithChildren} from "~/struct/Common/ISelectComponent";
+import BaseSelect from "~/components/Base/BaseSelect.vue";
+import RegionsSelect from "~/components/Regions/RegionsSelect.vue";
+import BasePriceRange from "~/components/Base/BasePriceRange.vue";
+import BaseButton from "~/components/Base/BaseButton.vue";
 
 const breedsStore = useBreedsStore()
 const adStore = useAdStore()
