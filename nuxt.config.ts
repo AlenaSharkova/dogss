@@ -21,7 +21,7 @@ export default defineNuxtConfig({
         scss: {
           additionalData: '@use "@/assets/style/imports/index.scss" as *;',
           api: 'modern-compiler',
-          silenceDeprecations: ["legacy-js-api"],
+          silenceDeprecations: ['mixed-decls'],
         }
       },
     },
